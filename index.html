@@ -657,7 +657,7 @@
             },
 
             async startCamera() {
-                const st = document.getElementById('checkin-status'); 
+                const st = document.getElementById('checkin-status');
                 st.innerText = "📍 Đang xác định vị trí...";
                 this.state.addr = "Đang lấy vị trí...";
 
@@ -667,7 +667,7 @@
                 navigator.geolocation.getCurrentPosition(async pos => {
                     const lat = pos.coords.latitude.toFixed(6);
                     const lon = pos.coords.longitude.toFixed(6);
-                    
+
                     // Gán tạm tọa độ trước (đề phòng không lấy được địa chỉ)
                     this.state.addr = `Tọa độ: ${lat}, ${lon}`;
                     st.innerText = "✅ Đã lấy tọa độ, đang tìm địa chỉ...";
@@ -679,8 +679,8 @@
                         const data = await res.json();
                         this.state.addr = data.display_name || `Tọa độ: ${lat}, ${lon}`;
                         st.innerText = "✅ Vị trí: " + (data.address.road || data.display_name.split(',')[0]);
-                    } catch (e) { 
-                        st.innerText = "✅ Đã lấy tọa độ (Lỗi tìm địa chỉ)"; 
+                    } catch (e) {
+                        st.innerText = "✅ Đã lấy tọa độ (Lỗi tìm địa chỉ)";
                     }
                 }, err => {
                     st.innerText = "❌ Lỗi GPS: Hãy bật định vị!";
@@ -691,7 +691,7 @@
                     this.state.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: this.state.camMode } });
                     document.getElementById('video-preview').srcObject = this.state.stream;
                     document.getElementById('overlay-camera').classList.add('active');
-                } catch(e) {
+                } catch (e) {
                     this.showToast("Không mở được camera!", "error");
                 }
             },
