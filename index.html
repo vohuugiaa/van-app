@@ -710,13 +710,29 @@
                 document.getElementById(`day_box_${i}`).classList.remove('error-focus');
             },
             generateDates() {
-                WEEK_DATES = []; let now = new Date(); now.setHours(0, 0, 0, 0);
-                let dToS = now.getDay() === 0 ? 0 : 7 - now.getDay();
-                let start = new Date(now); start.setDate(now.getDate() + 1); // Bắt đầu từ ngày mai
-                let sunT = new Date(now); sunT.setDate(now.getDate() + dToS);
-                for (let i = 0; i < 14; i++) {
-                    let c = new Date(start); c.setDate(start.getDate() + i);
-                    WEEK_DATES.push({ label: `${c.getDay() === 0 ? 'Chủ Nhật' : 'Thứ ' + (c.getDay() + 1)} (${c.getDate()}/${c.getMonth() + 1})`, value: this.fmt(c), isNext: c > sunT });
+                WEEK_DATES = [];
+                let now = new Date(); now.setHours(0, 0, 0, 0);
+                
+                // Ngày bắt đầu: Ngày mai
+                let start = new Date(now); start.setDate(now.getDate() + 1);
+
+                // Tìm ngày Chủ Nhật của tuần này
+                let dToSun1 = now.getDay() === 0 ? 0 : 7 - now.getDay();
+                let sun1 = new Date(now); sun1.setDate(now.getDate() + dToSun1);
+
+                // Tìm ngày Chủ Nhật của tuần tiếp theo (Hạn cuối đăng ký)
+                let sun2 = new Date(sun1); sun2.setDate(sun1.getDate() + 7);
+
+                // Chạy từ ngày mai cho đến Chủ Nhật tuần sau
+                let curr = new Date(start);
+                while (curr <= sun2) {
+                    let c = new Date(curr);
+                    WEEK_DATES.push({ 
+                        label: `${c.getDay() === 0 ? 'Chủ Nhật' : 'Thứ ' + (c.getDay() + 1)} (${c.getDate()}/${c.getMonth() + 1})`, 
+                        value: this.fmt(c), 
+                        isNext: c > sun1 
+                    });
+                    curr.setDate(curr.getDate() + 1);
                 }
             },
             startTimer() {
