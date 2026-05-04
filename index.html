@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VanApp - Pro Version</title>
+    <title>Thông Tin Tài Xế Van</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -18,53 +19,238 @@
             --nav-height: 70px;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; }
-        .container { max-width: 500px; margin: 0 auto; height: 100vh; display: flex; flex-direction: column; background: white; position: relative; }
-        .page { flex: 1; overflow-y: auto; display: none; padding: 20px; padding-bottom: calc(var(--nav-height) + 20px); animation: fadeIn 0.3s ease; }
-        .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            position: relative;
+        }
+
+        .page {
+            flex: 1;
+            overflow-y: auto;
+            display: none;
+            padding: 20px;
+            padding-bottom: calc(var(--nav-height) + 20px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
         /* Header & Nav */
-        .page-header { margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
-        .page-header h1 { font-size: 1.3rem; font-weight: 800; }
-        .bottom-nav { position: absolute; bottom: 0; width: 100%; height: var(--nav-height); background: white; display: flex; border-top: 1px solid #f1f5f9; box-shadow: 0 -5px 15px rgba(0,0,0,0.03); z-index: 1000; }
-        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: var(--text-light); cursor: pointer; }
-        .nav-item span:first-child { font-size: 1.4rem; margin-bottom: 2px; }
-        .nav-item span:last-child { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; }
-        .nav-item.active { color: var(--primary); }
+        .page-header {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .page-header h1 {
+            font-size: 1.3rem;
+            font-weight: 800;
+        }
+
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: var(--nav-height);
+            background: white;
+            display: flex;
+            border-top: 1px solid #f1f5f9;
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.03);
+            z-index: 1000;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: var(--text-light);
+            cursor: pointer;
+        }
+
+        .nav-item span:first-child {
+            font-size: 1.4rem;
+            margin-bottom: 2px;
+        }
+
+        .nav-item span:last-child {
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
 
         /* Elements */
-        .card { background: #f8fafc; border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid #f1f5f9; }
-        .btn-action { width: 100%; padding: 16px; border-radius: 16px; border: none; background: var(--primary); color: white; font-weight: 800; font-size: 1rem; cursor: pointer; }
-        .hotline-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #eee; text-decoration: none; color: inherit; }
-        .hotline-item:last-child { border-bottom: none; }
-        .hotline-item .label { font-size: 0.8rem; font-weight: 600; color: var(--text-light); }
-        .hotline-item .phone { font-size: 0.9rem; font-weight: 800; color: #3b82f6; }
+        .card {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 16px;
+            border-radius: 16px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .hotline-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .hotline-item:last-child {
+            border-bottom: none;
+        }
+
+        .hotline-item .label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .hotline-item .phone {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: #3b82f6;
+        }
 
         /* Camera Modal */
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 3000; display: none; flex-direction: column; }
-        .overlay.active { display: flex; }
-        #video-preview { flex: 1; object-fit: cover; }
-        .camera-ui { padding: 25px; background: white; border-top-left-radius: 30px; border-top-right-radius: 30px; display: flex; justify-content: space-around; align-items: center; }
-        .btn-shutter { width: 70px; height: 70px; border-radius: 50%; border: 5px solid #eee; background: var(--danger); }
-        .btn-switch { background: #f1f5f9; border: none; padding: 10px 15px; border-radius: 12px; font-size: 1.2rem; }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 3000;
+            display: none;
+            flex-direction: column;
+        }
+
+        .overlay.active {
+            display: flex;
+        }
+
+        #video-preview {
+            flex: 1;
+            object-fit: cover;
+        }
+
+        .camera-ui {
+            padding: 25px;
+            background: white;
+            border-top-left-radius: 30px;
+            border-top-right-radius: 30px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .btn-shutter {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 5px solid #eee;
+            background: var(--danger);
+        }
+
+        .btn-switch {
+            background: #f1f5f9;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 12px;
+            font-size: 1.2rem;
+        }
 
         /* Scheduling */
-        .day-box { background: white; border: 1px solid #f1f5f9; border-radius: 15px; padding: 15px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-        .native-select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 0.9rem; margin-bottom: 8px; outline: none; background: #fff; }
+        .day-box {
+            background: white;
+            border: 1px solid #f1f5f9;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+        }
+
+        .native-select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            outline: none;
+            background: #fff;
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
-        
+
         <!-- PAGE: LOGIN -->
         <div id="page-login" class="page active">
-            <div style="height: 100%; display: flex; flex-direction: column; justify-content: center; text-align: center;">
-                <h2 style="font-size: 2.2rem; font-weight: 900; color: var(--primary); margin-bottom: 10px;">VanApp</h2>
-                <p style="margin-bottom: 40px; color: var(--text-light);">Ứng dụng tài xế xe Van chuyên nghiệp</p>
-                <input type="text" id="login-name" placeholder="Họ và tên..." style="width: 100%; padding: 16px; border-radius: 16px; border: 2px solid #f1f5f9; margin-bottom: 15px; font-size: 1rem;">
-                <input type="number" id="login-id" placeholder="Mã nhân viên (SAP)..." style="width: 100%; padding: 16px; border-radius: 16px; border: 2px solid #f1f5f9; margin-bottom: 25px; font-size: 1rem;">
+            <div
+                style="height: 100%; display: flex; flex-direction: column; justify-content: center; text-align: center;">
+                <h2 style="font-size: 2.2rem; font-weight: 900; color: var(--primary); margin-bottom: 10px;">Thông Tin
+                    Tài Xế Van</h2>
+                <input type="text" id="login-name" placeholder="Họ và tên..."
+                    style="width: 100%; padding: 16px; border-radius: 16px; border: 2px solid #f1f5f9; margin-bottom: 15px; font-size: 1rem;">
+                <input type="number" id="login-id" placeholder="Mã nhân viên (SAP)..."
+                    style="width: 100%; padding: 16px; border-radius: 16px; border: 2px solid #f1f5f9; margin-bottom: 25px; font-size: 1rem;">
                 <button class="btn-action" onclick="app.login()">ĐĂNG NHẬP</button>
             </div>
         </div>
@@ -72,51 +258,78 @@
         <!-- PAGE: HOME -->
         <div id="page-home" class="page">
             <div class="page-header">
-                <div><h1 id="user-name">---</h1><p id="user-sap" style="font-size: 0.8rem; color: var(--text-light);">Mã NV: ---</p></div>
-                <button onclick="app.logout()" style="border:none; background:none; color: var(--danger); font-weight: 700; font-size: 0.8rem;">Đăng xuất</button>
+                <div>
+                    <h1 id="user-name">---</h1>
+                    <p id="user-sap" style="font-size: 0.8rem; color: var(--text-light);">Mã NV: ---</p>
+                </div>
+                <button onclick="app.logout()"
+                    style="border:none; background:none; color: var(--danger); font-weight: 700; font-size: 0.8rem;">Đăng
+                    xuất</button>
             </div>
-            
-            <div class="card" style="background: linear-gradient(135deg, #1abc9c, #16a085); color: white; border: none;">
+
+            <div class="card"
+                style="background: linear-gradient(135deg, #1abc9c, #16a085); color: white; border: none;">
                 <h3 style="font-size: 0.9rem; margin-bottom: 5px;">📍 Check-in hôm nay</h3>
                 <p style="font-size: 0.8rem; opacity: 0.9;" id="home-last-check">Chưa ghi nhận</p>
             </div>
 
             <h3 style="font-size: 1rem; margin-bottom: 12px; margin-top: 20px;">☎️ HOTLINE TỔNG ĐÀI</h3>
             <div class="card" style="padding: 0; overflow: hidden;">
-                <a href="tel:1900232389" class="hotline-item"><span class="label">Cứu hộ xe VF</span><span class="phone">1900.232389</span></a>
-                <a href="tel:1900636984" class="hotline-item"><span class="label">Sạc pin, App VF</span><span class="phone">1900.636984</span></a>
-                <a href="tel:02471096839" class="hotline-item"><span class="label">Chăm sóc TX</span><span class="phone">0247.109.6839</span></a>
-                <a href="tel:19002088" class="hotline-item"><span class="label">Tổng đài đặt xe</span><span class="phone">1900.2088</span></a>
-                <a href="tel:19002097" class="hotline-item"><span class="label">CSKH & Hóa đơn</span><span class="phone">1900.2097</span></a>
-                <a href="tel:1900545458" class="hotline-item"><span class="label">BH PVI (Techcom)</span><span class="phone">1900.545458</span></a>
+                <a href="tel:1900232389" class="hotline-item"><span class="label">Cứu hộ xe VF</span><span
+                        class="phone">1900.232389</span></a>
+                <a href="tel:1900636984" class="hotline-item"><span class="label">Sạc pin, App VF</span><span
+                        class="phone">1900.636984</span></a>
+                <a href="tel:02471096839" class="hotline-item"><span class="label">Chăm sóc TX</span><span
+                        class="phone">0247.109.6839</span></a>
+                <a href="tel:19002088" class="hotline-item"><span class="label">Tổng đài đặt xe</span><span
+                        class="phone">1900.2088</span></a>
+                <a href="tel:19002097" class="hotline-item"><span class="label">CSKH & Hóa đơn</span><span
+                        class="phone">1900.2097</span></a>
+                <a href="tel:1900545458" class="hotline-item"><span class="label">BH PVI (Techcom)</span><span
+                        class="phone">1900.545458</span></a>
             </div>
         </div>
 
         <!-- PAGE: CHECK-IN -->
         <div id="page-checkin" class="page">
-            <div class="page-header"><h1>Chấm công</h1></div>
-            <div style="background: #fff1f2; padding: 15px; border-radius: 15px; font-size: 0.8rem; margin-bottom: 25px;">
+            <div class="page-header">
+                <h1>Chấm công</h1>
+            </div>
+            <div
+                style="background: #fff1f2; padding: 15px; border-radius: 15px; font-size: 0.8rem; margin-bottom: 25px;">
                 <strong>⚠️ LƯU Ý:</strong> Chụp ảnh rõ mặt tại khu vực làm việc để hệ thống ghi nhận địa chỉ tự động.
             </div>
-            <div onclick="app.startCamera()" style="height: 250px; background: #f1f5f9; border-radius: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; cursor: pointer;">
+            <div onclick="app.startCamera()"
+                style="height: 250px; background: #f1f5f9; border-radius: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; cursor: pointer;">
                 <span style="font-size: 4rem;">📸</span>
                 <h3 style="font-weight: 800; color: var(--primary-dark);">BẤM ĐỂ CHỤP ẢNH</h3>
             </div>
-            <div id="checkin-status" style="margin-top: 20px; text-align: center; font-size: 0.85rem; font-weight: 600;"></div>
+            <div id="checkin-status"
+                style="margin-top: 20px; text-align: center; font-size: 0.85rem; font-weight: 600;"></div>
         </div>
 
         <!-- PAGE: PHÂN CA -->
         <div id="page-phanca" class="page">
-            <div class="page-header"><h1>Đăng ký Phân ca</h1></div>
-            <div id="phanca-timer" style="background: var(--danger); color: white; padding: 8px; border-radius: 10px; text-align: center; font-size: 0.75rem; font-weight: 700; margin-bottom: 15px;">Đang tải...</div>
+            <div class="page-header">
+                <h1>Đăng ký Phân ca</h1>
+            </div>
+            <div id="phanca-timer"
+                style="background: var(--danger); color: white; padding: 8px; border-radius: 10px; text-align: center; font-size: 0.75rem; font-weight: 700; margin-bottom: 15px;">
+                Đang tải...</div>
             <div id="phanca-list"></div>
-            <button class="btn-action" style="margin-top: 20px;" onclick="app.reviewSchedule()">TIẾP TỤC & CHỐT LỊCH</button>
+            <button class="btn-action" style="margin-top: 20px;" onclick="app.reviewSchedule()">TIẾP TỤC & CHỐT
+                LỊCH</button>
         </div>
 
         <!-- PAGE: HỒ SƠ -->
         <div id="page-hoso" class="page">
-            <div class="page-header"><h1>Hồ sơ cá nhân</h1></div>
-            <div class="card"><p><strong>Họ tên:</strong> <span id="p-name">---</span></p><p><strong>Mã SAP:</strong> <span id="p-id">---</span></p></div>
+            <div class="page-header">
+                <h1>Hồ sơ cá nhân</h1>
+            </div>
+            <div class="card">
+                <p><strong>Họ tên:</strong> <span id="p-name">---</span></p>
+                <p><strong>Mã SAP:</strong> <span id="p-id">---</span></p>
+            </div>
             <h4 style="font-size: 0.9rem; margin-bottom: 10px;">Lịch sử Check-in</h4>
             <div id="p-history" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;"></div>
             <h4 style="font-size: 0.9rem; margin-bottom: 10px;">Lịch phân ca đã chốt</h4>
@@ -126,7 +339,8 @@
         <!-- NAV BAR -->
         <nav class="bottom-nav" id="main-nav" style="display:none;">
             <div onclick="app.nav('home')" class="nav-item" id="nav-home"><span>🏠</span><span>Trang chủ</span></div>
-            <div onclick="app.nav('checkin')" class="nav-item" id="nav-checkin"><span>📍</span><span>Check-in</span></div>
+            <div onclick="app.nav('checkin')" class="nav-item" id="nav-checkin"><span>📍</span><span>Check-in</span>
+            </div>
             <div onclick="app.nav('phanca')" class="nav-item" id="nav-phanca"><span>📅</span><span>Phân ca</span></div>
             <div onclick="app.nav('hoso')" class="nav-item" id="nav-hoso"><span>👤</span><span>Hồ sơ</span></div>
         </nav>
@@ -137,17 +351,21 @@
             <div class="camera-ui">
                 <button class="btn-switch" onclick="app.switchCamera()">🔄</button>
                 <button class="btn-shutter" onclick="app.takePhoto()"></button>
-                <button class="btn-switch" onclick="app.closeCamera()" style="background: #fee2e2; color: red;">✖</button>
+                <button class="btn-switch" onclick="app.closeCamera()"
+                    style="background: #fee2e2; color: red;">✖</button>
             </div>
         </div>
 
         <!-- OVERLAY REVIEW -->
-        <div id="overlay-review" class="overlay" style="background: rgba(0,0,0,0.8); justify-content: center; padding: 20px;">
+        <div id="overlay-review" class="overlay"
+            style="background: rgba(0,0,0,0.8); justify-content: center; padding: 20px;">
             <div style="background: white; width: 100%; border-radius: 25px; padding: 25px;">
                 <h3 style="margin-bottom: 15px;">Xác nhận lịch trình</h3>
-                <div id="review-content" style="max-height: 300px; overflow-y: auto; font-size: 0.85rem; line-height: 1.5;"></div>
+                <div id="review-content"
+                    style="max-height: 300px; overflow-y: auto; font-size: 0.85rem; line-height: 1.5;"></div>
                 <div style="margin-top: 20px; display: flex; gap: 10px;">
-                    <button class="btn-action" style="background: #eee; color: #333;" onclick="document.getElementById('overlay-review').classList.remove('active')">SỬA LẠI</button>
+                    <button class="btn-action" style="background: #eee; color: #333;"
+                        onclick="document.getElementById('overlay-review').classList.remove('active')">SỬA LẠI</button>
                     <button class="btn-action" id="btn-final-chot" onclick="app.finalSubmit()">CHỐT NGAY</button>
                 </div>
             </div>
@@ -157,15 +375,15 @@
 
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwt1R_-vozEmoklFLbAmSFPS0lW79dWPqDfHVVKji_4WR5ujCaefhdh6I71mjYWbpw1/exec";
-        const AREAS = ["Quận Phú Nhuận","Huyện Nhà Bè","Quận 5","Quận 3","Quận 4","Quận 1","Quận 6","Quận 8","Quận 7","Huyện Bình Chánh","Quận Tân Bình","Quận 11","Quận 10","Quận Gò Vấp","Quận Bình Thạnh","Quận Tân Phú","Quận 12","Huyện Hóc Môn","Quận Bình Tân","Thành phố Thủ Đức"];
-        
+        const AREAS = ["Quận Phú Nhuận", "Huyện Nhà Bè", "Quận 5", "Quận 3", "Quận 4", "Quận 1", "Quận 6", "Quận 8", "Quận 7", "Huyện Bình Chánh", "Quận Tân Bình", "Quận 11", "Quận 10", "Quận Gò Vấp", "Quận Bình Thạnh", "Quận Tân Phú", "Quận 12", "Huyện Hóc Môn", "Quận Bình Tân", "Thành phố Thủ Đức"];
+
         const app = {
-            state: { name:'', id:'', stream:null, loc:'', addr:'', camMode:'user', shiftCounts:{} },
+            state: { name: '', id: '', stream: null, loc: '', addr: '', camMode: 'user', shiftCounts: {} },
 
             init() {
                 this.state.name = localStorage.getItem('van_user_name');
                 this.state.id = localStorage.getItem('van_user_id');
-                if(this.state.name && this.state.id) this.loginSuccess();
+                if (this.state.name && this.state.id) this.loginSuccess();
                 window.onhashchange = () => this.routing();
                 this.routing();
             },
@@ -173,10 +391,10 @@
             login() {
                 const n = document.getElementById('login-name').value.trim();
                 const i = document.getElementById('login-id').value.trim();
-                if(!n || !i) return alert("Nhập đủ thông tin!");
+                if (!n || !i) return alert("Nhập đủ thông tin!");
                 document.querySelector('.btn-action').innerText = "ĐANG XÁC THỰC...";
                 fetch(`${SCRIPT_URL}?action=login&name=${n}&id=${i}`).then(r => r.text()).then(res => {
-                    if(res === "success") {
+                    if (res === "success") {
                         localStorage.setItem('van_user_name', n); localStorage.setItem('van_user_id', i);
                         this.state.name = n; this.state.id = i; this.loginSuccess();
                     } else { alert("Sai thông tin!"); document.querySelector('.btn-action').innerText = "ĐĂNG NHẬP"; }
@@ -184,6 +402,10 @@
             },
 
             loginSuccess() {
+                // Clear URL parameters for cleaner access next time
+                if (window.history.replaceState) {
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
                 document.getElementById('page-login').classList.remove('active');
                 document.getElementById('main-nav').style.display = 'flex';
                 document.getElementById('user-name').innerText = this.state.name;
@@ -195,29 +417,29 @@
 
             routing() {
                 const h = location.hash.replace("#/", "") || "login";
-                if(h === "login" && this.state.name) return this.nav('home');
+                if (h === "login" && this.state.name) return this.nav('home');
                 document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
                 document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                if(document.getElementById('page-'+h)) document.getElementById('page-'+h).classList.add('active');
-                if(document.getElementById('nav-'+h)) document.getElementById('nav-'+h).classList.add('active');
-                if(h === "phanca") this.loadPhanCa();
-                if(h === "hoso") this.loadProfile();
-                if(h === "home") {
+                if (document.getElementById('page-' + h)) document.getElementById('page-' + h).classList.add('active');
+                if (document.getElementById('nav-' + h)) document.getElementById('nav-' + h).classList.add('active');
+                if (h === "phanca") this.loadPhanCa();
+                if (h === "hoso") this.loadProfile();
+                if (h === "home") {
                     const l = localStorage.getItem('last_check_time');
-                    if(l) document.getElementById('home-last-check').innerText = "Lần cuối: " + l;
+                    if (l) document.getElementById('home-last-check').innerText = "Lần cuối: " + l;
                 }
             },
 
-            logout() { if(confirm("Đăng xuất?")) { localStorage.clear(); location.href = ""; } },
+            logout() { if (confirm("Đăng xuất?")) { localStorage.clear(); location.href = ""; } },
 
             // --- CAMERA & GPS LOGIC ---
             async startCamera() {
                 const st = document.getElementById('checkin-status');
                 st.innerText = "📍 Đang lấy địa chỉ thực tế...";
                 try {
-                    const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, {timeout:8000}));
+                    const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, { timeout: 8000 }));
                     this.state.loc = `${pos.coords.latitude}, ${pos.coords.longitude}`;
-                    
+
                     // Reverse Geocoding (Lấy địa chỉ từ tọa độ)
                     const resAddr = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&addressdetails=1`);
                     const addrData = await resAddr.json();
@@ -225,11 +447,11 @@
                     st.innerText = "✅ Đã nhận diện địa chỉ: " + this.state.addr;
 
                     this.openStream();
-                } catch(e) { alert("Vui lòng cấp quyền Vị trí & Camera!"); }
+                } catch (e) { alert("Vui lòng cấp quyền Vị trí & Camera!"); }
             },
 
             async openStream() {
-                if(this.state.stream) this.state.stream.getTracks().forEach(t => t.stop());
+                if (this.state.stream) this.state.stream.getTracks().forEach(t => t.stop());
                 this.state.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: this.state.camMode } });
                 document.getElementById('video-preview').srcObject = this.state.stream;
                 document.getElementById('overlay-camera').classList.add('active');
@@ -251,7 +473,7 @@
             },
 
             closeCamera() {
-                if(this.state.stream) this.state.stream.getTracks().forEach(t => t.stop());
+                if (this.state.stream) this.state.stream.getTracks().forEach(t => t.stop());
                 document.getElementById('overlay-camera').classList.remove('active');
             },
 
@@ -272,28 +494,57 @@
 
             // --- PHÂN CA LOGIC ---
             async loadPhanCa() {
-                this.renderPhanCa();
-                this.startTimer();
-                const r = await fetch(`${SCRIPT_URL}?action=get_shift_data`);
-                this.state.shiftCounts = await r.json();
-                this.renderPhanCa();
+                const listEl = document.getElementById('phanca-list');
+                const btnEl = document.querySelector('#page-phanca .btn-action');
+                listEl.innerHTML = "Đang kiểm tra lịch đã chốt...";
+                btnEl.style.display = 'none';
+
+                try {
+                    // 1. Kiểm tra xem đã chốt lịch tuần tới chưa
+                    const resMy = await fetch(`${SCRIPT_URL}?action=my_schedule&id=${this.state.id}`);
+                    const myData = await resMy.json();
+
+                    this.generateDates();
+                    const nextWeekDates = WEEK_DATES.filter(d => d.isNext).map(d => d.value);
+                    const alreadyHasNextWeek = myData.some(r => nextWeekDates.includes(r[4]));
+
+                    if (alreadyHasNextWeek) {
+                        listEl.innerHTML = `
+                            <div class="card" style="text-align:center; padding:40px 20px; border:2px dashed var(--primary);">
+                                <span style="font-size:3rem; display:block; margin-bottom:15px;">✅</span>
+                                <h3 style="color:var(--primary-dark); margin-bottom:10px;">BẠN ĐÃ CHỐT LỊCH!</h3>
+                                <p style="font-size:0.85rem; color:var(--text-light);">Lịch trình tuần tới của bạn đã được ghi nhận và khóa. Vui lòng xem lại trong phần Hồ sơ.</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    // 2. Nếu chưa chốt thì hiện form đăng ký
+                    btnEl.style.display = 'block';
+                    const r = await fetch(`${SCRIPT_URL}?action=get_shift_data`);
+                    this.state.shiftCounts = await r.json();
+                    this.renderPhanCa();
+                    this.startTimer();
+                } catch (e) {
+                    listEl.innerHTML = "Lỗi tải dữ liệu. Vui lòng thử lại!";
+                }
             },
 
             renderPhanCa() {
-                let now = new Date(); now.setHours(0,0,0,0);
+                let now = new Date(); now.setHours(0, 0, 0, 0);
                 let dToSun = now.getDay() === 0 ? 0 : 7 - now.getDay();
                 let start = new Date(now); start.setDate(now.getDate() + 1);
                 let end = new Date(now); end.setDate(now.getDate() + dToSun + 7);
                 let sunT = new Date(now); sunT.setDate(now.getDate() + dToSun);
 
                 let html = ''; let curr = new Date(start); let i = 0;
-                while(curr <= end) {
-                    let dStr = `${("0"+curr.getDate()).slice(-2)}/${("0"+(curr.getMonth()+1)).slice(-2)}/${curr.getFullYear()}`;
+                while (curr <= end) {
+                    let dStr = `${("0" + curr.getDate()).slice(-2)}/${("0" + (curr.getMonth() + 1)).slice(-2)}/${curr.getFullYear()}`;
                     let dN = curr.getDay() === 0 ? 'Chủ Nhật' : 'Thứ ' + (curr.getDay() + 1);
                     let c8 = (this.state.shiftCounts[dStr] && this.state.shiftCounts[dStr]['08:00-17:00']) || 0;
                     html += `<div class="day-box">
                         <span style="font-size:0.6rem; background:#fef9c3; padding:2px 6px; border-radius:4px; font-weight:800;">${curr <= sunT ? 'TUẦN NÀY' : 'TUẦN TỚI'}</span>
-                        <h4 style="margin:5px 0;">${dN} (${curr.getDate()}/${curr.getMonth()+1})</h4>
+                        <h4 style="margin:5px 0;">${dN} (${curr.getDate()}/${curr.getMonth() + 1})</h4>
                         <select class="native-select" id="s_${i}" onchange="document.getElementById('a_${i}').disabled = (this.value===''||this.value==='OFF')">
                             <option value="">-- Chọn ca --</option>
                             <option value="06:00-15:00">06:00-15:00</option>
@@ -311,14 +562,14 @@
 
             startTimer() {
                 const el = document.getElementById('phanca-timer');
-                if(this.tInt) clearInterval(this.tInt);
+                if (this.tInt) clearInterval(this.tInt);
                 this.tInt = setInterval(() => {
                     let now = new Date(); let target = new Date();
                     let dToS = now.getDay() === 0 ? 0 : 7 - now.getDay();
-                    target.setDate(now.getDate() + dToS); target.setHours(20,0,0,0);
-                    if(now > target) el.innerText = "Hết giờ đăng ký tuần tới!";
+                    target.setDate(now.getDate() + dToS); target.setHours(20, 0, 0, 0);
+                    if (now > target) el.innerText = "Hết giờ đăng ký tuần tới!";
                     else {
-                        let diff = target - now; let h = Math.floor(diff/3600000); let m = Math.floor((diff%3600000)/60000); let s = Math.floor((diff%60000)/1000);
+                        let diff = target - now; let h = Math.floor(diff / 3600000); let m = Math.floor((diff % 3600000) / 60000); let s = Math.floor((diff % 60000) / 1000);
                         el.innerText = `Đóng tuần tới sau: ${h}h ${m}p ${s}s`;
                     }
                 }, 1000);
@@ -326,11 +577,11 @@
 
             reviewSchedule() {
                 this.state.schedules = []; let html = '';
-                for(let i=0; i<window.dCnt; i++){
+                for (let i = 0; i < window.dCnt; i++) {
                     const s = document.getElementById(`s_${i}`).value, a = document.getElementById(`a_${i}`).value;
-                    if(!s || (s!=='OFF' && !a)) return alert("Chọn đủ Ca & Khu vực!");
+                    if (!s || (s !== 'OFF' && !a)) return alert("Chọn đủ Ca & Khu vực!");
                     this.state.schedules.push({ date: "", shift: s, area: a || "Nghỉ" });
-                    html += `<p style="margin-bottom:5px; border-bottom:1px dashed #eee;">${s}: ${a||'OFF'}</p>`;
+                    html += `<p style="margin-bottom:5px; border-bottom:1px dashed #eee;">${s}: ${a || 'OFF'}</p>`;
                 }
                 document.getElementById('review-content').innerHTML = html;
                 document.getElementById('overlay-review').classList.add('active');
@@ -339,16 +590,16 @@
             async finalSubmit() {
                 const btn = document.getElementById('btn-final-chot');
                 btn.disabled = true; btn.innerText = "ĐANG GỬI...";
-                let now = new Date(); now.setHours(0,0,0,0);
+                let now = new Date(); now.setHours(0, 0, 0, 0);
                 let start = new Date(now); start.setDate(now.getDate() + 1);
                 this.state.schedules.forEach((it, idx) => {
                     let d = new Date(start); d.setDate(start.getDate() + idx);
-                    it.date = `${("0"+d.getDate()).slice(-2)}/${("0"+(d.getMonth()+1)).slice(-2)}/${d.getFullYear()}`;
+                    it.date = `${("0" + d.getDate()).slice(-2)}/${("0" + (d.getMonth() + 1)).slice(-2)}/${d.getFullYear()}`;
                 });
                 try {
-                    await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action:"submit_schedule", driverName:this.state.name, driverId:this.state.id, schedules:this.state.schedules }) });
+                    await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "submit_schedule", driverName: this.state.name, driverId: this.state.id, schedules: this.state.schedules }) });
                     alert("Thành công!"); location.reload();
-                } catch(e) { alert("Lỗi!"); btn.disabled = false; btn.innerText = "CHỐT NGAY"; }
+                } catch (e) { alert("Lỗi!"); btn.disabled = false; btn.innerText = "CHỐT NGAY"; }
             },
 
             async loadProfile() {
@@ -360,10 +611,11 @@
                     const dH = await rH.json(), dS = await rS.json();
                     hL.innerHTML = dH.reverse().slice(0, 10).map(r => `<div class="card" style="padding:10px; margin-bottom:5px; font-size:0.75rem; display:flex; justify-content:space-between;"><span>${r[0]}</span><strong>${r[3]}</strong></div>`).join('') || "Trống";
                     sL.innerHTML = dS.reverse().slice(0, 10).map(r => `<div class="card" style="padding:10px; margin-bottom:5px; font-size:0.75rem;"><div><strong>Ngày: ${r[4]}</strong> - ${r[5]}</div><div style="color:var(--text-light)">${r[3]}</div></div>`).join('') || "Trống";
-                } catch(e) { hL.innerHTML = "Lỗi!"; sL.innerHTML = "Lỗi!"; }
+                } catch (e) { hL.innerHTML = "Lỗi!"; sL.innerHTML = "Lỗi!"; }
             }
         };
         app.init();
     </script>
 </body>
+
 </html>
