@@ -57,27 +57,40 @@
                 <h3>Trạng thái làm việc</h3>
                 <span id="work-status" class="status-badge status-off">Nghỉ ca</span>
             </div>
-            <div class="check-grid">
-                <button id="btn-checkin" class="btn-check btn-in" onclick="startAttendanceFlow('Check-in')">
-                    <span>📍 Check-in</span>
-                    <span>(Ảnh & Vị trí)</span>
-                </button>
-                <button id="btn-checkout" class="btn-check btn-out" onclick="startAttendanceFlow('Check-out')" disabled>
-                    <span>🏁 Check-out</span>
-                    <span>(Ảnh & Vị trí)</span>
+            <div class="check-grid" style="grid-template-columns: 1fr;">
+                <button id="btn-checkin" class="btn-check btn-in" onclick="startAttendanceFlow('Check-in')" style="padding: 25px;">
+                    <span style="font-size: 2rem;">📍</span>
+                    <span style="font-size: 1.2rem;">BẮT ĐẦU CA (CHECK-IN)</span>
                 </button>
             </div>
             <div id="check-time" class="time-display">Chưa có dữ liệu hôm nay</div>
         </div>
 
         <!-- Main Buttons -->
-        <a href="https://script.google.com/macros/s/AKfycbxu89KJKpKEdBiU57ZEEfmw9A7AOV-sbR4utBsfbI6vYUWAlvZiaFUz7libxO8OeuBI/exec" class="action-btn btn-teal" style="background: linear-gradient(135deg, #1abc9c, #16a085);" target="_blank">
+        <button onclick="togglePhanCa()" class="action-btn btn-teal" style="background: linear-gradient(135deg, #1abc9c, #16a085); width: 100%;">
             📅 ĐĂNG KÝ PHÂN CA
-        </a>
+        </button>
+
+        <div id="phanca-container" class="hidden" style="margin-top: 10px; animation: slideUp 0.5s ease;">
+            <iframe id="iframe-phanca" src="" style="width:100%; height:500px; border:none; border-radius:20px; box-shadow: var(--shadow); background: white;"></iframe>
+        </div>
 
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSdeMUMCp55KATYMsYSpacilv4HnKiGKEsmbMEdRTyLS4wKc-w/viewform?usp=dialog" class="action-btn btn-red" target="_blank">📝 ĐĂNG KÝ LỊCH OFF</a>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSc4a_ebdFUlhKv4EDPFB70dIJD-8rMUw9gl3elkE3Im6BqiOw/viewform" class="action-btn btn-blue" target="_blank">💬 PHẢN HỒI LƯƠNG THÁNG 4</a>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSe5vAY1wYKI_HoOzvgB9QGjHmmfLGyEqn2iFIFzmlBNoMjXAQ/viewform?usp=dialog" class="action-btn btn-teal" target="_blank">💡 PHẢN HỒI Ý KIẾN</a>
+
+        <button onclick="viewMyHistory()" class="action-btn" style="background: #f1f5f9; color: var(--text-main); border: 1px solid #cbd5e1;">
+            📅 LỊCH SỬ CỦA TÔI
+        </button>
+
+        <div id="history-container" class="hidden" style="margin-top: 10px; animation: slideUp 0.5s ease;">
+            <div class="data-card" style="padding: 15px; font-size: 0.85rem;">
+                <h4 style="margin-bottom: 10px;">Lịch sử gần đây:</h4>
+                <div id="history-list" style="max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
+                    <!-- History items will appear here -->
+                </div>
+            </div>
+        </div>
 
         <!-- Hotline Section (Rút gọn) -->
         <div class="hotline-card">
@@ -108,7 +121,7 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwENfLXgkcNVX6NOUojt-r6uFo7WRZg1Rbr2_Xph1IcwiISgJEeN15yDID87zZdIS2R/exec";
         let currentType = '';
 
         // Elements
@@ -131,9 +144,30 @@
             const name = document.getElementById('full-name').value.trim();
             const id = document.getElementById('employee-id').value.trim();
             if (!name || !id) return alert('Nhập đủ thông tin!');
-            localStorage.setItem('van_user_name', name);
-            localStorage.setItem('van_user_id', id);
-            showDashboard(name, id);
+            
+            const btn = document.querySelector('.btn-login');
+            btn.innerHTML = "Đang xác thực...";
+            btn.disabled = true;
+
+            // Kiểm tra danh sách tài xế từ Google Sheet
+            fetch(`${SCRIPT_URL}?action=login&name=${name}&id=${id}`)
+                .then(res => res.text())
+                .then(result => {
+                    if (result === "success") {
+                        localStorage.setItem('van_user_name', name);
+                        localStorage.setItem('van_user_id', id);
+                        showDashboard(name, id);
+                    } else {
+                        alert("Thông tin không chính xác hoặc bạn không có trong danh sách tài xế!");
+                        btn.innerHTML = "VÀO ỨNG DỤNG";
+                        btn.disabled = false;
+                    }
+                })
+                .catch(err => {
+                    alert("Lỗi kết nối server!");
+                    btn.innerHTML = "VÀO ỨNG DỤNG";
+                    btn.disabled = false;
+                });
         }
 
         function showDashboard(name, id) {
@@ -183,7 +217,7 @@
             const id = localStorage.getItem('van_user_id');
             const timeStr = new Date().toLocaleString('vi-VN');
 
-            const btn = currentType === 'Check-in' ? document.getElementById('btn-checkin') : document.getElementById('btn-checkout');
+            const btn = document.getElementById('btn-checkin');
             btn.innerHTML = "Đang gửi...";
             btn.disabled = true;
 
@@ -194,9 +228,13 @@
                     name, id, type: currentType, timestamp: timeStr, photo, location
                 })
             }).then(() => {
-                alert(`${currentType} thành công!`);
+                alert(`Check-in thành công!`);
                 updateUIAfterCheck(currentType, timeStr);
-            }).catch(err => alert("Gửi thất bại!"));
+            }).catch(err => {
+                alert("Gửi thất bại!");
+                btn.innerHTML = `<span style="font-size: 2rem;">📍</span><span style="font-size: 1.2rem;">BẮT ĐẦU CA (CHECK-IN)</span>`;
+                btn.disabled = false;
+            });
         }
 
         function closeCamera() {
@@ -207,41 +245,71 @@
         }
 
         function updateUIAfterCheck(type, time) {
-            const inBtn = document.getElementById('btn-checkin');
-            const outBtn = document.getElementById('btn-checkout');
+            const btn = document.getElementById('btn-checkin');
             const status = document.getElementById('work-status');
             
-            if (type === 'Check-in') {
-                inBtn.disabled = true; inBtn.innerHTML = "📍 Check-in";
-                outBtn.disabled = false;
-                status.innerText = "Đang làm việc"; status.className = "status-badge status-on";
-                localStorage.setItem('work_status', 'working');
-            } else {
-                inBtn.disabled = false;
-                outBtn.disabled = true; outBtn.innerHTML = "🏁 Check-out";
-                status.innerText = "Nghỉ ca"; status.className = "status-badge status-off";
-                localStorage.setItem('work_status', 'off');
-            }
-            document.getElementById('check-time').innerText = `Lần cuối: ${type} lúc ${time}`;
+            btn.innerHTML = `<span style="font-size: 2rem;">📍</span><span style="font-size: 1.2rem;">BẮT ĐẦU CA (CHECK-IN)</span>`;
+            btn.disabled = false; // Cho phép bấm lại nếu cần
+
+            status.innerText = "Đã ghi nhận"; 
+            status.className = "status-badge status-on";
+            
+            document.getElementById('check-time').innerText = `Lần cuối: lúc ${time}`;
             localStorage.setItem('last_check_time', time);
         }
 
         function restoreWorkStatus() {
-            const status = localStorage.getItem('work_status');
             const lastTime = localStorage.getItem('last_check_time');
-            if (status === 'working') {
-                document.getElementById('btn-checkin').disabled = true;
-                document.getElementById('btn-checkout').disabled = false;
-                document.getElementById('work-status').innerText = "Đang làm việc";
+            if (lastTime) {
+                document.getElementById('work-status').innerText = "Đã ghi nhận";
                 document.getElementById('work-status').className = "status-badge status-on";
+                document.getElementById('check-time').innerText = `Lần cuối lúc ${lastTime}`;
             }
-            if (lastTime) document.getElementById('check-time').innerText = `Lần cuối lúc ${lastTime}`;
         }
 
         function handleLogout() {
             if (confirm('Đăng xuất?')) {
                 localStorage.clear();
                 location.reload();
+            }
+        }
+
+        function togglePhanCa() {
+            const container = document.getElementById('phanca-container');
+            const iframe = document.getElementById('iframe-phanca');
+            const url = "https://script.google.com/macros/s/AKfycbxu89KJKpKEdBiU57ZEEfmw9A7AOV-sbR4utBsfbI6vYUWAlvZiaFUz7libxO8OeuBI/exec";
+            
+            if (container.classList.contains('hidden')) {
+                if (!iframe.src) iframe.src = url;
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+
+        async function viewMyHistory() {
+            const container = document.getElementById('history-container');
+            const list = document.getElementById('history-list');
+            const id = localStorage.getItem('van_user_id');
+
+            if (container.classList.contains('hidden')) {
+                list.innerHTML = "Đang tải...";
+                container.classList.remove('hidden');
+                
+                try {
+                    const res = await fetch(`${SCRIPT_URL}?action=history&id=${id}`);
+                    const data = await res.json();
+                    list.innerHTML = data.reverse().map(r => `
+                        <div style="padding: 10px; border-radius: 10px; background: #f8fafc; border: 1px solid #edf2f7; display: flex; justify-content: space-between;">
+                            <span>${r[0]}</span>
+                            <strong style="color: ${r[3] === 'Check-in' ? '#1abc9c' : '#f1c40f'}">${r[3]}</strong>
+                        </div>
+                    `).join('') || "Chưa có lịch sử làm việc.";
+                } catch (err) {
+                    list.innerHTML = "Lỗi tải lịch sử.";
+                }
+            } else {
+                container.classList.add('hidden');
             }
         }
 
