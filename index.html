@@ -464,7 +464,7 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwNl5mz47zaw9RQ2B-m-e0GoFMAr4ZzWikp_Uv5ofeGByy9MdKRPjJsvoHX2iPiMbxz/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxVjaSagLldPC5WF2G1a6-J3xhL95bkujLElF4StchrA7YDmWKv_CCfWg96gz9A1k-G/exec";
         const AREAS = ["Quận Phú Nhuận", "Huyện Nhà Bè", "Quận 5", "Quận 3", "Quận 4", "Quận 1", "Quận 6", "Quận 8", "Quận 7", "Huyện Bình Chánh", "Quận Tân Bình", "Quận 11", "Quận 10", "Quận Gò Vấp", "Quận Bình Thạnh", "Quận Tân Phú", "Quận 12", "Huyện Hóc Môn", "Quận Bình Tân", "Thành phố Thủ Đức"];
         let WEEK_DATES = [];
 
@@ -489,17 +489,20 @@
                 err.style.display = 'none';
 
                 try {
-                    // Chế độ 'no-cors' không lấy được dữ liệu text, dùng cách truyền thống nhưng bắt lỗi CORS
                     const res = await fetch(`${SCRIPT_URL}?action=login&id=${i}`).then(r => r.text());
-                    if (res === "success") {
+                    const result = res.trim(); // Loại bỏ khoảng trắng thừa
+                    console.log("Kết quả đăng nhập:", result);
+
+                    if (result === "success") {
                         localStorage.setItem('van_user_id', i);
                         this.state.id = i;
                         this.loginSuccess();
                     } else {
-                        throw new Error("Mã SAP không tồn tại trong hệ thống!");
+                        throw new Error("Mã SAP này không có trong danh sách tài xế!");
                     }
                 } catch (e) {
-                    err.innerText = e.message || "Lỗi kết nối máy chủ!";
+                    console.error("Lỗi Login:", e);
+                    err.innerText = e.message.includes("Failed to fetch") ? "Lỗi kết nối (CORS)! Hãy kiểm tra quyền 'Anyone' của Script." : e.message;
                     err.style.display = 'block';
                     btn.disabled = false;
                     btn.innerHTML = `<span>ĐĂNG NHẬP LẠI</span>`;
