@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Báo Cáo Đội Xe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
+    
+    <style>
+        .excel-table-container::-webkit-scrollbar { height: 8px; width: 8px; }
+        .excel-table-container::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        .excel-table-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .excel-table-container::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .sticky-col { position: sticky; left: 0; z-index: 20; background-color: white; border-right: 1px solid #cbd5e1; }
+        .sticky-header { position: sticky; top: 0; z-index: 10; background-color: #f8fafc; border-bottom: 1px solid #cbd5e1; }
+        .sticky-corner { position: sticky; top: 0; left: 0; z-index: 30; background-color: #f8fafc; border-right: 1px solid #cbd5e1; border-bottom: 1px solid #cbd5e1;}
+        
+        table, th, td { border: 1px solid #e2e8f0; border-collapse: collapse; }
+        
+        th.sortable:hover { background-color: #e2e8f0 !important; cursor: pointer; transition: 0.2s; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans p-1 md:p-2 h-screen flex flex-col">
+
+    <div class="bg-white shadow-md border border-slate-200 flex flex-col h-full overflow-hidden">
+        
+        <div class="bg-slate-800 text-white px-3 py-2 flex justify-between items-center z-40">
+            <h1 class="text-sm md:text-base font-bold flex items-center gap-2">
+                📊Theo Dõi Công & Thống Kê
+                <span id="historyDates" class="text-[10px] font-normal bg-slate-700 px-2 py-0.5 rounded text-slate-300">Đang kiểm tra dữ liệu...</span>
+            </h1>
+            <div class="flex items-center gap-2">
+                <button id="btnCopy" onclick="copyTableData()" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-1 px-3 rounded text-[11px] transition flex items-center">📋 Copy Bảng</button>
+                <button onclick="exportToExcel()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-3 rounded text-[11px] transition flex items-center">📥 Xuất Excel</button>
+                <button onclick="clearAllFiles()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded text-[11px] transition">🗑️ Xóa Dữ Liệu</button>
+            </div>
+        </div>
+
+        <div class="bg-slate-100 border-b border-slate-300 p-2 flex flex-wrap items-center justify-between gap-3 z-30 relative">
+            <div class="flex flex-wrap items-center gap-2">
+                <div class="flex items-center gap-1 bg-white border border-slate-300 p-1 rounded shadow-sm">
+                    <span class="text-[11px] font-bold text-slate-600 px-1">1. DS Tài xế:</span>
+                    <input type="file" id="driverFileInput" accept=".xlsx, .xls, .csv" class="text-[10px] w-36 text-slate-500 cursor-pointer"/>
+                    <button onclick="processDriverFile(this)" class="bg-slate-700 hover:bg-slate-800 text-white font-bold py-0.5 px-2 rounded text-[10px] transition min-w-[70px]">Cập Nhật Tổ</button>
+                </div>
+                
+                <div class="flex items-center gap-1 bg-white border border-slate-300 p-1 rounded shadow-sm">
+                    <span class="text-[11px] font-bold text-slate-600 px-1">2. Chấm Công:</span>
+                    <input type="file" id="fileInput" multiple accept=".xlsx, .xls, .csv" class="text-[10px] w-36 text-slate-500 cursor-pointer"/>
+                    <button onclick="processFiles(this)" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-0.5 px-2 rounded text-[10px] transition min-w-[70px]">Tải Lên</button>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3 bg-blue-50 border-2 border-blue-200 p-1.5 rounded-lg shadow-sm flex-wrap">
+                
+                <div class="flex items-center gap-1 bg-white border border-blue-300 px-1.5 py-1 rounded shadow-sm">
+                    <span class="text-[11px] font-bold text-blue-800" title="Lọc dữ liệu theo khoảng thời gian">📅 Lịch:</span>
+                    <input type="date" id="startDate" class="text-[10px] border-none outline-none text-slate-700 bg-transparent cursor-pointer font-semibold" onchange="applyDateFilter()">
+                    <span class="text-[10px] text-slate-400">đến</span>
+                    <input type="date" id="endDate" class="text-[10px] border-none outline-none text-slate-700 bg-transparent cursor-pointer font-semibold" onchange="applyDateFilter()">
+                </div>
+
+                <div class="flex items-center gap-1.5 bg-white border border-green-300 px-2 py-1 rounded shadow-sm">
+                    <span class="text-[11px] font-bold text-green-800" title="Mức doanh thu để đủ điều kiện (Mức Khoán)">🏆 Mức khoán:</span>
+                    <input type="number" id="mucKhoanInput" value="700000" step="10000" class="w-20 text-center font-bold text-green-700 border border-slate-300 rounded text-[11px] outline-none focus:border-green-500" onchange="changeMucKhoan(this.value)">
+                </div>
+
+                <div class="flex items-center gap-1.5 bg-white border border-red-300 px-2 py-1 rounded shadow-sm">
+                    <span class="text-[11px] font-bold text-red-800" title="Tỷ lệ Nhận chuyến tối thiểu">🎯 % Nhận:</span>
+                    <input type="number" id="minNhan" value="80" class="w-10 text-center font-bold text-red-700 border border-slate-300 rounded text-[11px] outline-none focus:border-red-500" onchange="changeTyLe()">
+                </div>
+
+                <div class="flex items-center gap-1.5 bg-white border border-red-300 px-2 py-1 rounded shadow-sm">
+                    <span class="text-[11px] font-bold text-red-800" title="Tỷ lệ Hoàn thành tối thiểu">✅ % H.Thành:</span>
+                    <input type="number" id="minHoanThanh" value="85" class="w-10 text-center font-bold text-red-700 border border-slate-300 rounded text-[11px] outline-none focus:border-red-500" onchange="changeTyLe()">
+                </div>
+
+                <div class="flex items-center gap-1.5 bg-white border border-orange-300 px-2 py-1 rounded shadow-sm">
+                    <span class="text-[11px] font-bold text-orange-800" title="Số tiền quy định là 1 ngày yếu (móm)">💰 Mốc tiền yếu:</span>
+                    <input type="number" id="moneyThreshold" value="320000" step="10000" class="w-20 text-center font-bold text-orange-700 border border-slate-300 rounded text-[11px] outline-none focus:border-orange-500" onchange="changeMoneyThreshold(this.value)">
+                </div>
+
+                <div class="flex items-center gap-1.5 bg-white border border-orange-300 px-2 py-1 rounded shadow-sm">
+                    <span class="text-[11px] font-bold text-orange-800" title="Số ngày lọt mốc tiền yếu trong 1 chu kỳ 7 ngày">⚙️ Lần yếu/7 ngày:</span>
+                    <input type="number" id="weakThreshold" value="3" min="1" max="7" class="w-10 text-center font-bold text-orange-700 border border-slate-300 rounded text-[11px] outline-none focus:border-orange-500" onchange="changeThreshold(this.value)">
+                </div>
+
+                <div class="w-px h-5 bg-blue-200 hidden md:block"></div>
+
+                <div class="flex items-center gap-1.5">
+                    <span class="text-[11px] font-bold text-blue-900">🏢 Lọc Tổ:</span>
+                    <div id="teamFilters" class="relative w-32 text-[11px]">
+                        <span class="text-[10px] text-gray-500 italic">Trống</span>
+                    </div>
+                </div>
+                <div class="w-px h-5 bg-blue-200"></div>
+                <div class="flex items-center gap-1.5">
+                    <input type="text" id="searchInput" oninput="renderDisplayList()" placeholder="🔍 Tìm Tên / Mã..." class="border border-blue-300 rounded px-2 py-1 text-[11px] font-semibold text-blue-800 bg-white shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 w-32 md:w-40 placeholder-slate-400">
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-slate-50 border-b px-1 pt-1 pb-0 overflow-x-auto whitespace-nowrap z-10 flex space-x-1" id="tabContainer">
+            <button id="tabAll" onclick="switchFilter('all')" class="py-1 px-1 min-w-[140px] rounded-t transition bg-blue-50 text-blue-700 border-b-2 border-blue-700 text-center">Đang tải...</button>
+            <button id="tabLow" onclick="switchFilter('low')" class="py-1 px-1 min-w-[140px] rounded-t transition text-slate-500 hover:bg-gray-200 border-b-2 border-transparent text-center">Đang tải...</button>
+            <button id="tabCong" onclick="switchFilter('cong')" class="py-1 px-1 min-w-[140px] rounded-t transition text-slate-500 hover:bg-gray-200 border-b-2 border-transparent text-center">Đang tải...</button>
+        </div>
+
+        <div class="flex-1 overflow-auto excel-table-container bg-white relative">
+            <table class="min-w-full text-[11px] bg-white">
+                <thead id="tableHeader"></thead>
+                <tbody id="analysisTableBody">
+                    <tr><td class="text-center py-8 text-gray-500">Chưa có dữ liệu. Vui lòng tải các file chấm công lên.</td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="bg-slate-50 p-1.5 border-t text-[10px] flex justify-center gap-4 text-gray-600 flex-wrap z-10" id="legendBar">
+        </div>
+    </div>
+
+    <script>
+        // ================= CẤU HÌNH =================
+        let MUC_KHOAN = 700000; 
+        let MOC_TIEN_YEU = 320000; 
+        let SO_LAN_YEU_THRESHOLD = 3; 
+        
+        // Cấu hình tỷ lệ % động
+        let TY_LE_NHAN_MIN = 80;
+        let TY_LE_HOAN_THANH_MIN = 85;
+
+        // BIẾN LƯU BỘ LỌC NGÀY
+        let filterStartDate = "";
+        let filterEndDate = "";
+
+        // ================= HỆ THỐNG LƯU TRỮ =================
+        const StorageHelper = {
+            save: function(key, data) {
+                try {
+                    const compressed = LZString.compressToUTF16(JSON.stringify(data));
+                    localStorage.setItem(key, compressed);
+                    return true;
+                } catch (e) {
+                    console.error("Lỗi lưu Storage:", e);
+                    alert("CẢNH BÁO: Bộ nhớ trình duyệt đã đạt giới hạn tối đa dù đã nén. Vui lòng Xuất Excel để lưu trữ và Xóa bớt dữ liệu cũ!");
+                    return false;
+                }
+            },
+            load: function(key) {
+                const raw = localStorage.getItem(key);
+                if (!raw) return null;
+                try {
+                    const decompressed = LZString.decompressFromUTF16(raw);
+                    if (decompressed) return JSON.parse(decompressed);
+                    return JSON.parse(raw);
+                } catch (e) {
+                    try { return JSON.parse(raw); } catch (err) { return null; }
+                }
+            }
+        };
+
+        function recoverOldHistory() {
+            let keysToCheck = ['DataDoiXe_ChamCongSAP_V8', 'DataDoiXe_ChamCongSAP_V10', 'DataDoiXe_ChamCongSAP_V14', 'DataDoiXe_ChamCongSAP_V15', 'DataDoiXe_ChamCongSAP_V16', 'DataDoiXe_ChamCongSAP_V17', 'DataDoiXe_ChamCongSAP_V18'];
+            let mergedData = {};
+            
+            keysToCheck.forEach(key => {
+                try {
+                    let oldData = JSON.parse(localStorage.getItem(key));
+                    if (Array.isArray(oldData)) {
+                        oldData.forEach(dayItem => {
+                            if (dayItem && dayItem.dateLabel) {
+                                mergedData[dayItem.dateLabel] = dayItem; 
+                            }
+                        });
+                    }
+                } catch(e) {}
+            });
+            return Object.values(mergedData);
+        }
+
+        let driverTeamMap = StorageHelper.load('DataDoiXe_MapToSAP_Final') || StorageHelper.load('DataDoiXe_MapToSAP') || {}; 
+        
+        let savedFiles = StorageHelper.load('DataDoiXe_ChamCongSAP_Final_V20');
+        if (!savedFiles || savedFiles.length === 0) {
+            savedFiles = StorageHelper.load('DataDoiXe_ChamCongSAP_Final_V19') || recoverOldHistory();
+            if (savedFiles && savedFiles.length > 0) {
+                StorageHelper.save('DataDoiXe_ChamCongSAP_Final_V20', savedFiles);
+                localStorage.removeItem('DataDoiXe_ChamCongSAP_Final_V19');
+            } else {
+                savedFiles = [];
+            }
+        }
+        
+        let currentFilter = 'all'; 
+        let currentDisplayList = []; 
+        let selectedTeams = []; 
+        let allDriversList = [];
+
+        let tabSortMemory = {
+            'all': { col: '', asc: false },
+            'low': { col: '', asc: false },
+            'cong': { col: '', asc: false }
+        };
+
+        // ================= HÀM XỬ LÝ CHUỖI VÀ NGÀY THÁNG =================
+        function normalizeStr(str) {
+            if (str === undefined || str === null) return "";
+            return String(str).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\s/g, '');
+        }
+
+        function getFuzzyValue(row, ...possibleKeys) {
+            if (!row) return undefined;
+            let keys = Object.keys(row);
+            let normKeys = keys.map(normalizeStr);
+            
+            for (let pk of possibleKeys) {
+                let target = normalizeStr(pk);
+                let idx = normKeys.findIndex(k => k === target);
+                if (idx !== -1) return row[keys[idx]];
+            }
+            
+            for (let pk of possibleKeys) {
+                let target = normalizeStr(pk);
+                let idx = normKeys.findIndex(k => k.includes(target));
+                if (idx !== -1) return row[keys[idx]];
+            }
+            return undefined;
+        }
+
+        function parseNumber(val) {
+            if (val === undefined || val === null || val === '') return 0;
+            if (typeof val === 'number') return val;
+            let str = String(val).replace(/,/g, '').trim(); 
+            let num = parseFloat(str);
+            return isNaN(num) ? 0 : num;
+        }
+
+        function parseDateLabelToDate(dateStr) {
+            if (!dateStr) return new Date();
+            let parts = dateStr.split('/');
+            let d = parseInt(parts[0], 10);
+            let m = parseInt(parts[1], 10);
+            let y = new Date().getFullYear(); 
+            return new Date(y, m - 1, d);
+        }
+
+        init();
+
+        function init() {
+            updateStatusUI();
+            renderTeamDropdown();
+            processGlobalData();
+            switchFilter(currentFilter);
+        }
+        
+        // ================= SỰ KIỆN THAY ĐỔI CÁC ĐIỀU KIỆN =================
+        function changeMucKhoan(value) {
+            let val = parseInt(value);
+            if (!isNaN(val) && val >= 0) {
+                MUC_KHOAN = val;
+                processGlobalData(); 
+            }
+        }
+
+        function changeTyLe() {
+            TY_LE_NHAN_MIN = parseFloat(document.getElementById('minNhan').value) || 0;
+            TY_LE_HOAN_THANH_MIN = parseFloat(document.getElementById('minHoanThanh').value) || 0;
+            processGlobalData(); 
+        }
+
+        function changeMoneyThreshold(value) {
+            let val = parseInt(value);
+            if (!isNaN(val) && val >= 0) {
+                MOC_TIEN_YEU = val;
+                processGlobalData(); 
+            }
+        }
+
+        function changeThreshold(value) {
+            let val = parseInt(value);
+            if (!isNaN(val) && val > 0) {
+                SO_LAN_YEU_THRESHOLD = val;
+                processGlobalData(); 
+            }
+        }
+
+        function applyDateFilter() {
+            filterStartDate = document.getElementById('startDate').value;
+            filterEndDate = document.getElementById('endDate').value;
+            processGlobalData();
+        }
+
+        function formatMoney(rev) {
+            if (!rev || rev === 0) return '0';
+            if (rev >= 1000000) {
+                let mil = rev / 1000000;
+                return (Number.isInteger(mil) ? mil : mil.toFixed(1)).toString().replace('.', ',') + 'M';
+            }
+            return (rev / 1000).toLocaleString('vi-VN') + 'k';
+        }
+
+        function getDayOfWeek(shortDate) {
+            let parts = shortDate.split('/');
+            if(parts.length >= 2) {
+                let d = parts[0], m = parts[1];
+                let y = new Date().getFullYear();
+                let dateObj = new Date(`${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}T00:00:00`);
+                if (!isNaN(dateObj)) {
+                    let days = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+                    return days[dateObj.getDay()];
+                }
+            }
+            return "";
+        }
+
+        function formatShortDate(dateStr) {
+            if (!dateStr) return new Date().toLocaleDateString('vi-VN').substring(0, 5);
+            if (!isNaN(dateStr) && typeof dateStr === 'number' && dateStr > 10000) {
+                let jsDate = new Date(Math.round((dateStr - 25569) * 86400 * 1000));
+                let d = String(jsDate.getDate()).padStart(2, '0');
+                let m = String(jsDate.getMonth() + 1).padStart(2, '0');
+                return `${d}/${m}`;
+            }
+            let s = String(dateStr).trim();
+            let parts = s.split(/[-/]/); 
+            if (parts.length >= 2) {
+                let d = parts[0].padStart(2, '0'); 
+                let m = parts[1].padStart(2, '0'); 
+                return `${d}/${m}`;
+            }
+            return s.substring(0, 5);
+        }
+
+        function getSortedDates() {
+            if (savedFiles.length === 0) return [];
+            let uniqueDates = [...new Set(savedFiles.map(f => f.dateLabel))];
+
+            if (filterStartDate || filterEndDate) {
+                uniqueDates = uniqueDates.filter(dateStr => {
+                    let d = parseDateLabelToDate(dateStr);
+                    d.setHours(0,0,0,0);
+                    let isValid = true;
+                    if (filterStartDate) {
+                        let start = new Date(filterStartDate);
+                        start.setHours(0,0,0,0);
+                        if (d < start) isValid = false;
+                    }
+                    if (filterEndDate) {
+                        let end = new Date(filterEndDate);
+                        end.setHours(0,0,0,0);
+                        if (d > end) isValid = false;
+                    }
+                    return isValid;
+                });
+            }
+
+            return uniqueDates.sort((a, b) => {
+                let partsA = a.split('/');
+                let partsB = b.split('/');
+                if(partsA.length >= 2 && partsB.length >= 2) {
+                    let dayA = parseInt(partsA[0], 10), monthA = parseInt(partsA[1], 10);
+                    let dayB = parseInt(partsB[0], 10), monthB = parseInt(partsB[1], 10);
+                    if (monthA !== monthB) return monthA - monthB; 
+                    return dayA - dayB; 
+                }
+                return a.localeCompare(b); 
+            });
+        }
+
+        function updateStatusUI() {
+            const mapCount = Object.keys(driverTeamMap).length;
+            const historySpan = document.getElementById('historyDates');
+            if (savedFiles.length === 0) {
+                historySpan.innerText = `Data Tổ: ${mapCount} TX | Chấm công: Trống`;
+            } else {
+                let uniqueDates = [...new Set(savedFiles.map(f => f.dateLabel))];
+                historySpan.innerText = `Data Tổ: ${mapCount} TX | Tổng: ${uniqueDates.length} Ngày (Đã đồng bộ)`;
+            }
+        }
+
+        // ================= XỬ LÝ FILE TÀI XẾ =================
+        function processDriverFile(btn) {
+            const input = document.getElementById('driverFileInput');
+            if (input.files.length === 0) return alert("Vui lòng chọn File Danh sách tài xế!");
+            
+            const file = input.files[0];
+            const reader = new FileReader();
+            
+            let originalText = "Cập Nhật Tổ";
+            if(btn) { originalText = btn.innerText; btn.innerText = "Đang xử lý..."; btn.disabled = true; }
+            
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, {type: 'array'});
+                    const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {defval: ""});
+                    
+                    let count = 0;
+                    jsonData.forEach(row => {
+                        let maSAP = getFuzzyValue(row, 'mã sap', 'sap');
+                        let to = getFuzzyValue(row, 'tổ', 'to'); 
+                        
+                        if (maSAP) {
+                            let teamName = "Chưa phân tổ";
+                            let strTo = to ? String(to).trim() : "";
+                            if (strTo !== "") teamName = strTo; 
+                            driverTeamMap[String(maSAP).trim()] = teamName;
+                            count++;
+                        }
+                    });
+
+                    if (count === 0) {
+                        alert("LỖI: Không tìm thấy cột 'Mã SAP' hoặc cột 'Tổ' trong file này!");
+                    } else {
+                        StorageHelper.save('DataDoiXe_MapToSAP_Final', driverTeamMap);
+                        alert(`Đã cập nhật Tổ cho ${count} tài xế thành công!`);
+                        input.value = "";
+                        init(); 
+                    }
+                } catch(err) {
+                    alert("Lỗi khi đọc file: " + err.message);
+                } finally {
+                    if(btn) { btn.innerText = originalText; btn.disabled = false; }
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // ================= XỬ LÝ FILE CHẤM CÔNG =================
+        function processFiles(btn) {
+            const input = document.getElementById('fileInput');
+            if (input.files.length === 0) return alert("Vui lòng chọn ít nhất 1 file chấm công!");
+            
+            const totalFiles = input.files.length;
+            let filesProcessedCount = 0; 
+            
+            let originalText = "Tải Lên";
+            if(btn) {
+                originalText = btn.innerText;
+                btn.innerText = "Đang xử lý...";
+                btn.disabled = true;
+            }
+            
+            for (let i = 0; i < totalFiles; i++) {
+                const file = input.files[i];
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, {type: 'array'});
+                        const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {defval: ""});
+                        
+                        let recordsByDate = {}; 
+                        let fallbackDate = formatShortDate(new Date()); 
+                        
+                        let firstRowDate = getFuzzyValue(jsonData[0] || {}, 'ngày phân công', 'ngày', 'date', 'ngay');
+                        if (firstRowDate) fallbackDate = formatShortDate(firstRowDate);
+
+                        jsonData.forEach(row => {
+                            let rawDate = getFuzzyValue(row, 'ngày phân công', 'ngày', 'date', 'ngay') || fallbackDate;
+                            let shortDate = formatShortDate(rawDate);
+                            
+                            let maTX = getFuzzyValue(row, 'mã tài xế', 'mã nhân viên', 'mataixe');
+                            if (!maTX || String(maTX).trim() === "undefined" || String(maTX).trim() === "") return;
+
+                            let tenTX = getFuzzyValue(row, 'tên tài xế', 'họ tên', 'tentaixe');
+                            let dSo = parseNumber(getFuzzyValue(row, 'doanh số', 'doanh thu', 'doanhso'));
+                            
+                            let maCongRaw = getFuzzyValue(row, 'hệ thống chấm công', 'mã công', 'chấm công', 'macong');
+                            let congChinh = parseNumber(getFuzzyValue(row, 'công chính', 'số công chuẩn', 'congchinh'));
+                            let tyLeNhan = parseNumber(getFuzzyValue(row, 'tỷ lệ nhận chuyến', 'tylenhanchuyen'));
+                            let tyLeHoanThanh = parseNumber(getFuzzyValue(row, 'tỷ lệ hoàn thành', 'tylehoanthanh'));
+
+                            let hasCong = (congChinh >= 1) ? 1 : 0;
+                            let maCong = String(maCongRaw || "").toUpperCase().trim();
+
+                            if (!recordsByDate[shortDate]) recordsByDate[shortDate] = [];
+
+                            recordsByDate[shortDate].push({
+                                ma: String(maTX).trim(), 
+                                ten: tenTX,
+                                doanhSo: dSo,
+                                maCong: maCong,
+                                hasCong: hasCong,
+                                tyLeNhan: tyLeNhan,
+                                tyLeHoanThanh: tyLeHoanThanh
+                            });
+                        });
+
+                        for (let dateKey in recordsByDate) {
+                            let existingIndex = savedFiles.findIndex(f => f.dateLabel === dateKey);
+                            if(existingIndex >= 0) savedFiles[existingIndex].records = recordsByDate[dateKey];
+                            else savedFiles.push({ dateLabel: dateKey, records: recordsByDate[dateKey] });
+                        }
+                    } catch(err) {
+                        alert("Lỗi không thể đọc nội dung file " + file.name + ": " + err.message);
+                    }
+
+                    filesProcessedCount++;
+                    if (filesProcessedCount === totalFiles) {
+                        let isSaved = StorageHelper.save('DataDoiXe_ChamCongSAP_Final_V20', savedFiles); 
+                        if (isSaved) {
+                            alert("Tải dữ liệu chấm công thành công!");
+                        }
+                        input.value = ""; 
+                        init(); 
+                        
+                        if(btn) {
+                            btn.innerText = originalText;
+                            btn.disabled = false;
+                        }
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+            }
+        }
+
+        function clearAllFiles() {
+            if(confirm("Thao tác này xóa Lịch sử Chấm công (Giữ nguyên Danh sách Tổ). Xóa?")) {
+                savedFiles = [];
+                StorageHelper.save('DataDoiXe_ChamCongSAP_Final_V20', savedFiles);
+                init();
+            }
+        }
+
+        // ================= TẠO DROPDOWN LỌC TỔ =================
+        function renderTeamDropdown() {
+            const container = document.getElementById('teamFilters');
+            if (savedFiles.length === 0) {
+                container.innerHTML = '<span class="text-[10px] text-gray-500 italic">Trống</span>';
+                return;
+            }
+
+            let allTeams = new Set();
+            savedFiles.forEach(file => {
+                file.records.forEach(tx => {
+                    let teamName = driverTeamMap[tx.ma] || "Chưa phân tổ";
+                    allTeams.add(teamName);
+                });
+            });
+
+            let teamsArray = Array.from(allTeams).sort();
+            let btnText = 'Tất Cả Tổ';
+            if (selectedTeams.length > 0 && selectedTeams.length < teamsArray.length) {
+                if (selectedTeams.length === 1) btnText = `${selectedTeams[0]}`;
+                else btnText = `Đã chọn ${selectedTeams.length} Tổ`;
+            }
+
+            let html = `
+                <div class="relative w-full">
+                    <button onclick="toggleDropdown()" class="w-full bg-white border border-blue-300 rounded px-2 py-1 text-[11px] font-semibold text-blue-800 shadow-sm flex justify-between items-center focus:outline-none focus:ring-1 focus:ring-blue-500">
+                        <span id="dropdownBtnText" class="truncate">${btnText}</span>
+                        <span class="text-[9px] ml-1">▼</span>
+                    </button>
+                    
+                    <div id="dropdownContent" class="hidden absolute z-50 left-0 mt-1 bg-white border border-slate-200 rounded shadow-xl min-w-[200px] flex flex-col">
+                        <div class="p-1.5 border-b border-slate-200 bg-slate-100 flex-shrink-0">
+                            <label class="flex items-center cursor-pointer hover:text-blue-700">
+                                <input type="checkbox" id="cb_all_teams" onchange="toggleAllTeams(this)" class="h-3.5 w-3.5 text-blue-600 rounded cursor-pointer" ${selectedTeams.length === 0 ? 'checked' : ''}>
+                                <span class="ml-1.5 text-[11px] font-bold text-blue-900">Chọn Tất Cả Tổ</span>
+                            </label>
+                        </div>
+                        <div class="p-1 overflow-y-auto max-h-56 flex flex-col gap-0.5">
+            `;
+
+            teamsArray.forEach(team => {
+                let isChecked = selectedTeams.length === 0 || selectedTeams.includes(team) ? 'checked' : '';
+                html += `
+                            <label class="flex items-center cursor-pointer p-1.5 hover:bg-blue-50 rounded border border-transparent hover:border-blue-100">
+                                <input type="checkbox" value="${team}" onchange="toggleTeam()" class="team-cb h-3.5 w-3.5 text-blue-600 rounded cursor-pointer" ${isChecked}>
+                                <span class="ml-1.5 text-[11px] text-slate-700 truncate" title="${team}">${team}</span>
+                            </label>
+                `;
+            });
+            
+            html += `
+                        </div>
+                        <div class="p-2 border-t border-slate-200 bg-slate-50 flex-shrink-0">
+                            <button onclick="applyTeamFilter()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 rounded shadow-sm text-[11px] transition">
+                                ✅ Xác nhận & Lọc
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.innerHTML = html;
+        }
+
+        function toggleDropdown() {
+            let content = document.getElementById('dropdownContent');
+            if(content) content.classList.toggle('hidden');
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.closest('#teamFilters')) {
+                let dropdowns = document.getElementById('dropdownContent');
+                if (dropdowns && !dropdowns.classList.contains('hidden')) {
+                    dropdowns.classList.add('hidden');
+                }
+            }
+        }
+
+        function toggleAllTeams(masterCb) {
+            let checkboxes = document.querySelectorAll('.team-cb');
+            checkboxes.forEach(cb => cb.checked = masterCb.checked);
+        }
+
+        function toggleTeam() {
+            let masterCb = document.getElementById('cb_all_teams');
+            let allCheckboxes = document.querySelectorAll('.team-cb');
+            masterCb.checked = Array.from(allCheckboxes).every(c => c.checked);
+        }
+
+        function applyTeamFilter() {
+            let checkboxes = document.querySelectorAll('.team-cb:checked');
+            let allCheckboxes = document.querySelectorAll('.team-cb');
+            let btnText = document.getElementById('dropdownBtnText');
+            
+            if (checkboxes.length === allCheckboxes.length || checkboxes.length === 0) {
+                selectedTeams = []; 
+                if(document.getElementById('cb_all_teams')) document.getElementById('cb_all_teams').checked = true;
+                allCheckboxes.forEach(cb => cb.checked = true); 
+                btnText.innerText = 'Tất Cả Tổ';
+            } else {
+                selectedTeams = Array.from(checkboxes).map(cb => cb.value);
+                btnText.innerText = selectedTeams.length === 1 ? selectedTeams[0] : `Đã chọn ${selectedTeams.length} Tổ`;
+            }
+            
+            let content = document.getElementById('dropdownContent');
+            if(content) content.classList.add('hidden');
+            
+            processGlobalData(); 
+        }
+
+        // ================= GOM NHÓM DỮ LIỆU & TÍNH TOÁN =================
+        function processGlobalData() {
+            if (savedFiles.length === 0) {
+                document.getElementById('tableHeader').innerHTML = "";
+                document.getElementById('analysisTableBody').innerHTML = '<tr><td class="text-center py-8 text-gray-500">Chưa có dữ liệu. Vui lòng tải các file chấm công lên.</td></tr>';
+                return;
+            }
+
+            let driverMap = {};
+            let allowedDates = getSortedDates();
+
+            savedFiles.forEach(file => {
+                let currentDay = file.dateLabel;
+                if (!allowedDates.includes(currentDay)) return; 
+
+                file.records.forEach(tx => {
+                    if (!driverMap[tx.ma]) {
+                        let teamName = driverTeamMap[tx.ma] || "Chưa phân tổ";
+                        driverMap[tx.ma] = { 
+                            ma: tx.ma, ten: tx.ten, to: teamName, dataByDate: {}, 
+                            totalRev: 0, totalCong: 0, totalZeroCong: 0,
+                            lowDates: [], totalLowDays: 0, avgGMV: 0, daysWithRev: 0,
+                            isWeak: false 
+                        };
+                    }
+                    
+                    // ==========================================
+                    // TÍNH TOÁN NGUYÊN NHÂN CHÍNH XÁC KHI MẤT CÔNG
+                    // ==========================================
+                    let dynIsViolation = false;
+                    let dynReason = "";
+                    let shortReason = "";
+
+                    if (tx.maCong === "KL" || tx.hasCong === 0) {
+                        dynIsViolation = true; // Đánh dấu là mất công
+                        
+                        if (tx.maCong === "KL") {
+                            // Trình tự kiểm tra: Doanh Thu -> Nhận -> Hoàn Thành
+                            if (tx.doanhSo < MUC_KHOAN) {
+                                shortReason = `KL: DT < ${formatMoney(MUC_KHOAN)}`;
+                                dynReason = `Mã KL: Doanh thu (${formatMoney(tx.doanhSo)}) chưa đạt Mức khoán (${formatMoney(MUC_KHOAN)})`;
+                            } else if (tx.tyLeNhan < TY_LE_NHAN_MIN) {
+                                shortReason = `KL: Nhận ${tx.tyLeNhan}%`;
+                                dynReason = `Mã KL: Đủ DT nhưng Tỷ lệ nhận (${tx.tyLeNhan}%) < Quy định (${TY_LE_NHAN_MIN}%)`;
+                            } else if (tx.tyLeHoanThanh < TY_LE_HOAN_THANH_MIN) {
+                                shortReason = `KL: H.Thành ${tx.tyLeHoanThanh}%`;
+                                dynReason = `Mã KL: Đủ DT & Nhận, nhưng Tỷ lệ hoàn thành (${tx.tyLeHoanThanh}%) < Quy định (${TY_LE_HOAN_THANH_MIN}%)`;
+                            } else {
+                                shortReason = "KL: Lỗi Khác";
+                                dynReason = "Mã KL nhưng DT và Tỷ lệ đều đạt. Cần kiểm tra lại với Ops.";
+                            }
+                        } else {
+                            // Trường hợp các mã khác (CT02, UN06...) hoặc không có mã nhưng 0 công
+                            shortReason = tx.maCong ? tx.maCong : "0đ/Ko mã";
+                            dynReason = tx.maCong ? `Mã chấm công: ${tx.maCong}` : "Không có doanh thu và Không có mã chấm công";
+                        }
+                    }
+                    
+                    let finalTxData = { 
+                        ...tx, 
+                        dynIsViolation: dynIsViolation, 
+                        dynReason: dynReason,
+                        shortReason: shortReason
+                    };
+                    
+                    let dInfo = driverMap[tx.ma];
+                    dInfo.dataByDate[currentDay] = finalTxData;
+
+                    dInfo.totalRev += tx.doanhSo;
+                    if (tx.doanhSo > 0) dInfo.daysWithRev++; 
+                    
+                    if (tx.hasCong === 1) dInfo.totalCong++;
+                    else dInfo.totalZeroCong++;
+
+                    if (tx.doanhSo > 0 && tx.doanhSo < MOC_TIEN_YEU) {
+                        dInfo.totalLowDays++;
+                        dInfo.lowDates.push(parseDateLabelToDate(currentDay).getTime());
+                    }
+                });
+            });
+
+            let arrDrivers = Object.values(driverMap);
+            if (selectedTeams.length > 0) arrDrivers = arrDrivers.filter(d => selectedTeams.includes(d.to));
+            
+            arrDrivers.forEach(d => {
+                d.avgGMV = d.daysWithRev > 0 ? (d.totalRev / d.daysWithRev) : 0;
+
+                d.lowDates.sort((a, b) => a - b);
+                
+                for (let i = 0; i < d.lowDates.length; i++) {
+                    let startWindow = d.lowDates[i];
+                    let endWindow = startWindow + (6 * 24 * 60 * 60 * 1000); 
+                    
+                    let countInWindow = 0;
+                    for (let j = i; j < d.lowDates.length; j++) {
+                        if (d.lowDates[j] <= endWindow) countInWindow++;
+                        else break; 
+                    }
+
+                    if (countInWindow >= SO_LAN_YEU_THRESHOLD) {
+                        d.isWeak = true;
+                        break; 
+                    }
+                }
+            });
+
+            allDriversList = arrDrivers;
+
+            let countAll = allDriversList.filter(d => d.totalRev > 0).length;
+            let countLow = allDriversList.filter(d => d.isWeak).length; 
+            let countCong = allDriversList.length; 
+
+            updateTabUI('tabAll', '💰 Tất Cả (Có Doanh Thu)', countAll);
+            updateTabUI('tabLow', `📉 Yếu (≥${SO_LAN_YEU_THRESHOLD} Lần/7 Ngày)`, countLow);
+            updateTabUI('tabCong', '⚖️ Theo Dõi & Quản Lý Công', countCong);
+
+            switchFilter(currentFilter);
+        }
+
+        // ================= XỬ LÝ TAB UI =================
+        function updateTabUI(tabId, title, count) {
+            let btn = document.getElementById(tabId);
+            if (btn) {
+                btn.innerHTML = `
+                    <span class="block text-[11px] font-semibold">${title}</span>
+                    <span class="block text-sm font-black mt-0.5">${count} TX</span>
+                `;
+            }
+        }
+
+        function switchFilter(filterType) {
+            currentFilter = filterType;
+            
+            let tabs = ['all', 'low', 'cong'];
+            tabs.forEach(t => {
+                let btn = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1));
+                if (btn) btn.className = "py-1 px-1 min-w-[140px] rounded-t transition text-slate-500 hover:bg-gray-200 border-b-2 border-transparent text-center";
+            });
+
+            let activeBtn = document.getElementById('tab' + filterType.charAt(0).toUpperCase() + filterType.slice(1));
+            if(activeBtn) {
+                if(filterType === 'all') activeBtn.className = "py-1 px-1 min-w-[140px] rounded-t transition bg-blue-50 text-blue-700 border-b-2 border-blue-700 text-center";
+                else if(filterType === 'low') activeBtn.className = "py-1 px-1 min-w-[140px] rounded-t transition bg-orange-50 text-orange-700 border-b-2 border-orange-500 text-center";
+                else if(filterType === 'cong') activeBtn.className = "py-1 px-1 min-w-[140px] rounded-t transition bg-purple-50 text-purple-700 border-b-2 border-purple-600 text-center";
+            }
+            
+            renderDisplayList();
+        }
+
+        function handleSort(colName) {
+            let currentSort = tabSortMemory[currentFilter];
+            if (currentSort.col === colName) {
+                currentSort.asc = !currentSort.asc; 
+            } else {
+                currentSort.col = colName;
+                currentSort.asc = (colName === 'ten') ? true : false; 
+            }
+            renderDisplayList();
+        }
+
+        function getSortIcon(colName) {
+            let currentSort = tabSortMemory[currentFilter];
+            if (currentSort.col !== colName) return '<span class="text-[9px] text-gray-400">↕</span>';
+            return currentSort.asc ? '<span class="text-[10px] text-blue-700">🔼</span>' : '<span class="text-[10px] text-blue-700">🔽</span>';
+        }
+
+        // ================= KẾT XUẤT BẢNG HIỂN THỊ CHÍNH =================
+        function renderDisplayList() {
+            const tbody = document.getElementById('analysisTableBody');
+            const thead = document.getElementById('tableHeader');
+            const legendBar = document.getElementById('legendBar');
+            
+            if (savedFiles.length === 0) return;
+
+            let displayList = [];
+            
+            if (currentFilter === 'all') {
+                displayList = allDriversList.filter(d => d.totalRev > 0); 
+            } else if (currentFilter === 'low') {
+                displayList = allDriversList.filter(d => d.isWeak);
+            } else if (currentFilter === 'cong') {
+                displayList = [...allDriversList]; 
+            }
+
+            let searchText = document.getElementById('searchInput').value.toLowerCase().trim();
+            if (searchText) {
+                displayList = displayList.filter(tx => 
+                    tx.ten.toLowerCase().includes(searchText) || 
+                    tx.ma.toLowerCase().includes(searchText)
+                );
+            }
+
+            let currentSort = tabSortMemory[currentFilter];
+            if (currentSort.col) {
+                displayList.sort((a, b) => {
+                    let valA, valB;
+                    if (currentSort.col === 'ten') {
+                        valA = a.ten.toLowerCase(); valB = b.ten.toLowerCase();
+                        if (valA < valB) return currentSort.asc ? -1 : 1;
+                        if (valA > valB) return currentSort.asc ? 1 : -1;
+                        return 0;
+                    } else if (currentSort.col === 'totalRev') {
+                        valA = a.totalRev; valB = b.totalRev;
+                    } else if (currentSort.col === 'avgGMV') {
+                        valA = a.avgGMV; valB = b.avgGMV;
+                    } else if (currentSort.col === 'totalCong') {
+                        valA = a.totalCong; valB = b.totalCong;
+                    } else if (currentSort.col.startsWith('date_')) {
+                        let d = currentSort.col.replace('date_', '');
+                        valA = a.dataByDate[d] ? a.dataByDate[d].doanhSo : -1;
+                        valB = b.dataByDate[d] ? b.dataByDate[d].doanhSo : -1;
+                    }
+                    return currentSort.asc ? valA - valB : valB - valA;
+                });
+            } else {
+                if(currentFilter === 'low') displayList.sort((a, b) => b.totalLowDays - a.totalLowDays); 
+                else displayList.sort((a, b) => b.totalRev - a.totalRev); 
+            }
+
+            currentDisplayList = displayList;
+
+            let allDates = getSortedDates();
+            
+            let headerHtml = `<tr>
+                <th onclick="handleSort('ten')" class="sortable sticky-corner py-1.5 px-2 text-left font-bold text-gray-700 w-40 min-w-[160px]">
+                    <div class="flex justify-between items-center">Tên Tài Xế & Tổ ${getSortIcon('ten')}</div>
+                </th>`;
+
+            if (currentFilter === 'all') {
+                legendBar.innerHTML = `
+                    <div class="flex items-center"><span class="w-3 h-3 bg-red-100 border border-red-300 inline-block mr-1 text-[8px] flex items-center justify-center font-bold text-red-600">Mã</span> Các mã chấm công (CT02, UN06...)</div>
+                    <div class="flex items-center"><span class="w-3 h-3 bg-gray-100 border border-gray-300 inline-block mr-1"></span> 0đ (Không có mã)</div>
+                    <div class="flex items-center"><span class="w-3 h-3 bg-orange-50 border border-orange-300 inline-block mr-1"></span> &lt; ${formatMoney(MOC_TIEN_YEU)}</div>
+                    <div class="flex items-center"><span class="w-3 h-3 bg-white border border-gray-300 inline-block mr-1"></span> &lt; Mức Khoán</div>
+                    <div class="flex items-center"><span class="w-3 h-3 bg-green-50 border border-green-300 inline-block mr-1"></span> &ge; ${formatMoney(MUC_KHOAN)}</div>
+                `;
+                headerHtml += `
+                <th onclick="handleSort('totalRev')" class="sortable sticky-header py-1.5 px-2 text-center font-bold text-blue-700 min-w-[80px] bg-blue-50 border-r border-blue-200">
+                    <div class="flex justify-center items-center gap-1">Tổng ${getSortIcon('totalRev')}</div>
+                </th>
+                <th onclick="handleSort('avgGMV')" class="sortable sticky-header py-1.5 px-2 text-center font-bold text-teal-700 min-w-[80px] bg-teal-50 border-r border-teal-200" title="Tổng Doanh thu / Số ngày đi làm (có số)">
+                    <div class="flex justify-center items-center gap-1">GMV TB/Ngày ${getSortIcon('avgGMV')}</div>
+                </th>`;
+                allDates.forEach(date => {
+                    let dayName = getDayOfWeek(date);
+                    headerHtml += `
+                    <th onclick="handleSort('date_${date}')" class="sortable sticky-header py-1.5 px-2 text-center font-bold text-gray-600 min-w-[60px]">
+                        <div class="flex flex-col items-center justify-center leading-tight">
+                            <div class="flex items-center gap-1">${date} ${getSortIcon('date_'+date)}</div>
+                            <span class="text-[9px] font-normal text-gray-500">${dayName}</span>
+                        </div>
+                    </th>`;
+                });
+
+            } else if (currentFilter === 'low') {
+                legendBar.innerHTML = `
+                    <div class="flex items-center"><span class="w-3 h-3 bg-yellow-100 border border-yellow-300 inline-block mr-1"></span> Các ngày móm (&lt; ${formatMoney(MOC_TIEN_YEU)})</div>
+                    <div class="flex items-center"><span class="w-3 h-3 bg-green-100 border border-green-300 inline-block mr-1"></span> Đạt Khoán (&ge; ${formatMoney(MUC_KHOAN)})</div>
+                    <div class="flex items-center"><span class="w-3 h-3 bg-red-100 border border-red-300 inline-block mr-1 text-[8px] flex items-center justify-center font-bold text-red-600">Mã</span> Các mã chấm công (CT02, UN06...)</div>
+                `;
+                headerHtml += `
+                <th onclick="handleSort('totalRev')" class="sortable sticky-header py-1.5 px-2 text-center font-bold text-blue-700 min-w-[80px] bg-blue-50 border-r border-blue-200">
+                    <div class="flex justify-center items-center gap-1">Tổng DT ${getSortIcon('totalRev')}</div>
+                </th>
+                <th onclick="handleSort('avgGMV')" class="sortable sticky-header py-1.5 px-2 text-center font-bold text-teal-700 min-w-[80px] bg-teal-50 border-r border-teal-200" title="Tổng Doanh thu / Số ngày đi làm (có số)">
+                    <div class="flex justify-center items-center gap-1">GMV TB/Ngày ${getSortIcon('avgGMV')}</div>
+                </th>`;
+                
+                allDates.forEach(date => {
+                    let dayName = getDayOfWeek(date);
+                    headerHtml += `
+                    <th onclick="handleSort('date_${date}')" class="sortable sticky-header py-1.5 px-2 text-center font-bold text-slate-600 min-w-[60px]">
+                        <div class="flex flex-col items-center justify-center leading-tight">
+                            <div class="flex items-center gap-1">${date} ${getSortIcon('date_'+date)}</div>
+                            <span class="text-[9px] font-normal text-slate-400">${dayName}</span>
+                        </div>
+                    </th>`;
+                });
+
+            } else if (currentFilter === 'cong') {
+                legendBar.innerHTML = `
+                    <div class="flex items-center"><span class="font-bold text-green-600 mr-1">1</span> Đủ 1 Công</div>
+                    <div class="flex items-center"><span class="font-bold text-red-500 border-b border-red-200 mr-1">0 (Chi tiết)</span> Click để xem mô tả lỗi cụ thể</div>
+                `;
+                headerHtml += `
+                <th onclick="handleSort('totalCong')" class="sortable sticky-header py-1.5 px-2 text-center font-bold text-green-700 min-w-[70px] bg-green-50 border-r border-green-200">
+                    <div class="flex justify-center items-center gap-1">Tổng Công ${getSortIcon('totalCong')}</div>
+                </th>
+                <th class="sticky-header py-1.5 px-2 text-center font-bold text-red-700 min-w-[70px] bg-red-50 border-r border-red-200">
+                    Tổng 0 Công
+                </th>`;
+                allDates.forEach(date => {
+                    let dayName = getDayOfWeek(date);
+                    headerHtml += `
+                    <th class="sticky-header py-1.5 px-2 text-center font-bold text-gray-600 min-w-[60px]">
+                        <div class="flex flex-col items-center justify-center leading-tight">
+                            <span>${date}</span>
+                            <span class="text-[9px] font-normal text-gray-500">${dayName}</span>
+                        </div>
+                    </th>`;
+                });
+            }
+
+            headerHtml += `</tr>`;
+            thead.innerHTML = headerHtml;
+            tbody.innerHTML = "";
+
+            if(displayList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="${allDates.length + 8}" class="text-center py-8 text-gray-500">Không có dữ liệu phù hợp.</td></tr>`;
+                return;
+            }
+
+            let totalAllRev = 0;
+
+            displayList.forEach(tx => {
+                totalAllRev += tx.totalRev;
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-100 transition";
+
+                let rowHtml = `
+                    <td class="sticky-col py-1 px-2 bg-white group-hover:bg-slate-50">
+                        <div class="font-bold text-slate-800 truncate">${tx.ten}</div>
+                        <div class="flex items-center gap-1 mt-0.5">
+                            <span class="text-[9px] text-gray-500">Mã: ${tx.ma}</span>
+                            <span class="text-[9px] font-semibold bg-slate-100 text-slate-600 px-1 rounded border border-slate-200 truncate max-w-[80px]" title="${tx.to}">${tx.to}</span>
+                        </div>
+                    </td>
+                `;
+
+                if (currentFilter === 'all') {
+                    rowHtml += `<td class="py-1 px-2 text-right font-bold text-blue-700 border-r border-blue-200 bg-blue-50/30">${formatMoney(tx.totalRev)}</td>`;
+                    rowHtml += `<td class="py-1 px-2 text-right font-bold text-teal-700 border-r border-teal-200 bg-teal-50/30">${formatMoney(tx.avgGMV)}</td>`;
+                    
+                    allDates.forEach(date => {
+                        let dayData = tx.dataByDate[date];
+                        if (!dayData) rowHtml += `<td class="py-1 px-2 text-center text-gray-300 border-r border-slate-100">-</td>`;
+                        else {
+                            let rev = dayData.doanhSo;
+                            if (rev > 0) {
+                                if (rev < MOC_TIEN_YEU) rowHtml += `<td class="py-1 px-2 text-center bg-orange-50 text-orange-600 font-semibold border-r border-orange-100">${formatMoney(rev)}</td>`;
+                                else if (rev >= MUC_KHOAN) rowHtml += `<td class="py-1 px-2 text-center bg-green-50 text-green-700 font-bold border-r border-green-100">${formatMoney(rev)}</td>`;
+                                else rowHtml += `<td class="py-1 px-2 text-center text-gray-700 font-medium border-r border-slate-100">${formatMoney(rev)}</td>`;
+                            } else {
+                                if (dayData.maCong && dayData.maCong !== "0") {
+                                    rowHtml += `<td class="py-1 px-2 text-center bg-red-50 text-red-600 font-bold border-r border-red-100 text-[10px]" title="${dayData.dynReason}">${dayData.maCong}</td>`;
+                                } else {
+                                    rowHtml += `<td class="py-1 px-2 text-center bg-gray-100 text-gray-400 border-r border-slate-100">0đ</td>`;
+                                }
+                            }
+                        }
+                    });
+
+                } else if (currentFilter === 'low') {
+                    rowHtml += `<td class="py-1 px-2 text-right font-bold text-blue-700 border-r border-blue-200 bg-blue-50/30">${formatMoney(tx.totalRev)}</td>`;
+                    rowHtml += `<td class="py-1 px-2 text-right font-bold text-teal-700 border-r border-teal-200 bg-teal-50/30">${formatMoney(tx.avgGMV)}</td>`;
+                    
+                    allDates.forEach(date => {
+                        let dayData = tx.dataByDate[date];
+                        if (!dayData) rowHtml += `<td class="py-1 px-2 text-center text-gray-300 border-r border-slate-100">-</td>`;
+                        else {
+                            let rev = dayData.doanhSo;
+                            if (rev > 0) {
+                                if (rev < MOC_TIEN_YEU) {
+                                    rowHtml += `<td class="py-1 px-2 text-center bg-yellow-100 text-yellow-700 font-bold border-r border-yellow-200 shadow-inner">${formatMoney(rev)}</td>`;
+                                } else if (rev >= MUC_KHOAN) {
+                                    rowHtml += `<td class="py-1 px-2 text-center bg-green-100 text-green-700 font-bold border-r border-green-200">${formatMoney(rev)}</td>`;
+                                } else {
+                                    rowHtml += `<td class="py-1 px-2 text-center text-slate-500 font-medium border-r border-slate-100">${formatMoney(rev)}</td>`;
+                                }
+                            } else {
+                                if (dayData.maCong && dayData.maCong !== "0") {
+                                    rowHtml += `<td class="py-1 px-2 text-center bg-red-50 text-red-600 font-bold border-r border-red-100 text-[10px]" title="${dayData.dynReason}">${dayData.maCong}</td>`;
+                                } else {
+                                    rowHtml += `<td class="py-1 px-2 text-center text-slate-400 font-medium border-r border-slate-100">0đ</td>`;
+                                }
+                            }
+                        }
+                    });
+
+                } else if (currentFilter === 'cong') {
+                    rowHtml += `<td class="py-1 px-2 text-center font-bold text-green-700 border-r border-green-200 bg-green-50/30">${tx.totalCong}</td>`;
+                    rowHtml += `<td class="py-1 px-2 text-center font-bold text-red-600 border-r border-red-200">${tx.totalZeroCong}</td>`;
+                    
+                    allDates.forEach(date => {
+                        let dayData = tx.dataByDate[date];
+                        if (!dayData) {
+                            rowHtml += `<td class="py-1 px-2 text-center text-gray-300">-</td>`;
+                        } else {
+                            // CẬP NHẬT: Hiển thị nguyên nhân cụ thể kế bên số 0
+                            if (dayData.dynIsViolation) {
+                                rowHtml += `<td class="py-1 px-2 text-center">
+                                    <span onclick="alert('${dayData.dynReason}')" class="text-red-600 font-bold cursor-pointer hover:underline border-b border-red-200 text-[10px] truncate max-w-[80px] inline-block" title="${dayData.dynReason}">0 (${dayData.shortReason})</span>
+                                </td>`;
+                            } else {
+                                rowHtml += `<td class="py-1 px-2 text-center bg-green-50/30 text-green-600 font-bold">1</td>`;
+                            }
+                        }
+                    });
+                }
+
+                tr.innerHTML = rowHtml;
+                tbody.appendChild(tr);
+            });
+
+            if (currentFilter === 'all') {
+                let footerHtml = `
+                    <tr class="bg-blue-100 font-bold text-blue-900 border-t border-blue-300 sticky bottom-0 z-10">
+                        <td class="sticky-col py-2 px-2 text-center bg-blue-100 border-blue-300">TỔNG (${displayList.length} TX)</td>
+                        <td class="py-2 px-2 text-right border-r border-blue-300">${formatMoney(totalAllRev)}</td>
+                        <td class="py-2 px-2 text-right border-r border-blue-300">-</td>
+                `;
+                allDates.forEach(date => {
+                    let dailyTotal = 0;
+                    displayList.forEach(tx => {
+                        let dayData = tx.dataByDate[date];
+                        if (dayData) dailyTotal += dayData.doanhSo;
+                    });
+                    footerHtml += `<td class="py-2 px-2 text-center border-blue-200">${formatMoney(dailyTotal)}</td>`;
+                });
+                footerHtml += `</tr>`;
+                tbody.innerHTML += footerHtml;
+            }
+        }
+
+        // ================= COPY & XUẤT EXCEL =================
+        function copyTableData() {
+            if (currentDisplayList.length === 0) return alert("Không có dữ liệu để Copy!");
+            
+            let allDates = getSortedDates();
+            let tsvText = "";
+            let btnCopy = document.getElementById('btnCopy');
+
+            let headers = ["Mã Tài Xế", "Tên Tài Xế", "Tổ / Đội"];
+            if (currentFilter === 'all' || currentFilter === 'low') {
+                headers.push("Tổng Doanh Thu", "GMV Trung Bình/Ngày");
+                allDates.forEach(date => headers.push(date));
+            } else if (currentFilter === 'cong') {
+                headers.push("Tổng Có Công", "Tổng 0 Công");
+                allDates.forEach(date => headers.push(date));
+            }
+            tsvText += headers.join("\t") + "\n"; 
+
+            currentDisplayList.forEach(tx => {
+                let row = [tx.ma, tx.ten, tx.to];
+
+                if (currentFilter === 'all' || currentFilter === 'low') {
+                    row.push(tx.totalRev, Math.round(tx.avgGMV)); 
+                    allDates.forEach(date => {
+                        let d = tx.dataByDate[date];
+                        if (!d) row.push("-");
+                        else if (d.doanhSo > 0) row.push(d.doanhSo); 
+                        else if (d.maCong && d.maCong !== "0") row.push(d.maCong);
+                        else row.push(0);
+                    });
+                } else if (currentFilter === 'cong') {
+                    row.push(tx.totalCong, tx.totalZeroCong);
+                    allDates.forEach(date => {
+                        let d = tx.dataByDate[date];
+                        if(!d) row.push("-");
+                        // CẬP NHẬT: Xuất nguyên nhân chi tiết ra bộ nhớ tạm
+                        else if (d.dynIsViolation) row.push(`0 (${d.shortReason})`);
+                        else row.push(1);
+                    });
+                }
+                tsvText += row.join("\t") + "\n";
+            });
+
+            navigator.clipboard.writeText(tsvText).then(() => {
+                let originalText = btnCopy.innerHTML;
+                btnCopy.innerHTML = "✅ Đã Copy Xong!";
+                btnCopy.classList.replace('bg-teal-600', 'bg-green-600');
+                setTimeout(() => { 
+                    btnCopy.innerHTML = originalText; 
+                    btnCopy.classList.replace('bg-green-600', 'bg-teal-600');
+                }, 2000);
+            }).catch(err => {
+                alert("Lỗi khi copy: " + err);
+            });
+        }
+
+        function exportToExcel() {
+            if (currentDisplayList.length === 0) return alert("Không có dữ liệu để xuất!");
+            
+            let allDates = getSortedDates();
+            let exportData = [];
+
+            currentDisplayList.forEach(tx => {
+                let row = {
+                    "Mã Tài Xế": tx.ma,
+                    "Tên Tài Xế": tx.ten,
+                    "Tổ / Đội": tx.to
+                };
+
+                if (currentFilter === 'all') {
+                    row["Tổng Doanh Thu"] = tx.totalRev; 
+                    row["GMV Trung Bình/Ngày"] = Math.round(tx.avgGMV);
+                    allDates.forEach(date => {
+                        let d = tx.dataByDate[date];
+                        if (!d) row[date] = "-";
+                        else if (d.doanhSo > 0) row[date] = d.doanhSo; 
+                        else if (d.maCong && d.maCong !== "0") row[date] = d.maCong;
+                        else row[date] = 0;
+                    });
+                } else if (currentFilter === 'low') {
+                    row["Tổng Doanh Thu"] = tx.totalRev;
+                    row["GMV Trung Bình/Ngày"] = Math.round(tx.avgGMV);
+
+                    allDates.forEach(date => {
+                        let d = tx.dataByDate[date];
+                        if (!d) row[`Ngày ${date}`] = "-";
+                        else if (d.doanhSo > 0) row[`Ngày ${date}`] = d.doanhSo; 
+                        else if (d.maCong && d.maCong !== "0") row[`Ngày ${date}`] = d.maCong;
+                        else row[`Ngày ${date}`] = 0;
+                    });
+
+                } else if (currentFilter === 'cong') {
+                    row["Tổng Có Công"] = tx.totalCong;
+                    row["Tổng 0 Công"] = tx.totalZeroCong;
+                    allDates.forEach(date => {
+                        let d = tx.dataByDate[date];
+                        if(!d) row[date] = "-";
+                        // CẬP NHẬT: Xuất nguyên nhân chi tiết ra file Excel
+                        else if (d.dynIsViolation) row[date] = `0 (${d.shortReason})`;
+                        else row[date] = 1;
+                    });
+                }
+
+                exportData.push(row);
+            });
+
+            const worksheet = XLSX.utils.json_to_sheet(exportData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "BaoCao_DoiXe");
+            
+            let dateStr = new Date().toLocaleDateString('vi-VN').replace(/\//g, '-');
+            let fileName = `BangChamCong_${currentFilter}_${dateStr}.xlsx`;
+            
+            XLSX.writeFile(workbook, fileName);
+        }
+    </script>
+</body>
+</html>

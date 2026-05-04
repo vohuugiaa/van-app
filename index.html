@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đội Van App - Tài Xế</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="login-screen" class="container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>Đội Van App</h1>
+                <p>Vui lòng đăng nhập để tiếp tục</p>
+            </div>
+            <div class="input-group">
+                <div class="input-field">
+                    <label for="full-name">Họ và Tên</label>
+                    <input type="text" id="full-name" placeholder="Nhập họ và tên của bạn...">
+                </div>
+                <div class="input-field">
+                    <label for="employee-id">Mã Nhân Viên</label>
+                    <input type="text" id="employee-id" placeholder="VD: NV1234">
+                </div>
+            </div>
+            <button class="btn-login" onclick="handleLogin()">VÀO ỨNG DỤNG</button>
+            <button class="admin-link" onclick="handleAdminLogin()">Đăng nhập Admin</button>
+        </div>
+    </div>
+
+    <!-- Main Dashboard Screen -->
+    <div id="app-screen" class="container hidden">
+        <header class="app-header">
+            <div class="user-profile">
+                <div class="avatar" id="user-avatar">?</div>
+                <div class="user-info">
+                    <span class="name" id="display-name">Tài xế</span>
+                    <span class="id" id="display-id">Mã NV: ---</span>
+                </div>
+            </div>
+            <button class="btn-logout" onclick="handleLogout()">Đăng xuất</button>
+        </header>
+
+        <!-- Warning Banner -->
+        <div class="warning-banner">
+            <strong>⚠️ LƯU Ý QUAN TRỌNG:</strong>
+            Tài Xế xe Van bắt buộc phải đăng ký phân ca và check-in theo đúng khung giờ đăng ký mỗi ngày để chứng minh đang ở khu vực phân ca. Trường hợp không tuân thủ quy định, Tài xế tự chịu trách nhiệm.
+        </div>
+
+        <!-- Check-in/Out Module -->
+        <div class="check-section">
+            <div class="check-header">
+                <h3>Trạng thái làm việc</h3>
+                <span id="work-status" class="status-badge status-off">Nghỉ ca</span>
+            </div>
+            <div class="check-grid">
+                <button id="btn-checkin" class="btn-check btn-in" onclick="startAttendanceFlow('Check-in')">
+                    <span>📍 Check-in</span>
+                    <span>(Ảnh & Vị trí)</span>
+                </button>
+                <button id="btn-checkout" class="btn-check btn-out" onclick="startAttendanceFlow('Check-out')" disabled>
+                    <span>🏁 Check-out</span>
+                    <span>(Ảnh & Vị trí)</span>
+                </button>
+            </div>
+            <div id="check-time" class="time-display">Chưa có dữ liệu hôm nay</div>
+        </div>
+
+        <!-- Main Buttons -->
+        <a href="https://script.google.com/macros/s/AKfycbxu89KJKpKEdBiU57ZEEfmw9A7AOV-sbR4utBsfbI6vYUWAlvZiaFUz7libxO8OeuBI/exec" class="action-btn btn-teal" style="background: linear-gradient(135deg, #1abc9c, #16a085);" target="_blank">
+            📅 ĐĂNG KÝ PHÂN CA
+        </a>
+
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSdeMUMCp55KATYMsYSpacilv4HnKiGKEsmbMEdRTyLS4wKc-w/viewform?usp=dialog" class="action-btn btn-red" target="_blank">📝 ĐĂNG KÝ LỊCH OFF</a>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSc4a_ebdFUlhKv4EDPFB70dIJD-8rMUw9gl3elkE3Im6BqiOw/viewform" class="action-btn btn-blue" target="_blank">💬 PHẢN HỒI LƯƠNG THÁNG 4</a>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSe5vAY1wYKI_HoOzvgB9QGjHmmfLGyEqn2iFIFzmlBNoMjXAQ/viewform?usp=dialog" class="action-btn btn-teal" target="_blank">💡 PHẢN HỒI Ý KIẾN</a>
+
+        <!-- Hotline Section (Rút gọn) -->
+        <div class="hotline-card">
+            <div class="hotline-header"><h2>Hotline Hỗ Trợ</h2></div>
+            <div class="hotline-list">
+                <div class="hotline-item">
+                    <div class="label">Cứu hộ xe VF</div>
+                    <a href="tel:1900232389" class="call-btn">1900.232389</a>
+                </div>
+                <div class="hotline-item">
+                    <div class="label">Chăm sóc TX</div>
+                    <a href="tel:02471096839" class="call-btn">0247.109.6839</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Camera Modal -->
+    <div id="camera-modal" class="modal hidden">
+        <div class="modal-content">
+            <video id="camera-preview" autoplay playsinline></video>
+            <canvas id="photo-canvas" class="hidden"></canvas>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeCamera()">Hủy</button>
+                <button id="btn-capture-photo" class="btn-capture">CHỤP ẢNH</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";
+        let currentType = '';
+
+        // Elements
+        const loginScreen = document.getElementById('login-screen');
+        const appScreen = document.getElementById('app-screen');
+        const cameraModal = document.getElementById('camera-modal');
+        const video = document.getElementById('camera-preview');
+        const canvas = document.getElementById('photo-canvas');
+        
+        window.onload = () => {
+            const savedName = localStorage.getItem('van_user_name');
+            const savedId = localStorage.getItem('van_user_id');
+            if (savedName && savedId) {
+                showDashboard(savedName, savedId);
+                restoreWorkStatus();
+            }
+        };
+
+        function handleLogin() {
+            const name = document.getElementById('full-name').value.trim();
+            const id = document.getElementById('employee-id').value.trim();
+            if (!name || !id) return alert('Nhập đủ thông tin!');
+            localStorage.setItem('van_user_name', name);
+            localStorage.setItem('van_user_id', id);
+            showDashboard(name, id);
+        }
+
+        function showDashboard(name, id) {
+            document.getElementById('display-name').innerText = name;
+            document.getElementById('display-id').innerText = 'Mã NV: ' + id;
+            document.getElementById('user-avatar').innerText = name.charAt(0).toUpperCase();
+            loginScreen.classList.add('hidden');
+            appScreen.classList.remove('hidden');
+        }
+
+        // Attendance Flow with Camera & GPS
+        async function startAttendanceFlow(type) {
+            currentType = type;
+            try {
+                // 1. Get GPS Location
+                const position = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 });
+                });
+                window.lastLocation = `${position.coords.latitude}, ${position.coords.longitude}`;
+                
+                // 2. Start Camera
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                video.srcObject = stream;
+                cameraModal.classList.remove('hidden');
+                
+                document.getElementById('btn-capture-photo').onclick = () => capturePhoto(stream);
+            } catch (err) {
+                alert("Lỗi: " + (err.message || "Không thể lấy vị trí/camera. Vui lòng cấp quyền!"));
+            }
+        }
+
+        function capturePhoto(stream) {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            const photoData = canvas.toDataURL('image/jpeg', 0.5); // Nén ảnh
+            
+            // Dừng camera
+            stream.getTracks().forEach(track => track.stop());
+            cameraModal.classList.add('hidden');
+            
+            submitFinalData(photoData, window.lastLocation);
+        }
+
+        function submitFinalData(photo, location) {
+            const name = localStorage.getItem('van_user_name');
+            const id = localStorage.getItem('van_user_id');
+            const timeStr = new Date().toLocaleString('vi-VN');
+
+            const btn = currentType === 'Check-in' ? document.getElementById('btn-checkin') : document.getElementById('btn-checkout');
+            btn.innerHTML = "Đang gửi...";
+            btn.disabled = true;
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify({
+                    name, id, type: currentType, timestamp: timeStr, photo, location
+                })
+            }).then(() => {
+                alert(`${currentType} thành công!`);
+                updateUIAfterCheck(currentType, timeStr);
+            }).catch(err => alert("Gửi thất bại!"));
+        }
+
+        function closeCamera() {
+            if (video.srcObject) {
+                video.srcObject.getTracks().forEach(track => track.stop());
+            }
+            cameraModal.classList.add('hidden');
+        }
+
+        function updateUIAfterCheck(type, time) {
+            const inBtn = document.getElementById('btn-checkin');
+            const outBtn = document.getElementById('btn-checkout');
+            const status = document.getElementById('work-status');
+            
+            if (type === 'Check-in') {
+                inBtn.disabled = true; inBtn.innerHTML = "📍 Check-in";
+                outBtn.disabled = false;
+                status.innerText = "Đang làm việc"; status.className = "status-badge status-on";
+                localStorage.setItem('work_status', 'working');
+            } else {
+                inBtn.disabled = false;
+                outBtn.disabled = true; outBtn.innerHTML = "🏁 Check-out";
+                status.innerText = "Nghỉ ca"; status.className = "status-badge status-off";
+                localStorage.setItem('work_status', 'off');
+            }
+            document.getElementById('check-time').innerText = `Lần cuối: ${type} lúc ${time}`;
+            localStorage.setItem('last_check_time', time);
+        }
+
+        function restoreWorkStatus() {
+            const status = localStorage.getItem('work_status');
+            const lastTime = localStorage.getItem('last_check_time');
+            if (status === 'working') {
+                document.getElementById('btn-checkin').disabled = true;
+                document.getElementById('btn-checkout').disabled = false;
+                document.getElementById('work-status').innerText = "Đang làm việc";
+                document.getElementById('work-status').className = "status-badge status-on";
+            }
+            if (lastTime) document.getElementById('check-time').innerText = `Lần cuối lúc ${lastTime}`;
+        }
+
+        function handleLogout() {
+            if (confirm('Đăng xuất?')) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        function handleAdminLogin() {
+            const pass = prompt("Nhập mã Admin:");
+            if (pass === "1234") { // Demo pass
+                window.location.href = "admin/thongkedoanhthu.html";
+            } else {
+                alert("Sai mã!");
+            }
+        }
+    </script>
+</body>
+</html>

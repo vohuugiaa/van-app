@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hệ Thống Trạm - Tài Xế</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    
+    <style>
+        body, html { margin: 0; padding: 0; height: 100vh; background-color: #f0f2f5; overflow: hidden; display: flex; flex-direction: column; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+
+        .warning-banner { background-color: #dc3545; color: white; padding: 12px 15px; font-size: 0.85rem; line-height: 1.4; text-align: justify; flex-shrink: 0; box-shadow: 0 2px 10px rgba(0,0,0,0.15); z-index: 10;}
+
+        /* Khung chứa App Script */
+        .iframe-container { flex-grow: 1; width: 100%; position: relative; -webkit-overflow-scrolling: touch;}
+        
+        /* Chỉnh Iframe để ẩn/hiện mượt mà */
+        iframe { width: 100%; height: 100%; border: none; background-color: #f4f6f9; position: absolute; top: 0; left: 0; opacity: 0; transition: opacity 0.3s ease; z-index: 1; pointer-events: none;}
+        iframe.active-frame { opacity: 1; z-index: 2; pointer-events: auto;}
+
+        /* Màn hình chờ (Splash Screen) che lúc Google đang tải */
+        #loadingScreen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #f0f2f5; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 5;}
+        .spinner-border { width: 3rem; height: 3rem; color: #0d6efd; margin-bottom: 15px;}
+        .loading-text { font-weight: bold; color: #555;}
+
+        .bottom-nav { height: 70px; background: white; flex-shrink: 0; width: 100%; display: flex; justify-content: space-around; align-items: center; box-shadow: 0 -2px 15px rgba(0,0,0,0.08); z-index: 10; padding-bottom: 5px;}
+        .nav-item { text-align: center; color: #6c757d; font-size: 0.8rem; flex: 1; padding: 8px 0; cursor: pointer; transition: all 0.2s ease;}
+        .nav-item i { font-size: 1.5rem; display: block; margin-bottom: 2px;}
+        .nav-item.active { color: #0d6efd; font-weight: 700; transform: scale(1.05);}
+    </style>
+</head>
+<body>
+
+    <div class="warning-banner">
+        <strong><i class="bi bi-exclamation-triangle-fill"></i> LƯU Ý:</strong>
+        Tài Xế xe Van bắt buộc phải đăng ký phân ca và check-in theo đúng khung giờ đăng ký mỗi ngày để chứng minh đang ở khu vực phân ca. Trường hợp không tuân thủ quy định, Tài xế tự chịu trách nhiệm.
+    </div>
+
+    <div class="iframe-container">
+        <!-- Màn hình chờ hiển thị ban đầu -->
+        <div id="loadingScreen">
+            <div class="spinner-border" role="status"></div>
+            <div class="loading-text">Đang kết nối máy chủ Google...</div>
+        </div>
+
+        <!-- Khai báo cả 2 Iframe cùng lúc, dùng sự kiện onload để tắt màn hình chờ -->
+        <iframe id="framePhanCa" class="active-frame" src="https://script.google.com/macros/s/AKfycbxu89KJKpKEdBiU57ZEEfmw9A7AOV-sbR4utBsfbI6vYUWAlvZiaFUz7libxO8OeuBI/exec" onload="hideLoader('framePhanCa')"></iframe>
+        
+        <!-- Iframe CheckIn tự ngầm tải ở chế độ ẩn -->
+        <iframe id="frameCheckIn" src="https://script.google.com/macros/s/AKfycbzRtftPAwh36nzGq1uAyuvSZceTxlbNcgsYLD5qa8pecYgnS8j5fO-66EpJqgVNUO9M/exec" onload="hideLoader('frameCheckIn')"></iframe>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-item active" id="navPhanCa" onclick="switchTab('phanca')">
+            <i class="bi bi-calendar2-week-fill"></i>
+            Đăng ký Ca
+        </div>
+        <div class="nav-item" id="navCheckIn" onclick="switchTab('checkin')">
+            <i class="bi bi-camera-fill"></i>
+            Check-In
+        </div>
+    </div>
+
+    <script>
+        let isPhanCaLoaded = false;
+        let isCheckInLoaded = false;
+
+        // Hàm tắt màn hình loading khi Iframe tải xong
+        function hideLoader(frameId) {
+            if (frameId === 'framePhanCa') isPhanCaLoaded = true;
+            if (frameId === 'frameCheckIn') isCheckInLoaded = true;
+
+            // Chỉ tắt màn hình loading khi App Phân Ca (app mặc định) đã tải xong
+            if (isPhanCaLoaded) {
+                document.getElementById('loadingScreen').style.display = 'none';
+            }
+        }
+
+        function switchTab(tab) {
+            // Đổi màu thanh Nav
+            document.getElementById('navPhanCa').classList.remove('active');
+            document.getElementById('navCheckIn').classList.remove('active');
+            
+            // Ẩn/Hiện Iframe bằng CSS Class (Không tải lại link)
+            let framePhanCa = document.getElementById('framePhanCa');
+            let frameCheckIn = document.getElementById('frameCheckIn');
+
+            if(tab === 'phanca') {
+                document.getElementById('navPhanCa').classList.add('active');
+                framePhanCa.classList.add('active-frame');
+                frameCheckIn.classList.remove('active-frame');
+            } else {
+                document.getElementById('navCheckIn').classList.add('active');
+                frameCheckIn.classList.add('active-frame');
+                framePhanCa.classList.remove('active-frame');
+            }
+        }
+    </script>
+</body>
+</html>

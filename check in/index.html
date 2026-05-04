@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <style>
+    body { background-color: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .app-container { max-width: 500px; margin: auto; background: #fff; min-height: 100vh; box-shadow: 0 0 20px rgba(0,0,0,0.05); position: relative; padding-bottom: 80px;}
+    .header { background: linear-gradient(135deg, #0d6efd, #0b5ed7); color: white; padding: 20px; text-align: center;}
+    
+    .countdown-banner { background: #dc3545; color: white; padding: 10px; text-align: center; font-size: 0.9rem; font-weight: bold; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);}
+    
+    .card-custom { border: none; border-radius: 15px; background: #f8f9fa; padding: 15px; margin: 15px; border: 1px solid #e9ecef;}
+    
+    .day-row { padding: 15px; border-bottom: 1px solid #e9ecef; }
+    .day-row:last-child { border-bottom: none; }
+    .day-date { font-weight: bold; color: #0d6efd; font-size: 1.05rem; }
+    
+    .form-select-sm { font-size: 0.85rem; font-weight: 600; padding: 8px 30px 8px 10px; border-radius: 10px;}
+    .group-header { background-color: #ffc107; color: #000; font-weight: 800; text-align: center; padding: 8px; font-size: 0.9rem; text-transform: uppercase;}
+    
+    .btn-bottom { position: fixed; bottom: 0; width: 100%; max-width: 500px; border-radius: 0; padding: 15px; font-size: 1.1rem; font-weight: bold; z-index: 1000;}
+    
+    .screen { display: none; padding: 5px; }
+    .active-screen { display: block; animation: fadeIn 0.4s; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .success-icon { font-size: 5rem; color: #198754; text-align: center; }
+    .review-item { display: flex; justify-content: space-between; border-bottom: 1px dashed #ccc; padding: 10px 0; }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  <div class="header">
+    <h4 class="mb-0">ĐĂNG KÝ PHÂN CA</h4>
+    <p class="mb-0 text-white-50" style="font-size: 0.9rem;">Dành cho Tài xế xe Van</p>
+  </div>
+  
+  <div class="countdown-banner" id="countdownTimer">
+    <i class="bi bi-stopwatch"></i> Đang tải dữ liệu hạn chót...
+  </div>
+
+  <div id="screen1" class="screen active-screen mt-3">
+    <div class="card-custom">
+      <h6 class="mb-3 text-primary"><i class="bi bi-person-badge"></i> Xác minh danh tính</h6>
+      <input type="text" id="inpName" class="form-control form-control-lg mb-3" placeholder="Nhập Họ và tên..." list="listNames">
+      <datalist id="listNames"></datalist>
+      <input type="number" id="inpId" class="form-control form-control-lg mb-3" placeholder="Nhập Mã Nhân Viên">
+      <button class="btn btn-primary w-100 btn-lg rounded-pill" onclick="doLogin()" id="btnLogin">
+        Đăng nhập hệ thống <i class="bi bi-arrow-right-circle"></i>
+      </button>
+      <div id="loginError" class="text-danger mt-3 text-center" style="display:none; font-weight:bold;"></div>
+    </div>
+  </div>
+
+  <div id="screen2" class="screen">
+    <div class="card-custom p-0" style="overflow: hidden;">
+      <div id="calendarList" class="p-0">
+        <!-- Render JS -->
+      </div>
+    </div>
+    <button class="btn btn-success btn-bottom" id="btnNext" onclick="prepareReview()">TIẾP TỤC <i class="bi bi-chevron-right"></i></button>
+  </div>
+
+  <div id="screen3" class="screen">
+    <div class="alert alert-warning text-center mx-3 mt-3" role="alert">
+      <strong>Vui lòng kiểm tra kỹ!</strong><br>Hệ thống sẽ KHÓA LỊCH ngay sau khi bạn bấm xác nhận.
+    </div>
+    <div class="card-custom">
+      <h6 class="border-bottom pb-2 text-primary">Thông পুরা cá nhân</h6>
+      <div class="review-item"><span>Họ Tên:</span> <strong id="revName"></strong></div>
+      <div class="review-item"><span>Mã SAP:</span> <strong id="revId"></strong></div>
+    </div>
+    <div class="card-custom">
+      <h6 class="border-bottom pb-2 text-primary">Lịch trình chi tiết</h6>
+      <div id="revSchedule"></div>
+    </div>
+    <div style="display: flex; gap: 10px;" class="btn-bottom">
+      <button class="btn btn-secondary w-50" onclick="switchScreen(2)"><i class="bi bi-arrow-return-left"></i> QUAY LẠI</button>
+      <button class="btn btn-danger w-50" id="btnSubmitFinal" onclick="submitData()">CHỐT CA NGAY</button>
+    </div>
+  </div>
+
+  <div id="screen4" class="screen text-center pt-5">
+    <div class="success-icon mb-3"><i class="bi bi-check-circle-fill"></i></div>
+    <h3 class="text-success mb-3">ĐĂNG KÝ THÀNH CÔNG</h3>
+    <p>Hệ thống đã KHÓA LỊCH đăng ký của bạn.</p>
+    <button class="btn btn-outline-primary mt-4 rounded-pill px-4" onclick="location.reload()">Về trang chủ</button>
+  </div>
+
+</div>
+
+<script>
+  let ALL_DRIVERS = [];
+  let SHIFT_DATA = {}; 
+  let WEEK_DATES = []; 
+  let liveTimer = null;
+
+  const AREA_OPTIONS = `
+    <option value="">- Chọn khu vực -</option>
+    <option>Quận Phú Nhuận</option><option>Huyện Nhà Bè</option><option>Quận 5</option>
+    <option>Quận 3</option><option>Quận 4</option><option>Quận 1</option><option>Quận 6</option>
+    <option>Quận 8</option><option>Quận 7</option><option>Huyện Bình Chánh</option>
+    <option>Quận Tân Bình</option><option>Quận 11</option><option>Quận 10</option>
+    <option>Quận Gò Vấp</option><option>Quận Bình Thạnh</option><option>Quận Tân Phú</option>
+    <option>Quận 12</option><option>Huyện Hóc Môn</option><option>Quận Bình Tân</option>
+    <option>Thành phố Thủ Đức</option>
+  `;
+
+  window.onload = function() {
+    google.script.run.withSuccessHandler(res => {
+      ALL_DRIVERS = res;
+      let dl = document.getElementById('listNames');
+      res.forEach(d => { dl.innerHTML += `<option value="${d.name}">`; });
+      generateWeekData(); 
+      startCountdown(); 
+    }).getDriversList();
+  };
+
+  function startCountdown() {
+    let timerEl = document.getElementById('countdownTimer');
+    let btnNext = document.getElementById('btnNext');
+
+    setInterval(function() {
+      let now = new Date();
+      let currentDay = now.getDay(); 
+      let target = new Date(now);
+
+      let daysToSunday = currentDay === 0 ? 0 : 7 - currentDay;
+      target.setDate(now.getDate() + daysToSunday);
+      target.setHours(20, 0, 0, 0); 
+
+      if (now > target) {
+        timerEl.innerHTML = "<i class='bi bi-lock-fill'></i> ĐÃ KHÓA ĐĂNG KÝ TUẦN TỚI";
+        timerEl.style.background = "#343a40"; 
+        if(btnNext) {
+          btnNext.disabled = true;
+          btnNext.innerHTML = "HẾT GIỜ ĐĂNG KÝ";
+          btnNext.classList.replace('btn-success', 'btn-secondary');
+        }
+        return;
+      } else {
+        if(btnNext) {
+           btnNext.disabled = false;
+           btnNext.innerHTML = 'TIẾP TỤC <i class="bi bi-chevron-right"></i>';
+           btnNext.classList.replace('btn-secondary', 'btn-success');
+        }
+      }
+
+      let diff = target - now;
+      let d = Math.floor(diff / (1000 * 60 * 60 * 24));
+      let h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      let m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      let s = Math.floor((diff % (1000 * 60)) / 1000);
+
+      timerEl.innerHTML = `<i class="bi bi-stopwatch"></i> Đóng đăng ký sau: <b>${d} ngày ${h}h ${m}p ${s}s</b>`;
+    }, 1000);
+  }
+
+  function generateWeekData() {
+    let today = new Date();
+    today.setHours(0, 0, 0, 0); // Ép thời gian về đúng 00:00:00
+
+    let startDate = new Date(today);
+    startDate.setDate(today.getDate() + 1); 
+
+    let currentDay = today.getDay(); 
+    let daysToThisSunday = currentDay === 0 ? 0 : 7 - currentDay;
+    let daysToNextSunday = daysToThisSunday + 7;
+
+    let endDate = new Date(today);
+    endDate.setDate(today.getDate() + daysToNextSunday); 
+
+    let thisSundayDate = new Date(today);
+    thisSundayDate.setDate(today.getDate() + daysToThisSunday);
+
+    let currDate = new Date(startDate);
+    while (currDate <= endDate) {
+      let dayStr = ("0" + currDate.getDate()).slice(-2);
+      let monthStr = ("0" + (currDate.getMonth() + 1)).slice(-2);
+      let dateValue = `${dayStr}/${monthStr}/${currDate.getFullYear()}`;
+      
+      let displayStr = `${currDate.getDate()}/${currDate.getMonth() + 1}`;
+      let dayName = currDate.getDay() === 0 ? 'Chủ Nhật' : 'Thứ ' + (currDate.getDay() + 1);
+      
+      let isThisWeek = currDate <= thisSundayDate;
+      let weekGroup = isThisWeek ? 'Lịch Tuần Hiện Tại' : 'Lịch Tuần Tới';
+
+      WEEK_DATES.push({ label: `${dayName} (${displayStr})`, value: dateValue, group: weekGroup });
+      currDate.setDate(currDate.getDate() + 1);
+    }
+  }
+
+  function switchScreen(num) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
+    document.getElementById('screen' + num).classList.add('active-screen');
+  }
+
+  function doLogin() {
+    let name = document.getElementById('inpName').value.trim();
+    let id = document.getElementById('inpId').value.trim();
+    let errDiv = document.getElementById('loginError');
+    let btn = document.getElementById('btnLogin');
+
+    if(!name || !id) { errDiv.innerText = "Vui lòng nhập đủ Tên và Mã SAP"; errDiv.style.display = 'block'; return; }
+    
+    let isValid = ALL_DRIVERS.some(d => d.name === name && d.id === id);
+    if(!isValid) { errDiv.innerText = "Thông tin không khớp. Vui lòng thử lại!"; errDiv.style.display = 'block'; return; }
+
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Đang tải dữ liệu...';
+    btn.disabled = true;
+
+    google.script.run.withSuccessHandler(res => {
+      btn.innerHTML = 'Đăng nhập hệ thống <i class="bi bi-arrow-right-circle"></i>';
+      btn.disabled = false;
+
+      if(res.isAlreadyRegistered) {
+        errDiv.innerText = "Bạn ĐÃ CHỐT LỊCH cho chu kỳ này! Không thể thao tác thêm.";
+        errDiv.style.display = 'block';
+      } else {
+        SHIFT_DATA = res.shiftCounts;
+        renderCalendarUI();
+        switchScreen(2);
+        liveTimer = setInterval(updateLiveCounts, 5000);
+      }
+    }).checkAndGetShiftData(id);
+  }
+
+  function handleShiftChange(index) {
+    let shiftVal = document.getElementById(`shift_${index}`).value;
+    let areaSel = document.getElementById(`area_${index}`);
+    
+    if (shiftVal === 'OFF') {
+      areaSel.value = ''; areaSel.disabled = true;
+    } else {
+      areaSel.disabled = false;
+    }
+
+    // Bắt lỗi 252 người / ngày
+    if (shiftVal === '08:00-17:00') {
+      let dateStr = WEEK_DATES[index].value;
+      let serverCount = (SHIFT_DATA[dateStr] && SHIFT_DATA[dateStr]['08:00-17:00']) ? SHIFT_DATA[dateStr]['08:00-17:00'] : 0;
+      
+      if (serverCount >= 252) {
+        alert(`Xin lỗi, ca 08:00-17:00 ngày ${WEEK_DATES[index].label} đã đủ giới hạn 252 người!`);
+        document.getElementById(`shift_${index}`).value = ''; 
+        areaSel.value = ''; areaSel.disabled = true; 
+      }
+    }
+  }
+
+  function renderCalendarUI() {
+    let html = '';
+    let currentGroup = '';
+
+    WEEK_DATES.forEach((day, index) => {
+      if (day.group !== currentGroup) {
+        html += `<div class="group-header"><i class="bi bi-flag-fill"></i> ${day.group}</div>`;
+        currentGroup = day.group;
+      }
+
+      html += `
+        <div class="day-row">
+          <div class="day-date mb-2"><i class="bi bi-calendar-check"></i> ${day.label}</div>
+          <div class="row g-2">
+            <div class="col-6">
+              <select class="form-select form-select-sm shadow-sm" id="area_${index}">
+                ${AREA_OPTIONS}
+              </select>
+            </div>
+            <div class="col-6">
+              <select class="form-select form-select-sm shadow-sm" id="shift_${index}" onchange="handleShiftChange(${index})">
+                <option value="">- Chọn ca -</option>
+                <option value="06:00-15:00" id="opt1_${index}">06:00 - 15:00</option>
+                <option value="08:00-17:00" id="opt8_${index}">08:00 - 17:00</option>
+                <option value="13:00-22:00" id="opt3_${index}">13:00 - 22:00</option>
+                <option value="OFF" style="color:red; font-weight:bold;">OFF (Nghỉ)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+    document.getElementById('calendarList').innerHTML = html;
+    applyLiveLimits(); 
+  }
+
+  function applyLiveLimits() {
+    WEEK_DATES.forEach((day, index) => {
+      let counts = SHIFT_DATA[day.value] || { '06:00-15:00': 0, '08:00-17:00': 0, '13:00-22:00': 0 };
+      
+      let c1 = counts['06:00-15:00'] || 0;
+      let c2 = counts['08:00-17:00'] || 0;
+      let c3 = counts['13:00-22:00'] || 0;
+
+      let opt1 = document.getElementById(`opt1_${index}`);
+      let opt8 = document.getElementById(`opt8_${index}`);
+      let opt3 = document.getElementById(`opt3_${index}`);
+
+      if(opt1) opt1.innerText = `06:00 - 15:00 (Đã chọn: ${c1})`;
+      if(opt3) opt3.innerText = `13:00 - 22:00 (Đã chọn: ${c3})`;
+
+      if(opt8) {
+        if(c2 >= 252) {
+          opt8.disabled = true; 
+          opt8.innerText = `08:00 - 17:00 (Full ngày: 252/252)`;
+          
+          let sel = document.getElementById(`shift_${index}`);
+          if(sel.value === '08:00-17:00') { 
+            sel.value = ''; 
+            alert(`Xin lỗi, ca 08:00-17:00 ngày ${day.label} vừa bị đầy!`); 
+            document.getElementById(`area_${index}`).disabled = true;
+          }
+        } else {
+          opt8.disabled = false; 
+          opt8.innerText = `08:00 - 17:00 (${c2}/252)`; 
+        }
+      }
+    });
+  }
+
+  function updateLiveCounts() {
+    google.script.run.withSuccessHandler(res => {
+      SHIFT_DATA = res.shiftCounts;
+      applyLiveLimits();
+    }).checkAndGetShiftData('dummy_update');
+  }
+
+  function prepareReview() {
+    let schedules = [];
+    let isComplete = true;
+    let revHtml = '';
+
+    WEEK_DATES.forEach((day, index) => {
+      let shiftVal = document.getElementById(`shift_${index}`).value;
+      let areaVal = document.getElementById(`area_${index}`).value;
+
+      if(!shiftVal) isComplete = false;
+      if(shiftVal !== 'OFF' && !areaVal) isComplete = false; 
+
+      schedules.push({ date: day.value, label: day.label, shift: shiftVal, area: areaVal });
+      
+      let detailText = shiftVal === 'OFF' ? '<span class="text-danger fw-bold">OFF (Nghỉ)</span>' : `<span class="text-primary fw-bold">${shiftVal}</span><br><small class="text-muted"><i class="bi bi-geo-alt"></i> ${areaVal}</small>`;
+      revHtml += `<div class="review-item align-items-center"><span style="font-weight:600;">${day.label}</span><div class="text-end">${detailText}</div></div>`;
+    });
+
+    if(!isComplete) return alert("Vui lòng chọn đầy đủ Ca và Khu vực cho tất cả các ngày (Ngày nào nghỉ chọn OFF).");
+
+    document.getElementById('revName').innerText = document.getElementById('inpName').value;
+    document.getElementById('revId').innerText = document.getElementById('inpId').value;
+    document.getElementById('revSchedule').innerHTML = revHtml;
+
+    clearInterval(liveTimer); 
+    switchScreen(3);
+  }
+
+  function submitData() {
+    let btn = document.getElementById('btnSubmitFinal');
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Đang chốt lịch...';
+    btn.disabled = true;
+
+    let schedules = [];
+    WEEK_DATES.forEach((day, index) => {
+      schedules.push({ date: day.value, shift: document.getElementById(`shift_${index}`).value, area: document.getElementById(`area_${index}`).value });
+    });
+
+    let payload = { driverName: document.getElementById('inpName').value, driverId: document.getElementById('inpId').value, schedules: schedules };
+
+    google.script.run.withSuccessHandler(res => { switchScreen(4); }).submitFinalSchedule(payload);
+  }
+</script>
+</body>
+</html>
