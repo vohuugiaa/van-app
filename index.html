@@ -398,8 +398,7 @@
                 <h2
                     style="font-size: 2.8rem; font-weight: 900; color: var(--primary); margin-bottom: 5px; letter-spacing: -1px;">
                     VanApp</h2>
-                <p style="color: var(--text-light); margin-bottom: 45px; font-weight: 600;">Hệ thống Driver chuyên
-                    nghiệp</p>
+
                 <div class="card" style="padding: 30px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
                     <input type="number" id="login-id" placeholder="Nhập mã SAP của bạn"
                         style="width: 100%; padding: 18px; border-radius: 15px; border: 2px solid #f1f5f9; margin-bottom: 20px; font-size: 1.2rem; text-align: center; outline: none; transition: 0.3s;">
@@ -557,7 +556,7 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxY9onu0jEzzBu-mNRDM-fmETWZN88PmDkuppfO5kMTF_67Q-EvfUDmv44tT8KHVvdb/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwlW0VSFxnbSxCCJ7Y9b17n1DmTj7nIPZgmN-Ewu1RKF_1gbtPXZatnAJJVZireSluO/exec";
         const AREAS = ["Quận Phú Nhuận", "Huyện Nhà Bè", "Quận 5", "Quận 3", "Quận 4", "Quận 1", "Quận 6", "Quận 8", "Quận 7", "Huyện Bình Chánh", "Quận Tân Bình", "Quận 11", "Quận 10", "Quận Gò Vấp", "Quận Bình Thạnh", "Quận Tân Phú", "Quận 12", "Huyện Hóc Môn", "Quận Bình Tân", "Thành phố Thủ Đức"];
         let WEEK_DATES = [];
 
@@ -712,7 +711,7 @@
             generateDates() {
                 WEEK_DATES = [];
                 let now = new Date(); now.setHours(0, 0, 0, 0);
-                
+
                 // Ngày bắt đầu: Ngày mai
                 let start = new Date(now); start.setDate(now.getDate() + 1);
 
@@ -727,10 +726,10 @@
                 let curr = new Date(start);
                 while (curr <= sun2) {
                     let c = new Date(curr);
-                    WEEK_DATES.push({ 
-                        label: `${c.getDay() === 0 ? 'Chủ Nhật' : 'Thứ ' + (c.getDay() + 1)} (${c.getDate()}/${c.getMonth() + 1})`, 
-                        value: this.fmt(c), 
-                        isNext: c > sun1 
+                    WEEK_DATES.push({
+                        label: `${c.getDay() === 0 ? 'Chủ Nhật' : 'Thứ ' + (c.getDay() + 1)} (${c.getDate()}/${c.getMonth() + 1})`,
+                        value: this.fmt(c),
+                        isNext: c > sun1
                     });
                     curr.setDate(curr.getDate() + 1);
                 }
