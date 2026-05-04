@@ -37,7 +37,6 @@
         /* Elements */
         .card { background: #f8fafc; border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid #f1f5f9; }
         .btn-action { width: 100%; padding: 16px; border-radius: 16px; border: none; background: var(--primary); color: white; font-weight: 800; font-size: 1rem; cursor: pointer; }
-        .btn-action:disabled { background: #cbd5e1; cursor: not-allowed; }
         
         .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
         .menu-btn { background: white; padding: 15px; border-radius: 18px; border: 1px solid #f1f5f9; text-align: center; text-decoration: none; color: inherit; box-shadow: 0 4px 6px rgba(0,0,0,0.02); transition: 0.2s; }
@@ -104,7 +103,7 @@
         <div id="page-checkin" class="page">
             <div class="page-header"><h1>Điểm danh</h1></div>
             <div id="checkin-limit-msg" style="display:none;" class="card">
-                <div style="text-align:center; padding:20px;"><span style="font-size:3rem;">✅</span><h3 style="color:var(--primary-dark); margin-top:10px;">ĐÃ ĐIỂM DANH XONG</h3><p style="font-size:0.8rem; color:var(--text-light); margin-top:5px;">Hôm nay bạn đã Check-in. Hẹn gặp lại ngày mai!</p></div>
+                <div style="text-align:center; padding:20px;"><span style="font-size:3rem;">✅</span><h3 style="color:var(--primary-dark); margin-top:10px;">ĐÃ ĐIỂM DANH XONG</h3><p style="font-size:0.8rem; color:var(--text-light); margin-top:5px;">Bạn đã Check-in hôm nay. Hẹn gặp lại ngày mai!</p></div>
             </div>
             <div id="checkin-content">
                 <div onclick="app.startCamera()" style="height: 250px; background: #f1f5f9; border-radius: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; cursor: pointer;"><span style="font-size: 4rem;">📸</span><h3 style="font-weight: 800; color: var(--primary-dark);">BẤM ĐỂ CHỤP ẢNH</h3></div>
@@ -126,7 +125,7 @@
             <div class="card"><p><strong>Họ tên:</strong> <span id="p-name">---</span></p><p><strong>Mã SAP:</strong> <span id="p-id">---</span></p></div>
             <h4 style="font-size: 0.9rem; margin-bottom: 10px;">Lịch sử Check-in</h4>
             <div id="p-history" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;"></div>
-            <h4 style="font-size: 0.9rem; margin-bottom: 10px;">Lịch trình sắp tới</h4>
+            <h4 style="font-size: 0.9rem; margin-bottom: 10px;">Lịch trình Hiện tại & Tuần tới</h4>
             <div id="p-schedule" style="display: flex; flex-direction: column; gap: 8px;"></div>
         </div>
 
@@ -164,7 +163,8 @@
         let WEEK_DATES = [];
 
         const app = {
-            state: { name: '', id: '', stream: null, loc: '', addr: '', camMode: 'user', shiftCounts: {} },
+            state: { name: '', id: '', stream: null, addr: '', camMode: 'user', shiftCounts: {} },
+
             init() {
                 this.state.name = localStorage.getItem('van_user_name');
                 this.state.id = localStorage.getItem('van_user_id');
@@ -172,6 +172,7 @@
                 window.onhashchange = () => this.routing();
                 this.routing();
             },
+
             login() {
                 const n = document.getElementById('login-name').value.trim();
                 const i = document.getElementById('login-id').value.trim();
@@ -183,6 +184,7 @@
                     } else alert("Thông tin sai!");
                 });
             },
+
             loginSuccess() {
                 if (window.history.replaceState) window.history.replaceState({}, document.title, window.location.pathname);
                 document.getElementById('page-login').classList.remove('active');
@@ -191,7 +193,9 @@
                 document.getElementById('user-sap').innerText = "Mã NV: " + this.state.id;
                 this.nav('home');
             },
+
             nav(p) { location.hash = "#/" + p; },
+
             routing() {
                 const h = location.hash.replace("#/", "") || "login";
                 if (h === "login" && this.state.name) return this.nav('home');
@@ -199,6 +203,7 @@
                 document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
                 if (document.getElementById('page-' + h)) document.getElementById('page-' + h).classList.add('active');
                 if (document.getElementById('nav-' + h)) document.getElementById('nav-' + h).classList.add('active');
+                
                 if (h === "checkin") this.checkCheckinLimit();
                 if (h === "phanca") this.loadPhanCa();
                 if (h === "hoso") this.loadProfile();
@@ -207,7 +212,16 @@
                     if (l) document.getElementById('home-last-check').innerText = "Lần cuối: " + l;
                 }
             },
+
             logout() { if (confirm("Đăng xuất?")) { localStorage.clear(); location.href = ""; } },
+
+            // Helper to format dates consistently
+            fmt(dateObj) {
+                if (!dateObj) return "";
+                const d = new Date(dateObj);
+                if (isNaN(d)) return String(dateObj).trim(); // Fallback if string
+                return `${("0" + d.getDate()).slice(-2)}/${("0" + (d.getMonth() + 1)).slice(-2)}/${d.getFullYear()}`;
+            },
 
             checkCheckinLimit() {
                 const today = new Date().toLocaleDateString('vi-VN');
@@ -239,7 +253,9 @@
                 document.getElementById('video-preview').srcObject = this.state.stream;
                 document.getElementById('overlay-camera').classList.add('active');
             },
+
             switchCamera() { this.state.camMode = (this.state.camMode === 'user' ? 'environment' : 'user'); this.openStream(); },
+
             takePhoto() {
                 const v = document.getElementById('video-preview');
                 const c = document.createElement('canvas');
@@ -249,7 +265,9 @@
                 this.closeCamera();
                 this.submitCheckin(photo);
             },
+
             closeCamera() { if (this.state.stream) this.state.stream.getTracks().forEach(t => t.stop()); document.getElementById('overlay-camera').classList.remove('active'); },
+
             submitCheckin(photo) {
                 const time = new Date().toLocaleString('vi-VN');
                 const payload = { name: this.state.name, id: this.state.id, type: "Check-in", timestamp: time, location: this.state.addr, photo: photo };
@@ -264,23 +282,29 @@
             async loadPhanCa() {
                 const listEl = document.getElementById('phanca-list');
                 const btnEl = document.getElementById('btn-phanca-submit');
-                listEl.innerHTML = "Đang kiểm tra..."; btnEl.style.display = 'none';
+                listEl.innerHTML = "Đang kiểm tra lịch đã chốt..."; btnEl.style.display = 'none';
                 try {
                     const resMy = await fetch(`${SCRIPT_URL}?action=my_schedule&id=${this.state.id}`);
                     const myData = await resMy.json();
                     this.generateDates();
+                    
                     const shownDates = WEEK_DATES.map(d => d.value);
-                    const already = myData.some(r => shownDates.includes(String(r[4]).trim()));
+                    const already = myData.some(r => {
+                        const sheetDate = this.fmt(r[4]); // Convert sheet date to DD/MM/YYYY
+                        return shownDates.includes(sheetDate);
+                    });
+
                     if (already) {
-                        listEl.innerHTML = `<div class="card" style="text-align:center; padding:40px 20px; border:2px dashed var(--primary);"><span style="font-size:3rem; display:block; margin-bottom:15px;">✅</span><h3 style="color:var(--primary-dark);">BẠN ĐÃ CHỐT LỊCH!</h3><p style="font-size:0.85rem; color:var(--text-light); margin-top:10px;">Lịch trình hiện tại và tuần tới của bạn đã được khóa để tránh trùng lặp.</p></div>`;
+                        listEl.innerHTML = `<div class="card" style="text-align:center; padding:40px 20px; border:2px dashed var(--primary);"><span style="font-size:3rem; display:block; margin-bottom:15px;">✅</span><h3 style="color:var(--primary-dark);">BẠN ĐÃ CHỐT LỊCH!</h3><p style="font-size:0.85rem; color:var(--text-light); margin-top:10px;">Lịch trình sắp tới đã được ghi nhận. Vui lòng xem chi tiết tại mục Hồ sơ.</p></div>`;
                         return;
                     }
+
                     btnEl.style.display = 'block';
                     const r = await fetch(`${SCRIPT_URL}?action=get_shift_data`);
                     this.state.shiftCounts = await r.json();
                     this.renderPhanCa();
                     this.startTimer();
-                } catch (e) { listEl.innerHTML = "Lỗi tải!"; }
+                } catch (e) { listEl.innerHTML = "Lỗi tải dữ liệu!"; }
             },
 
             generateDates() {
@@ -291,12 +315,15 @@
                 let sunT = new Date(now); sunT.setDate(now.getDate() + dToS);
                 let curr = new Date(start);
                 while (curr <= end) {
-                    let dStr = `${("0" + curr.getDate()).slice(-2)}/${("0" + (curr.getMonth() + 1)).slice(-2)}/${curr.getFullYear()}`;
-                    let dN = curr.getDay() === 0 ? 'Chủ Nhật' : 'Thứ ' + (curr.getDay() + 1);
-                    WEEK_DATES.push({ label: `${dN} (${curr.getDate()}/${curr.getMonth() + 1})`, value: dStr, isNext: curr > sunT });
+                    WEEK_DATES.push({ 
+                        label: `${curr.getDay() === 0 ? 'Chủ Nhật' : 'Thứ ' + (curr.getDay() + 1)} (${curr.getDate()}/${curr.getMonth() + 1})`, 
+                        value: this.fmt(curr), 
+                        isNext: curr > sunT 
+                    });
                     curr.setDate(curr.getDate() + 1);
                 }
             },
+
             renderPhanCa() {
                 let html = '';
                 WEEK_DATES.forEach((d, i) => {
@@ -306,6 +333,7 @@
                 document.getElementById('phanca-list').innerHTML = html;
                 window.dCnt = WEEK_DATES.length;
             },
+
             startTimer() {
                 const el = document.getElementById('phanca-timer');
                 if (this.tInt) clearInterval(this.tInt);
@@ -320,6 +348,7 @@
                     }
                 }, 1000);
             },
+
             reviewSchedule() {
                 this.state.schedules = []; let html = '';
                 for (let i = 0; i < window.dCnt; i++) {
@@ -331,6 +360,7 @@
                 document.getElementById('review-content').innerHTML = html;
                 document.getElementById('overlay-review').classList.add('active');
             },
+
             async finalSubmit() {
                 const btn = document.getElementById('btn-final-chot');
                 btn.disabled = true; btn.innerText = "ĐANG GỬI...";
@@ -339,6 +369,7 @@
                     alert("Thành công!"); location.reload();
                 } catch (e) { alert("Lỗi!"); btn.disabled = false; btn.innerText = "CHỐT NGAY"; }
             },
+
             async loadProfile() {
                 document.getElementById('p-name').innerText = this.state.name; document.getElementById('p-id').innerText = this.state.id;
                 const hL = document.getElementById('p-history'), sL = document.getElementById('p-schedule');
@@ -347,16 +378,18 @@
                     const [rH, rS] = await Promise.all([fetch(`${SCRIPT_URL}?action=history&id=${this.state.id}`), fetch(`${SCRIPT_URL}?action=my_schedule&id=${this.state.id}`)]);
                     const dH = await rH.json(), dS = await rS.json();
                     hL.innerHTML = dH.reverse().slice(0, 10).map(r => `<div class="card" style="padding:10px; margin-bottom:5px; font-size:0.75rem; display:flex; justify-content:space-between;"><span>${r[0]}</span><strong>${r[3]}</strong></div>`).join('') || "Trống";
+                    
                     const todayDate = new Date(); todayDate.setHours(0,0,0,0);
                     const seenDates = new Set();
                     sL.innerHTML = dS.filter(r => {
-                        const parts = r[4].split('/');
+                        const sheetDate = this.fmt(r[4]);
+                        const parts = sheetDate.split('/');
                         const d = new Date(parts[2], parts[1]-1, parts[0]);
                         if (d < todayDate) return false;
-                        if (seenDates.has(r[4])) return false;
-                        seenDates.add(r[4]);
+                        if (seenDates.has(sheetDate)) return false;
+                        seenDates.add(sheetDate);
                         return true;
-                    }).reverse().map(r => `<div class="card" style="padding:10px; margin-bottom:5px; font-size:0.75rem;"><div><strong>Ngày: ${r[4]}</strong> - ${r[5]}</div><div style="color:var(--text-light)">${r[3]}</div></div>`).join('') || "Chưa có lịch.";
+                    }).reverse().map(r => `<div class="card" style="padding:10px; margin-bottom:5px; font-size:0.75rem;"><div><strong>Ngày: ${this.fmt(r[4])}</strong> - ${r[5]}</div><div style="color:var(--text-light)">${r[3]}</div></div>`).join('') || "Chưa có lịch sắp tới.";
                 } catch (e) { hL.innerHTML = "Lỗi!"; sL.innerHTML = "Lỗi!"; }
             }
         };
