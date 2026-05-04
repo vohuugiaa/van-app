@@ -473,13 +473,17 @@
                 </div>
             </div>
             <div id="checkin-content">
-                <div onclick="app.startCamera()"
-                    style="height: 280px; background: #f1f5f9; border-radius: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; cursor: pointer; border: 3px dashed #cbd5e1; transition: 0.3s;">
-                    <span style="font-size: 5rem;">📸</span>
-                    <h3 style="font-weight: 800; color: var(--primary-dark);">BẤM ĐỂ CHỤP ẢNH</h3>
-                </div>
-                <div id="checkin-status"
-                    style="margin-top: 25px; text-align: center; font-size: 0.9rem; color: var(--text-light); font-weight: 600; padding: 0 15px;">
+                <div class="card" style="text-align: center; padding: 40px 20px;">
+                    <div id="loc-loading" style="margin-bottom: 20px;">
+                        <div class="spinner-small" style="margin: 0 auto 15px;"></div>
+                        <p style="font-weight: 700; color: var(--primary);">Đang xác định vị trí GPS...</p>
+                        <p style="font-size: 0.75rem; color: var(--text-light); margin-top: 5px;">Vui lòng chờ trong giây lát</p>
+                    </div>
+                    <div id="loc-ready" style="display: none;">
+                        <div style="font-size: 3rem; margin-bottom: 10px;">📍</div>
+                        <p id="checkin-page-addr" style="font-size: 0.9rem; font-weight: 700; color: green; margin-bottom: 20px; padding: 0 10px;"></p>
+                        <button class="btn-action" onclick="app.startCamera()">BẮT ĐẦU CHỤP ẢNH</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -656,44 +660,43 @@
                 document.getElementById('checkin-content').style.display = isDone ? 'none' : 'block';
             },
 
-            async startCamera() {
-                const st = document.getElementById('checkin-status');
-                const btnSnap = document.getElementById('btn-snap');
-                st.innerText = "📍 Đang xác định vị trí...";
-                st.style.color = "var(--primary)";
-                this.state.addr = "";
-                if (btnSnap) btnSnap.style.opacity = "0.3"; 
-                if (btnSnap) btnSnap.style.pointerEvents = "none";
+            preFetchLocation() {
+                const loadEl = document.getElementById('loc-loading');
+                const readyEl = document.getElementById('loc-ready');
+                const addrEl = document.getElementById('checkin-page-addr');
+                if (!loadEl || !readyEl) return;
 
-                const gpsOptions = { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 };
+                loadEl.style.display = 'block';
+                readyEl.style.display = 'none';
+                this.state.addr = "";
 
                 navigator.geolocation.getCurrentPosition(async pos => {
                     const lat = pos.coords.latitude.toFixed(6);
                     const lon = pos.coords.longitude.toFixed(6);
-                    this.state.addr = `Tọa độ: ${lat}, ${lon}`;
-
                     try {
                         const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`, {
                             headers: { 'Accept-Language': 'vi' }
                         });
                         const data = await res.json();
                         this.state.addr = data.display_name || `Tọa độ: ${lat}, ${lon}`;
-                        st.innerText = "✅ Vị trí: " + (data.address.road || data.display_name.split(',')[0]);
+                        addrEl.innerText = "📍 " + (data.address.road || data.display_name.split(',')[0]);
                     } catch (e) {
-                        st.innerText = "✅ Đã lấy tọa độ";
+                        this.state.addr = `Tọa độ: ${lat}, ${lon}`;
+                        addrEl.innerText = "📍 " + this.state.addr;
                     }
-                    if (btnSnap) {
-                        btnSnap.style.opacity = "1";
-                        btnSnap.style.pointerEvents = "auto";
-                    }
-                    st.style.color = "green";
+                    loadEl.style.display = 'none';
+                    readyEl.style.display = 'block';
                 }, err => {
-                    st.innerText = "❌ Lỗi GPS: Hãy cho phép truy cập vị trí!";
-                    st.style.color = "red";
-                    this.state.addr = "";
-                    this.showToast("Bạn cần cho phép truy cập vị trí để điểm danh!", "error");
-                }, gpsOptions);
+                    addrEl.innerText = "❌ Lỗi: Hãy bật định vị và cho phép truy cập!";
+                    loadEl.style.display = 'none';
+                    readyEl.style.display = 'block';
+                    this.state.addr = "Lỗi GPS";
+                }, { enableHighAccuracy: true, timeout: 15000 });
+            },
 
+            async startCamera() {
+                const st = document.getElementById('checkin-status');
+                st.innerText = "✅ Vị trí: " + this.state.addr;
                 try {
                     this.state.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: this.state.camMode } });
                     document.getElementById('video-preview').srcObject = this.state.stream;
