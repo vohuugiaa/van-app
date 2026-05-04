@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VanApp - Quản lý Đội Van</title>
+    <title>VanApp - Pro Version</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -12,68 +12,47 @@
             --primary: #1abc9c;
             --primary-dark: #16a085;
             --bg: #f8fafc;
-            --card-bg: #ffffff;
             --text: #1e293b;
             --text-light: #64748b;
+            --danger: #ef4444;
             --nav-height: 70px;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; }
-        
-        /* Layout Structure */
         .container { max-width: 500px; margin: 0 auto; height: 100vh; display: flex; flex-direction: column; background: white; position: relative; }
         .page { flex: 1; overflow-y: auto; display: none; padding: 20px; padding-bottom: calc(var(--nav-height) + 20px); animation: fadeIn 0.3s ease; }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Header */
-        .page-header { margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between; }
-        .page-header h1 { font-size: 1.4rem; font-weight: 800; color: var(--text); }
-        .back-btn { background: #f1f5f9; border: none; padding: 8px 12px; border-radius: 10px; font-weight: 700; font-size: 0.8rem; cursor: pointer; }
-
-        /* Bottom Nav */
+        /* Header & Nav */
+        .page-header { margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
+        .page-header h1 { font-size: 1.3rem; font-weight: 800; }
         .bottom-nav { position: absolute; bottom: 0; width: 100%; height: var(--nav-height); background: white; display: flex; border-top: 1px solid #f1f5f9; box-shadow: 0 -5px 15px rgba(0,0,0,0.03); z-index: 1000; }
-        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: var(--text-light); transition: 0.2s; cursor: pointer; }
-        .nav-item span:first-child { font-size: 1.5rem; margin-bottom: 4px; transition: 0.2s; }
-        .nav-item span:last-child { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: var(--text-light); cursor: pointer; }
+        .nav-item span:first-child { font-size: 1.4rem; margin-bottom: 2px; }
+        .nav-item span:last-child { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; }
         .nav-item.active { color: var(--primary); }
-        .nav-item.active span:first-child { transform: translateY(-5px); font-size: 1.7rem; }
 
-        /* Login Page */
-        #login-page { background: white; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px; }
-        .login-card { width: 100%; }
-        .login-card h2 { font-size: 2rem; font-weight: 900; color: var(--primary); margin-bottom: 30px; }
-        .input-group { width: 100%; text-align: left; margin-bottom: 20px; }
-        .input-group label { display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-light); margin-bottom: 8px; text-transform: uppercase; }
-        .input-group input { width: 100%; padding: 16px; border-radius: 16px; border: 2px solid #f1f5f9; background: #f8fafc; font-size: 1rem; outline: none; transition: 0.3s; }
-        .input-group input:focus { border-color: var(--primary); background: white; }
-        .btn-action { width: 100%; padding: 18px; border-radius: 16px; border: none; background: var(--primary); color: white; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: 0.3s; }
-        .btn-action:active { transform: scale(0.98); }
+        /* Elements */
+        .card { background: #f8fafc; border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid #f1f5f9; }
+        .btn-action { width: 100%; padding: 16px; border-radius: 16px; border: none; background: var(--primary); color: white; font-weight: 800; font-size: 1rem; cursor: pointer; }
+        .hotline-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #eee; text-decoration: none; color: inherit; }
+        .hotline-item:last-child { border-bottom: none; }
+        .hotline-item .label { font-size: 0.8rem; font-weight: 600; color: var(--text-light); }
+        .hotline-item .phone { font-size: 0.9rem; font-weight: 800; color: #3b82f6; }
 
-        /* Components */
-        .card { background: #f8fafc; border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid #f1f5f9; }
-        .warning-strip { background: #fff1f2; color: #991b1b; padding: 12px; border-radius: 12px; font-size: 0.8rem; line-height: 1.4; margin-bottom: 20px; }
-        
-        /* Check-in Page Specific */
-        .checkin-hero { height: 250px; background: #f1f5f9; border-radius: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; cursor: pointer; transition: 0.3s; }
-        .checkin-hero:active { background: #e2e8f0; }
-        .checkin-hero .icon { font-size: 4rem; }
-        .checkin-hero h3 { font-weight: 800; color: var(--primary-dark); }
-
-        /* Scheduling Page Specific */
-        .day-item { background: white; border: 1px solid #f1f5f9; border-radius: 18px; padding: 18px; margin-bottom: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
-        .day-item h4 { font-size: 0.95rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-        .day-item .tag { padding: 4px 8px; border-radius: 6px; font-size: 0.65rem; font-weight: 800; background: #fef9c3; color: #854d0e; }
-        .select-native { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 0.9rem; margin-bottom: 8px; outline: none; appearance: none; background: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") no-repeat right 12px center/16px; }
-
-        /* Modal Overlay */
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        /* Camera Modal */
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 3000; display: none; flex-direction: column; }
         .overlay.active { display: flex; }
-        .modal-card { background: white; width: 100%; max-width: 400px; border-radius: 25px; overflow: hidden; }
+        #video-preview { flex: 1; object-fit: cover; }
+        .camera-ui { padding: 25px; background: white; border-top-left-radius: 30px; border-top-right-radius: 30px; display: flex; justify-content: space-around; align-items: center; }
+        .btn-shutter { width: 70px; height: 70px; border-radius: 50%; border: 5px solid #eee; background: var(--danger); }
+        .btn-switch { background: #f1f5f9; border: none; padding: 10px 15px; border-radius: 12px; font-size: 1.2rem; }
 
-        /* Countdown Strip */
-        .countdown-strip { background: #ef4444; color: white; padding: 8px; text-align: center; font-size: 0.75rem; font-weight: 700; margin-bottom: 15px; border-radius: 8px; }
+        /* Scheduling */
+        .day-box { background: white; border: 1px solid #f1f5f9; border-radius: 15px; padding: 15px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .native-select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 0.9rem; margin-bottom: 8px; outline: none; background: #fff; }
     </style>
 </head>
 <body>
@@ -81,142 +60,95 @@
         
         <!-- PAGE: LOGIN -->
         <div id="page-login" class="page active">
-            <div id="login-page">
-                <div class="login-card">
-                    <div style="font-size: 4rem; margin-bottom: 20px;">🚐</div>
-                    <h2>VanApp Login</h2>
-                    <div class="input-group">
-                        <label>Họ và tên</label>
-                        <input type="text" id="login-name" placeholder="Ví dụ: Nguyễn Văn Sơn">
-                    </div>
-                    <div class="input-group">
-                        <label>Mã nhân viên</label>
-                        <input type="number" id="login-id" placeholder="Nhập mã SAP">
-                    </div>
-                    <button class="btn-action" onclick="app.login()">ĐĂNG NHẬP NGAY</button>
-                    <p style="margin-top: 20px; font-size: 0.8rem; color: var(--text-light);">Phiên bản 3.0 Pro</p>
-                </div>
+            <div style="height: 100%; display: flex; flex-direction: column; justify-content: center; text-align: center;">
+                <h2 style="font-size: 2.2rem; font-weight: 900; color: var(--primary); margin-bottom: 10px;">VanApp</h2>
+                <p style="margin-bottom: 40px; color: var(--text-light);">Ứng dụng tài xế xe Van chuyên nghiệp</p>
+                <input type="text" id="login-name" placeholder="Họ và tên..." style="width: 100%; padding: 16px; border-radius: 16px; border: 2px solid #f1f5f9; margin-bottom: 15px; font-size: 1rem;">
+                <input type="number" id="login-id" placeholder="Mã nhân viên (SAP)..." style="width: 100%; padding: 16px; border-radius: 16px; border: 2px solid #f1f5f9; margin-bottom: 25px; font-size: 1rem;">
+                <button class="btn-action" onclick="app.login()">ĐĂNG NHẬP</button>
             </div>
         </div>
 
-        <!-- PAGE: HOME (DASHBOARD) -->
+        <!-- PAGE: HOME -->
         <div id="page-home" class="page">
             <div class="page-header">
-                <div>
-                    <h1 id="user-name">---</h1>
-                    <p style="font-size: 0.8rem; color: var(--text-light);" id="user-sap">Mã NV: ---</p>
-                </div>
-                <button class="back-btn" onclick="app.logout()" style="color: #ef4444;">Đăng xuất</button>
+                <div><h1 id="user-name">---</h1><p id="user-sap" style="font-size: 0.8rem; color: var(--text-light);">Mã NV: ---</p></div>
+                <button onclick="app.logout()" style="border:none; background:none; color: var(--danger); font-weight: 700; font-size: 0.8rem;">Đăng xuất</button>
             </div>
             
             <div class="card" style="background: linear-gradient(135deg, #1abc9c, #16a085); color: white; border: none;">
-                <h3 style="font-size: 0.9rem; margin-bottom: 5px;">📍 Trạng thái hôm nay</h3>
-                <p style="font-size: 0.8rem; opacity: 0.9;" id="home-last-check">Chưa ghi nhận Check-in</p>
+                <h3 style="font-size: 0.9rem; margin-bottom: 5px;">📍 Check-in hôm nay</h3>
+                <p style="font-size: 0.8rem; opacity: 0.9;" id="home-last-check">Chưa ghi nhận</p>
             </div>
 
-            <h3 style="font-size: 1rem; margin-bottom: 15px;">Tiện ích nhanh</h3>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div class="card" style="margin:0; text-align:center; padding: 25px;" onclick="app.nav('phanca')">
-                    <span style="font-size: 2rem; display:block; margin-bottom:10px;">📅</span>
-                    <span style="font-size: 0.8rem; font-weight:700;">Đăng ký Phân ca</span>
-                </div>
-                <div class="card" style="margin:0; text-align:center; padding: 25px;" onclick="app.nav('hoso')">
-                    <span style="font-size: 2rem; display:block; margin-bottom:10px;">👤</span>
-                    <span style="font-size: 0.8rem; font-weight:700;">Hồ sơ cá nhân</span>
-                </div>
-            </div>
-            
-            <div style="margin-top: 30px;">
-                <h3 style="font-size: 1rem; margin-bottom: 15px;">Hỗ trợ kỹ thuật</h3>
-                <div class="card" style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
-                    <span style="font-size: 1.5rem;">📞</span>
-                    <div>
-                        <div style="font-size: 0.8rem; font-weight: 700;">Hotline Cứu hộ</div>
-                        <a href="tel:1900232389" style="font-size: 0.9rem; color: var(--secondary); text-decoration:none;">1900 23 23 89</a>
-                    </div>
-                </div>
+            <h3 style="font-size: 1rem; margin-bottom: 12px; margin-top: 20px;">☎️ HOTLINE TỔNG ĐÀI</h3>
+            <div class="card" style="padding: 0; overflow: hidden;">
+                <a href="tel:1900232389" class="hotline-item"><span class="label">Cứu hộ xe VF</span><span class="phone">1900.232389</span></a>
+                <a href="tel:1900636984" class="hotline-item"><span class="label">Sạc pin, App VF</span><span class="phone">1900.636984</span></a>
+                <a href="tel:02471096839" class="hotline-item"><span class="label">Chăm sóc TX</span><span class="phone">0247.109.6839</span></a>
+                <a href="tel:19002088" class="hotline-item"><span class="label">Tổng đài đặt xe</span><span class="phone">1900.2088</span></a>
+                <a href="tel:19002097" class="hotline-item"><span class="label">CSKH & Hóa đơn</span><span class="phone">1900.2097</span></a>
+                <a href="tel:1900545458" class="hotline-item"><span class="label">BH PVI (Techcom)</span><span class="phone">1900.545458</span></a>
             </div>
         </div>
 
         <!-- PAGE: CHECK-IN -->
         <div id="page-checkin" class="page">
-            <div class="page-header">
-                <h1>Check-in ca làm</h1>
-                <button class="back-btn" onclick="app.nav('home')">🏠 Trang chủ</button>
+            <div class="page-header"><h1>Chấm công</h1></div>
+            <div style="background: #fff1f2; padding: 15px; border-radius: 15px; font-size: 0.8rem; margin-bottom: 25px;">
+                <strong>⚠️ LƯU Ý:</strong> Chụp ảnh rõ mặt tại khu vực làm việc để hệ thống ghi nhận địa chỉ tự động.
             </div>
-            <div class="warning-strip">Vui lòng đứng ở vị trí có sóng GPS tốt và để điện thoại thẳng mặt khi chụp ảnh.</div>
-            <div class="checkin-hero" onclick="app.startCheckinFlow()">
-                <div class="icon">📍</div>
-                <h3>BẤM ĐỂ CHECK-IN</h3>
-                <p style="font-size: 0.8rem; color: var(--text-light);">Tự động lấy GPS & Ảnh</p>
+            <div onclick="app.startCamera()" style="height: 250px; background: #f1f5f9; border-radius: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; cursor: pointer;">
+                <span style="font-size: 4rem;">📸</span>
+                <h3 style="font-weight: 800; color: var(--primary-dark);">BẤM ĐỂ CHỤP ẢNH</h3>
             </div>
-            <div id="checkin-status" style="text-align: center; margin-top: 20px; font-weight: 700; color: var(--primary);"></div>
+            <div id="checkin-status" style="margin-top: 20px; text-align: center; font-size: 0.85rem; font-weight: 600;"></div>
         </div>
 
         <!-- PAGE: PHÂN CA -->
         <div id="page-phanca" class="page">
-            <div class="page-header">
-                <h1>Đăng ký Phân ca</h1>
-                <button class="back-btn" onclick="app.nav('home')">🏠 Trang chủ</button>
-            </div>
-            <div id="phanca-lockdown" class="countdown-strip">Đang tải hạn chót...</div>
-            <div id="phanca-list">
-                <!-- Renders natively -->
-            </div>
+            <div class="page-header"><h1>Đăng ký Phân ca</h1></div>
+            <div id="phanca-timer" style="background: var(--danger); color: white; padding: 8px; border-radius: 10px; text-align: center; font-size: 0.75rem; font-weight: 700; margin-bottom: 15px;">Đang tải...</div>
+            <div id="phanca-list"></div>
             <button class="btn-action" style="margin-top: 20px;" onclick="app.reviewSchedule()">TIẾP TỤC & CHỐT LỊCH</button>
         </div>
 
         <!-- PAGE: HỒ SƠ -->
         <div id="page-hoso" class="page">
-            <div class="page-header">
-                <h1>Hồ sơ & Lịch sử</h1>
-                <button class="back-btn" onclick="app.nav('home')">🏠 Trang chủ</button>
-            </div>
-            <div class="card">
-                <p><strong>Họ tên:</strong> <span id="prof-name">---</span></p>
-                <p><strong>Mã NV:</strong> <span id="prof-sap">---</span></p>
-            </div>
-            <h4 style="margin-bottom: 10px; font-size: 0.9rem;">Lịch sử Check-in</h4>
-            <div id="history-list" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 25px;"></div>
-            
-            <h4 style="margin-bottom: 10px; font-size: 0.9rem;">Lịch phân ca đã chốt</h4>
-            <div id="schedule-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
+            <div class="page-header"><h1>Hồ sơ cá nhân</h1></div>
+            <div class="card"><p><strong>Họ tên:</strong> <span id="p-name">---</span></p><p><strong>Mã SAP:</strong> <span id="p-id">---</span></p></div>
+            <h4 style="font-size: 0.9rem; margin-bottom: 10px;">Lịch sử Check-in</h4>
+            <div id="p-history" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;"></div>
+            <h4 style="font-size: 0.9rem; margin-bottom: 10px;">Lịch phân ca đã chốt</h4>
+            <div id="p-schedule" style="display: flex; flex-direction: column; gap: 8px;"></div>
         </div>
 
-        <!-- NAVIGATION BAR -->
-        <nav class="bottom-nav hidden" id="main-nav">
-            <a onclick="app.nav('home')" class="nav-item" id="nav-home">
-                <span>🏠</span><span>Trang chủ</span>
-            </a>
-            <a onclick="app.nav('checkin')" class="nav-item" id="nav-checkin">
-                <span>📍</span><span>Check-in</span>
-            </a>
-            <a onclick="app.nav('phanca')" class="nav-item" id="nav-phanca">
-                <span>📅</span><span>Phân ca</span>
-            </a>
-            <a onclick="app.nav('hoso')" class="nav-item" id="nav-hoso">
-                <span>👤</span><span>Hồ sơ</span>
-            </a>
+        <!-- NAV BAR -->
+        <nav class="bottom-nav" id="main-nav" style="display:none;">
+            <div onclick="app.nav('home')" class="nav-item" id="nav-home"><span>🏠</span><span>Trang chủ</span></div>
+            <div onclick="app.nav('checkin')" class="nav-item" id="nav-checkin"><span>📍</span><span>Check-in</span></div>
+            <div onclick="app.nav('phanca')" class="nav-item" id="nav-phanca"><span>📅</span><span>Phân ca</span></div>
+            <div onclick="app.nav('hoso')" class="nav-item" id="nav-hoso"><span>👤</span><span>Hồ sơ</span></div>
         </nav>
 
-        <!-- OVERLAYS -->
+        <!-- OVERLAY CAMERA -->
         <div id="overlay-camera" class="overlay">
-            <div class="modal-card">
-                <video id="camera-stream" autoplay playsinline style="width: 100%; aspect-ratio: 3/4; object-fit: cover;"></video>
-                <div style="padding: 20px; text-align: center;">
-                    <button class="btn-action" style="background: var(--danger);" onclick="app.takePhoto()">CHỤP ẢNH & GỬI</button>
-                    <p style="margin-top: 10px; font-size: 0.8rem; color: var(--text-light);">Vui lòng giữ điện thoại thẳng</p>
-                </div>
+            <video id="video-preview" autoplay playsinline></video>
+            <div class="camera-ui">
+                <button class="btn-switch" onclick="app.switchCamera()">🔄</button>
+                <button class="btn-shutter" onclick="app.takePhoto()"></button>
+                <button class="btn-switch" onclick="app.closeCamera()" style="background: #fee2e2; color: red;">✖</button>
             </div>
         </div>
 
-        <div id="overlay-review" class="overlay">
-            <div class="modal-card" style="padding: 25px;">
+        <!-- OVERLAY REVIEW -->
+        <div id="overlay-review" class="overlay" style="background: rgba(0,0,0,0.8); justify-content: center; padding: 20px;">
+            <div style="background: white; width: 100%; border-radius: 25px; padding: 25px;">
                 <h3 style="margin-bottom: 15px;">Xác nhận lịch trình</h3>
-                <div id="review-content" style="max-height: 300px; overflow-y: auto; font-size: 0.85rem; line-height: 1.6;"></div>
+                <div id="review-content" style="max-height: 300px; overflow-y: auto; font-size: 0.85rem; line-height: 1.5;"></div>
                 <div style="margin-top: 20px; display: flex; gap: 10px;">
-                    <button class="btn-action" style="background: #f1f5f9; color: #333;" onclick="app.closeReview()">SỬA LẠI</button>
-                    <button class="btn-action" id="btn-final-chot" onclick="app.finalSubmitSchedule()">XÁC NHẬN CHỐT</button>
+                    <button class="btn-action" style="background: #eee; color: #333;" onclick="document.getElementById('overlay-review').classList.remove('active')">SỬA LẠI</button>
+                    <button class="btn-action" id="btn-final-chot" onclick="app.finalSubmit()">CHỐT NGAY</button>
                 </div>
             </div>
         </div>
@@ -228,235 +160,209 @@
         const AREAS = ["Quận Phú Nhuận","Huyện Nhà Bè","Quận 5","Quận 3","Quận 4","Quận 1","Quận 6","Quận 8","Quận 7","Huyện Bình Chánh","Quận Tân Bình","Quận 11","Quận 10","Quận Gò Vấp","Quận Bình Thạnh","Quận Tân Phú","Quận 12","Huyện Hóc Môn","Quận Bình Tân","Thành phố Thủ Đức"];
         
         const app = {
-            state: { name: '', id: '', currentStream: null, location: '', shiftCounts: {}, schedules: [] },
+            state: { name:'', id:'', stream:null, loc:'', addr:'', camMode:'user', shiftCounts:{} },
 
             init() {
                 this.state.name = localStorage.getItem('van_user_name');
                 this.state.id = localStorage.getItem('van_user_id');
-                if (this.state.name && this.state.id) this.loginSuccess();
-                
-                // Handle hash navigation
-                window.onhashchange = () => this.handleRouting();
-                this.handleRouting();
+                if(this.state.name && this.state.id) this.loginSuccess();
+                window.onhashchange = () => this.routing();
+                this.routing();
             },
 
             login() {
-                const name = document.getElementById('login-name').value.trim();
-                const id = document.getElementById('login-id').value.trim();
-                if (!name || !id) return alert("Vui lòng nhập đủ thông tin!");
-
+                const n = document.getElementById('login-name').value.trim();
+                const i = document.getElementById('login-id').value.trim();
+                if(!n || !i) return alert("Nhập đủ thông tin!");
                 document.querySelector('.btn-action').innerText = "ĐANG XÁC THỰC...";
-                fetch(`${SCRIPT_URL}?action=login&name=${name}&id=${id}`)
-                    .then(r => r.text())
-                    .then(res => {
-                        if (res === "success") {
-                            localStorage.setItem('van_user_name', name);
-                            localStorage.setItem('van_user_id', id);
-                            this.state.name = name; this.state.id = id;
-                            this.loginSuccess();
-                        } else {
-                            alert("Sai thông tin!");
-                            document.querySelector('.btn-action').innerText = "ĐĂNG NHẬP NGAY";
-                        }
-                    });
+                fetch(`${SCRIPT_URL}?action=login&name=${n}&id=${i}`).then(r => r.text()).then(res => {
+                    if(res === "success") {
+                        localStorage.setItem('van_user_name', n); localStorage.setItem('van_user_id', i);
+                        this.state.name = n; this.state.id = i; this.loginSuccess();
+                    } else { alert("Sai thông tin!"); document.querySelector('.btn-action').innerText = "ĐĂNG NHẬP"; }
+                });
             },
 
             loginSuccess() {
                 document.getElementById('page-login').classList.remove('active');
-                document.getElementById('main-nav').classList.remove('hidden');
+                document.getElementById('main-nav').style.display = 'flex';
                 document.getElementById('user-name').innerText = this.state.name;
                 document.getElementById('user-sap').innerText = "Mã NV: " + this.state.id;
                 this.nav('home');
             },
 
-            nav(page) {
-                location.hash = "#/" + page;
-            },
+            nav(p) { location.hash = "#/" + p; },
 
-            handleRouting() {
-                const hash = location.hash.replace("#/", "") || "login";
-                if (hash === "login" && this.state.name) return this.nav('home');
-                
+            routing() {
+                const h = location.hash.replace("#/", "") || "login";
+                if(h === "login" && this.state.name) return this.nav('home');
                 document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
                 document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                
-                const activePage = document.getElementById('page-' + hash);
-                if (activePage) activePage.classList.add('active');
-                const activeNav = document.getElementById('nav-' + hash);
-                if (activeNav) activeNav.classList.add('active');
-
-                if (hash === "phanca") this.loadPhanCa();
-                if (hash === "hoso") this.loadProfile();
-                if (hash === "home") {
-                    const last = localStorage.getItem('last_check_time');
-                    if (last) document.getElementById('home-last-check').innerText = "Check-in gần nhất: " + last;
+                if(document.getElementById('page-'+h)) document.getElementById('page-'+h).classList.add('active');
+                if(document.getElementById('nav-'+h)) document.getElementById('nav-'+h).classList.add('active');
+                if(h === "phanca") this.loadPhanCa();
+                if(h === "hoso") this.loadProfile();
+                if(h === "home") {
+                    const l = localStorage.getItem('last_check_time');
+                    if(l) document.getElementById('home-last-check').innerText = "Lần cuối: " + l;
                 }
             },
 
-            logout() {
-                if(confirm("Bạn muốn đăng xuất?")) { localStorage.clear(); location.href = ""; }
+            logout() { if(confirm("Đăng xuất?")) { localStorage.clear(); location.href = ""; } },
+
+            // --- CAMERA & GPS LOGIC ---
+            async startCamera() {
+                const st = document.getElementById('checkin-status');
+                st.innerText = "📍 Đang lấy địa chỉ thực tế...";
+                try {
+                    const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, {timeout:8000}));
+                    this.state.loc = `${pos.coords.latitude}, ${pos.coords.longitude}`;
+                    
+                    // Reverse Geocoding (Lấy địa chỉ từ tọa độ)
+                    const resAddr = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&addressdetails=1`);
+                    const addrData = await resAddr.json();
+                    this.state.addr = addrData.display_name || this.state.loc;
+                    st.innerText = "✅ Đã nhận diện địa chỉ: " + this.state.addr;
+
+                    this.openStream();
+                } catch(e) { alert("Vui lòng cấp quyền Vị trí & Camera!"); }
             },
 
-            // --- CHECK-IN LOGIC ---
-            async startCheckinFlow() {
-                try {
-                    document.getElementById('checkin-status').innerText = "Đang lấy vị trí GPS...";
-                    const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, {timeout: 8000}));
-                    this.state.location = `${pos.coords.latitude}, ${pos.coords.longitude}`;
-                    
-                    document.getElementById('checkin-status').innerText = "Đang mở camera...";
-                    this.state.currentStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
-                    document.getElementById('camera-stream').srcObject = this.state.currentStream;
-                    document.getElementById('overlay-camera').classList.add('active');
-                } catch(e) { alert("Lỗi: Vui lòng cấp quyền Camera và GPS!"); }
+            async openStream() {
+                if(this.state.stream) this.state.stream.getTracks().forEach(t => t.stop());
+                this.state.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: this.state.camMode } });
+                document.getElementById('video-preview').srcObject = this.state.stream;
+                document.getElementById('overlay-camera').classList.add('active');
+            },
+
+            switchCamera() {
+                this.state.camMode = (this.state.camMode === 'user' ? 'environment' : 'user');
+                this.openStream();
             },
 
             takePhoto() {
-                const video = document.getElementById('camera-stream');
-                const canvas = document.createElement('canvas');
-                canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-                canvas.getContext('2d').drawImage(video, 0, 0);
-                const photo = canvas.toDataURL('image/jpeg', 0.5);
-                
-                this.state.currentStream.getTracks().forEach(t => t.stop());
-                document.getElementById('overlay-camera').classList.remove('active');
-                this.submitAttendance(photo);
+                const v = document.getElementById('video-preview');
+                const c = document.createElement('canvas');
+                c.width = v.videoWidth; c.height = v.videoHeight;
+                c.getContext('2d').drawImage(v, 0, 0);
+                const photo = c.toDataURL('image/jpeg', 0.5);
+                this.closeCamera();
+                this.submitCheckin(photo);
             },
 
-            submitAttendance(photo) {
-                document.getElementById('checkin-status').innerText = "Đang gửi dữ liệu lên máy chủ...";
+            closeCamera() {
+                if(this.state.stream) this.state.stream.getTracks().forEach(t => t.stop());
+                document.getElementById('overlay-camera').classList.remove('active');
+            },
+
+            submitCheckin(photo) {
+                const st = document.getElementById('checkin-status');
+                st.innerText = "⏳ Đang gửi dữ liệu...";
                 const time = new Date().toLocaleString('vi-VN');
-                const payload = { name: this.state.name, id: this.state.id, type: "Check-in", timestamp: time, location: this.state.location, photo: photo };
+                const payload = { name: this.state.name, id: this.state.id, type: "Check-in", timestamp: time, location: this.state.addr, photo: photo };
 
                 fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload), mode: 'no-cors' })
                     .then(() => {
-                        alert("Ghi nhận thành công!");
+                        alert("Thành công!");
                         localStorage.setItem('last_check_time', time);
-                        document.getElementById('checkin-status').innerText = "ĐÃ HOÀN TẤT CHECK-IN";
+                        st.innerText = "Ghi nhận lúc: " + time;
                         this.nav('home');
-                    }).catch(() => alert("Gửi thất bại!"));
+                    });
             },
 
             // --- PHÂN CA LOGIC ---
             async loadPhanCa() {
-                this.renderPhanCaList();
-                this.startCountdown();
+                this.renderPhanCa();
+                this.startTimer();
                 const r = await fetch(`${SCRIPT_URL}?action=get_shift_data`);
                 this.state.shiftCounts = await r.json();
-                this.renderPhanCaList();
+                this.renderPhanCa();
             },
 
-            renderPhanCaList() {
+            renderPhanCa() {
                 let now = new Date(); now.setHours(0,0,0,0);
-                let daysToSun = now.getDay() === 0 ? 0 : 7 - now.getDay();
+                let dToSun = now.getDay() === 0 ? 0 : 7 - now.getDay();
                 let start = new Date(now); start.setDate(now.getDate() + 1);
-                let end = new Date(now); end.setDate(now.getDate() + daysToSun + 7);
-                let sunThis = new Date(now); sunThis.setDate(now.getDate() + daysToSun);
+                let end = new Date(now); end.setDate(now.getDate() + dToSun + 7);
+                let sunT = new Date(now); sunT.setDate(now.getDate() + dToSun);
 
                 let html = ''; let curr = new Date(start); let i = 0;
                 while(curr <= end) {
-                    let dateStr = `${("0"+curr.getDate()).slice(-2)}/${("0"+(curr.getMonth()+1)).slice(-2)}/${curr.getFullYear()}`;
-                    let dName = curr.getDay() === 0 ? 'Chủ Nhật' : 'Thứ ' + (curr.getDay() + 1);
-                    let counts = this.state.shiftCounts[dateStr] || {};
-                    let c8 = counts['08:00-17:00'] || 0;
-
-                    html += `
-                        <div class="day-item">
-                            <span class="tag">${curr <= sunThis ? 'Tuần này' : 'Tuần tới'}</span>
-                            <h4>📅 ${dName} (${curr.getDate()}/${curr.getMonth()+1})</h4>
-                            <select class="select-native" id="s_${i}" onchange="app.toggleAreaSelect(${i})">
-                                <option value="">-- Chọn ca --</option>
-                                <option value="06:00-15:00">06:00-15:00</option>
-                                <option value="08:00-17:00" ${c8 >= 252 ? 'disabled' : ''}>08:00-17:00 (${c8}/252)</option>
-                                <option value="13:00-22:00">13:00-22:00</option>
-                                <option value="OFF" style="color:red">OFF (Nghỉ)</option>
-                            </select>
-                            <select class="select-native" id="a_${i}" disabled>
-                                <option value="">-- Chọn khu vực --</option>
-                                ${AREAS.map(a => `<option value="${a}">${a}</option>`).join('')}
-                            </select>
-                        </div>
-                    `;
+                    let dStr = `${("0"+curr.getDate()).slice(-2)}/${("0"+(curr.getMonth()+1)).slice(-2)}/${curr.getFullYear()}`;
+                    let dN = curr.getDay() === 0 ? 'Chủ Nhật' : 'Thứ ' + (curr.getDay() + 1);
+                    let c8 = (this.state.shiftCounts[dStr] && this.state.shiftCounts[dStr]['08:00-17:00']) || 0;
+                    html += `<div class="day-box">
+                        <span style="font-size:0.6rem; background:#fef9c3; padding:2px 6px; border-radius:4px; font-weight:800;">${curr <= sunT ? 'TUẦN NÀY' : 'TUẦN TỚI'}</span>
+                        <h4 style="margin:5px 0;">${dN} (${curr.getDate()}/${curr.getMonth()+1})</h4>
+                        <select class="native-select" id="s_${i}" onchange="document.getElementById('a_${i}').disabled = (this.value===''||this.value==='OFF')">
+                            <option value="">-- Chọn ca --</option>
+                            <option value="06:00-15:00">06:00-15:00</option>
+                            <option value="08:00-17:00" ${c8 >= 252 ? 'disabled' : ''}>08:00-17:00 (${c8}/252)</option>
+                            <option value="13:00-22:00">13:00-22:00</option>
+                            <option value="OFF" style="color:red">OFF (Nghỉ)</option>
+                        </select>
+                        <select class="native-select" id="a_${i}" disabled><option value="">-- Khu vực --</option>${AREAS.map(a => `<option value="${a}">${a}</option>`).join('')}</select>
+                    </div>`;
                     curr.setDate(curr.getDate() + 1); i++;
                 }
                 document.getElementById('phanca-list').innerHTML = html;
-                window.dayCount = i;
+                window.dCnt = i;
             },
 
-            toggleAreaSelect(i) {
-                const s = document.getElementById(`s_${i}`).value;
-                document.getElementById(`a_${i}`).disabled = (s === "" || s === "OFF");
-            },
-
-            startCountdown() {
-                const timer = document.getElementById('phanca-lockdown');
-                if(this.timerInt) clearInterval(this.timerInt);
-                this.timerInt = setInterval(() => {
+            startTimer() {
+                const el = document.getElementById('phanca-timer');
+                if(this.tInt) clearInterval(this.tInt);
+                this.tInt = setInterval(() => {
                     let now = new Date(); let target = new Date();
                     let dToS = now.getDay() === 0 ? 0 : 7 - now.getDay();
                     target.setDate(now.getDate() + dToS); target.setHours(20,0,0,0);
-                    if(now > target) { timer.innerText = "Đã khóa đăng ký tuần tới!"; }
+                    if(now > target) el.innerText = "Hết giờ đăng ký tuần tới!";
                     else {
                         let diff = target - now; let h = Math.floor(diff/3600000); let m = Math.floor((diff%3600000)/60000); let s = Math.floor((diff%60000)/1000);
-                        timer.innerText = `Đóng đăng ký tuần tới sau: ${h}h ${m}p ${s}s`;
+                        el.innerText = `Đóng tuần tới sau: ${h}h ${m}p ${s}s`;
                     }
                 }, 1000);
             },
 
             reviewSchedule() {
                 this.state.schedules = []; let html = '';
-                for(let i=0; i<window.dayCount; i++) {
-                    const s = document.getElementById(`s_${i}`).value;
-                    const a = document.getElementById(`a_${i}`).value;
-                    if(!s || (s !== "OFF" && !a)) return alert("Vui lòng chọn đủ Ca và Khu vực!");
+                for(let i=0; i<window.dCnt; i++){
+                    const s = document.getElementById(`s_${i}`).value, a = document.getElementById(`a_${i}`).value;
+                    if(!s || (s!=='OFF' && !a)) return alert("Chọn đủ Ca & Khu vực!");
                     this.state.schedules.push({ date: "", shift: s, area: a || "Nghỉ" });
-                    html += `<p><strong>${s}</strong>: ${a || 'OFF'}</p>`;
+                    html += `<p style="margin-bottom:5px; border-bottom:1px dashed #eee;">${s}: ${a||'OFF'}</p>`;
                 }
                 document.getElementById('review-content').innerHTML = html;
                 document.getElementById('overlay-review').classList.add('active');
             },
 
-            closeReview() { document.getElementById('overlay-review').classList.remove('active'); },
-
-            async finalSubmitSchedule() {
+            async finalSubmit() {
                 const btn = document.getElementById('btn-final-chot');
                 btn.disabled = true; btn.innerText = "ĐANG GỬI...";
-                
-                // Re-calculate dates for submission
                 let now = new Date(); now.setHours(0,0,0,0);
                 let start = new Date(now); start.setDate(now.getDate() + 1);
-                this.state.schedules.forEach((item, idx) => {
+                this.state.schedules.forEach((it, idx) => {
                     let d = new Date(start); d.setDate(start.getDate() + idx);
-                    item.date = `${("0"+d.getDate()).slice(-2)}/${("0"+(d.getMonth()+1)).slice(-2)}/${d.getFullYear()}`;
+                    it.date = `${("0"+d.getDate()).slice(-2)}/${("0"+(d.getMonth()+1)).slice(-2)}/${d.getFullYear()}`;
                 });
-
-                const payload = { action: "submit_schedule", driverName: this.state.name, driverId: this.state.id, schedules: this.state.schedules };
                 try {
-                    await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
-                    alert("Chốt lịch thành công!");
-                    location.reload();
-                } catch(e) { alert("Lỗi gửi dữ liệu!"); btn.disabled = false; btn.innerText = "XÁC NHẬN CHỐT"; }
+                    await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action:"submit_schedule", driverName:this.state.name, driverId:this.state.id, schedules:this.state.schedules }) });
+                    alert("Thành công!"); location.reload();
+                } catch(e) { alert("Lỗi!"); btn.disabled = false; btn.innerText = "CHỐT NGAY"; }
             },
 
-            // --- PROFILE LOGIC ---
             async loadProfile() {
-                document.getElementById('prof-name').innerText = this.state.name;
-                document.getElementById('prof-sap').innerText = "Mã NV: " + this.state.id;
-                const hList = document.getElementById('history-list');
-                const sList = document.getElementById('schedule-list');
-                hList.innerHTML = "Đang tải..."; sList.innerHTML = "Đang tải...";
+                document.getElementById('p-name').innerText = this.state.name; document.getElementById('p-id').innerText = this.state.id;
+                const hL = document.getElementById('p-history'), sL = document.getElementById('p-schedule');
+                hL.innerHTML = "Đang tải..."; sL.innerHTML = "Đang tải...";
                 try {
-                    const [resH, resS] = await Promise.all([
-                        fetch(`${SCRIPT_URL}?action=history&id=${this.state.id}`),
-                        fetch(`${SCRIPT_URL}?action=my_schedule&id=${this.state.id}`)
-                    ]);
-                    const dataH = await resH.json(); const dataS = await resS.json();
-                    hList.innerHTML = dataH.reverse().slice(0, 10).map(r => `<div class="card" style="padding:10px; margin-bottom:5px; font-size:0.75rem; display:flex; justify-content:space-between;"><span>${r[0]}</span><strong>${r[3]}</strong></div>`).join('') || "Trống";
-                    sList.innerHTML = dataS.reverse().slice(0, 10).map(r => `<div class="card" style="padding:10px; margin-bottom:5px; font-size:0.75rem;"><div><strong>Ngày: ${r[4]}</strong> - ${r[5]}</div><div style="color:var(--text-light)">${r[3]}</div></div>`).join('') || "Trống";
-                } catch(e) { hList.innerHTML = "Lỗi!"; sList.innerHTML = "Lỗi!"; }
+                    const [rH, rS] = await Promise.all([fetch(`${SCRIPT_URL}?action=history&id=${this.state.id}`), fetch(`${SCRIPT_URL}?action=my_schedule&id=${this.state.id}`)]);
+                    const dH = await rH.json(), dS = await rS.json();
+                    hL.innerHTML = dH.reverse().slice(0, 10).map(r => `<div class="card" style="padding:10px; margin-bottom:5px; font-size:0.75rem; display:flex; justify-content:space-between;"><span>${r[0]}</span><strong>${r[3]}</strong></div>`).join('') || "Trống";
+                    sL.innerHTML = dS.reverse().slice(0, 10).map(r => `<div class="card" style="padding:10px; margin-bottom:5px; font-size:0.75rem;"><div><strong>Ngày: ${r[4]}</strong> - ${r[5]}</div><div style="color:var(--text-light)">${r[3]}</div></div>`).join('') || "Trống";
+                } catch(e) { hL.innerHTML = "Lỗi!"; sL.innerHTML = "Lỗi!"; }
             }
         };
-
         app.init();
     </script>
 </body>
