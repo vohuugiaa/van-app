@@ -531,7 +531,7 @@
                 <button class="btn-action"
                     style="width:65px; height:65px; border-radius:50%; background:#f1f5f9; color:#333;"
                     onclick="app.switchCamera()">🔄</button>
-                <div class="btn-shutter" onclick="app.takePhoto()"></div>
+                <div id="btn-snap" class="btn-shutter" onclick="app.takePhoto()"></div>
                 <button class="btn-action"
                     style="width:65px; height:65px; border-radius:50%; background:#fee2e2; color:red;"
                     onclick="app.closeCamera()">✖</button>
@@ -658,19 +658,19 @@
 
             async startCamera() {
                 const st = document.getElementById('checkin-status');
+                const btnSnap = document.getElementById('btn-snap');
                 st.innerText = "📍 Đang xác định vị trí...";
-                this.state.addr = "Đang lấy vị trí...";
+                st.style.color = "var(--primary)";
+                this.state.addr = "";
+                if (btnSnap) btnSnap.style.opacity = "0.3"; 
+                if (btnSnap) btnSnap.style.pointerEvents = "none";
 
-                // Cấu hình GPS chính xác hơn
-                const gpsOptions = { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 };
+                const gpsOptions = { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 };
 
                 navigator.geolocation.getCurrentPosition(async pos => {
                     const lat = pos.coords.latitude.toFixed(6);
                     const lon = pos.coords.longitude.toFixed(6);
-
-                    // Gán tạm tọa độ trước (đề phòng không lấy được địa chỉ)
                     this.state.addr = `Tọa độ: ${lat}, ${lon}`;
-                    st.innerText = "✅ Đã lấy tọa độ, đang tìm địa chỉ...";
 
                     try {
                         const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`, {
@@ -680,11 +680,18 @@
                         this.state.addr = data.display_name || `Tọa độ: ${lat}, ${lon}`;
                         st.innerText = "✅ Vị trí: " + (data.address.road || data.display_name.split(',')[0]);
                     } catch (e) {
-                        st.innerText = "✅ Đã lấy tọa độ (Lỗi tìm địa chỉ)";
+                        st.innerText = "✅ Đã lấy tọa độ";
                     }
+                    if (btnSnap) {
+                        btnSnap.style.opacity = "1";
+                        btnSnap.style.pointerEvents = "auto";
+                    }
+                    st.style.color = "green";
                 }, err => {
-                    st.innerText = "❌ Lỗi GPS: Hãy bật định vị!";
-                    this.state.addr = "Không lấy được vị trí (Người dùng từ chối hoặc lỗi GPS)";
+                    st.innerText = "❌ Lỗi GPS: Hãy cho phép truy cập vị trí!";
+                    st.style.color = "red";
+                    this.state.addr = "";
+                    this.showToast("Bạn cần cho phép truy cập vị trí để điểm danh!", "error");
                 }, gpsOptions);
 
                 try {
@@ -704,6 +711,10 @@
             },
             closeCamera() { if (this.state.stream) this.state.stream.getTracks().forEach(t => t.stop()); document.getElementById('overlay-camera').classList.remove('active'); },
             async submitCheckin(photo) {
+                if (!this.state.addr) {
+                    this.showToast("Vui lòng chờ lấy vị trí GPS...", "warning");
+                    return;
+                }
                 const payload = { id: this.state.id, name: this.state.name, type: "Check-in", timestamp: new Date().toLocaleString('vi-VN'), location: this.state.addr, photo: photo };
                 await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload), mode: 'no-cors' });
                 this.showToast("Điểm danh thành công!", "success");
