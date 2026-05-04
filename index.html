@@ -11,437 +11,453 @@
         :root {
             --primary: #1abc9c;
             --primary-dark: #16a085;
-            --secondary: #3498db;
-            --danger: #e74c3c;
-            --warning: #f1c40f;
-            --bg: #f0f2f5;
+            --bg: #f8fafc;
             --card-bg: #ffffff;
-            --text: #2c3e50;
-            --text-muted: #7f8c8d;
-            --shadow: 0 10px 25px rgba(0,0,0,0.05);
+            --text: #1e293b;
+            --text-light: #64748b;
+            --nav-height: 70px;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg); color: var(--text); overflow-x: hidden; }
-        .hidden { display: none !important; }
-        .container { max-width: 500px; margin: 0 auto; min-height: 100vh; background: var(--bg); position: relative; padding-bottom: 30px; }
+        body { background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; }
+        
+        /* Layout Structure */
+        .container { max-width: 500px; margin: 0 auto; height: 100vh; display: flex; flex-direction: column; background: white; position: relative; }
+        .page { flex: 1; overflow-y: auto; display: none; padding: 20px; padding-bottom: calc(var(--nav-height) + 20px); animation: fadeIn 0.3s ease; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Login Screen */
-        #login-screen { padding: 40px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
-        .login-card { background: white; width: 100%; padding: 30px; border-radius: 30px; box-shadow: var(--shadow); text-align: center; }
-        .login-card h1 { font-weight: 800; font-size: 1.8rem; margin-bottom: 10px; color: var(--primary-dark); }
-        .input-group { margin-bottom: 20px; text-align: left; }
-        .input-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: var(--text-muted); }
-        .input-group input { width: 100%; padding: 15px; border-radius: 15px; border: 1px solid #ddd; outline: none; font-size: 1rem; transition: 0.3s; }
-        .input-group input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(26,188,156,0.1); }
-        .btn-login { width: 100%; padding: 18px; border-radius: 15px; border: none; background: var(--primary); color: white; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: 0.3s; }
-        .btn-login:active { transform: scale(0.98); }
+        /* Header */
+        .page-header { margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between; }
+        .page-header h1 { font-size: 1.4rem; font-weight: 800; color: var(--text); }
+        .back-btn { background: #f1f5f9; border: none; padding: 8px 12px; border-radius: 10px; font-weight: 700; font-size: 0.8rem; cursor: pointer; }
 
-        /* Main App Header */
-        .header { background: white; padding: 25px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom-left-radius: 30px; border-bottom-right-radius: 30px; box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100; }
-        .user-info { display: flex; align-items: center; gap: 15px; }
-        .avatar { width: 50px; height: 50px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; }
-        .user-text h2 { font-size: 1rem; font-weight: 800; }
-        .user-text p { font-size: 0.8rem; color: var(--text-muted); }
-        .btn-logout { background: #fef2f2; color: var(--danger); border: none; padding: 10px 15px; border-radius: 12px; font-weight: 700; font-size: 0.8rem; }
+        /* Bottom Nav */
+        .bottom-nav { position: absolute; bottom: 0; width: 100%; height: var(--nav-height); background: white; display: flex; border-top: 1px solid #f1f5f9; box-shadow: 0 -5px 15px rgba(0,0,0,0.03); z-index: 1000; }
+        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: var(--text-light); transition: 0.2s; cursor: pointer; }
+        .nav-item span:first-child { font-size: 1.5rem; margin-bottom: 4px; transition: 0.2s; }
+        .nav-item span:last-child { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .nav-item.active { color: var(--primary); }
+        .nav-item.active span:first-child { transform: translateY(-5px); font-size: 1.7rem; }
 
-        /* Content Sections */
-        .content { padding: 20px; }
-        .warning-banner { background: #fee2e2; border-left: 5px solid var(--danger); padding: 15px; border-radius: 15px; margin-bottom: 20px; font-size: 0.85rem; line-height: 1.5; color: #991b1b; }
+        /* Login Page */
+        #login-page { background: white; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px; }
+        .login-card { width: 100%; }
+        .login-card h2 { font-size: 2rem; font-weight: 900; color: var(--primary); margin-bottom: 30px; }
+        .input-group { width: 100%; text-align: left; margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-light); margin-bottom: 8px; text-transform: uppercase; }
+        .input-group input { width: 100%; padding: 16px; border-radius: 16px; border: 2px solid #f1f5f9; background: #f8fafc; font-size: 1rem; outline: none; transition: 0.3s; }
+        .input-group input:focus { border-color: var(--primary); background: white; }
+        .btn-action { width: 100%; padding: 18px; border-radius: 16px; border: none; background: var(--primary); color: white; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: 0.3s; }
+        .btn-action:active { transform: scale(0.98); }
 
-        /* Check-in Card */
-        .check-card { background: white; border-radius: 25px; padding: 25px; box-shadow: var(--shadow); margin-bottom: 25px; text-align: center; }
-        .check-card h3 { font-size: 0.9rem; font-weight: 700; color: var(--text-muted); margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; }
-        .status-on { background: #e8f8f5; color: var(--primary-dark); }
-        .btn-main-check { width: 100%; padding: 25px; border-radius: 20px; border: 2px solid #e2e8f0; background: #f8fafc; cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 15px; }
-        .btn-main-check:active { background: #f1f5f9; border-color: var(--primary); }
-        .btn-main-check span:first-child { font-size: 2.5rem; }
-        .btn-main-check span:last-child { font-weight: 800; font-size: 1.1rem; color: var(--primary-dark); }
-        .last-time { font-size: 0.8rem; color: var(--text-muted); }
+        /* Components */
+        .card { background: #f8fafc; border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid #f1f5f9; }
+        .warning-strip { background: #fff1f2; color: #991b1b; padding: 12px; border-radius: 12px; font-size: 0.8rem; line-height: 1.4; margin-bottom: 20px; }
+        
+        /* Check-in Page Specific */
+        .checkin-hero { height: 250px; background: #f1f5f9; border-radius: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; cursor: pointer; transition: 0.3s; }
+        .checkin-hero:active { background: #e2e8f0; }
+        .checkin-hero .icon { font-size: 4rem; }
+        .checkin-hero h3 { font-weight: 800; color: var(--primary-dark); }
 
-        /* Grid Menu */
-        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
-        .menu-item { background: white; padding: 20px; border-radius: 20px; box-shadow: var(--shadow); border: 1px solid #f1f5f9; text-align: center; cursor: pointer; transition: 0.2s; text-decoration: none; color: inherit; }
-        .menu-item:active { transform: scale(0.95); background: #f8fafc; }
-        .menu-item .icon { font-size: 1.8rem; margin-bottom: 10px; display: block; }
-        .menu-item span { font-size: 0.85rem; font-weight: 700; display: block; }
+        /* Scheduling Page Specific */
+        .day-item { background: white; border: 1px solid #f1f5f9; border-radius: 18px; padding: 18px; margin-bottom: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .day-item h4 { font-size: 0.95rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .day-item .tag { padding: 4px 8px; border-radius: 6px; font-size: 0.65rem; font-weight: 800; background: #fef9c3; color: #854d0e; }
+        .select-native { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 0.9rem; margin-bottom: 8px; outline: none; appearance: none; background: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") no-repeat right 12px center/16px; }
 
-        /* Modals */
-        .modal-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; display: none; align-items: flex-end; justify-content: center; }
-        .modal-screen.active { display: flex; }
-        .modal-body { background: white; width: 100%; max-width: 500px; border-top-left-radius: 30px; border-top-right-radius: 30px; max-height: 85vh; display: flex; flex-direction: column; animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .modal-header { padding: 20px 25px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-        .modal-header h3 { font-size: 1.1rem; font-weight: 800; }
-        .modal-scroll { padding: 20px; overflow-y: auto; flex: 1; }
-        .close-btn { background: #f1f5f9; border: none; width: 35px; height: 35px; border-radius: 50%; font-weight: 800; cursor: pointer; }
+        /* Modal Overlay */
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .overlay.active { display: flex; }
+        .modal-card { background: white; width: 100%; max-width: 400px; border-radius: 25px; overflow: hidden; }
 
-        /* Scheduling Elements */
-        .countdown-strip { background: var(--danger); color: white; padding: 10px; text-align: center; font-size: 0.8rem; font-weight: 700; }
-        .day-box { background: #f8fafc; border: 1px solid #edf2f7; border-radius: 15px; padding: 15px; margin-bottom: 15px; }
-        .day-box h4 { font-size: 0.95rem; color: var(--secondary); margin-bottom: 10px; font-weight: 700; }
-        .native-select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; font-size: 0.9rem; margin-bottom: 8px; background: white; outline: none; }
-        .native-select:focus { border-color: var(--primary); }
-        .tag-week { background: var(--warning); color: black; padding: 4px 10px; border-radius: 6px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; display: inline-block; }
-
-        /* Camera Modal */
-        #camera-modal { align-items: center; }
-        .camera-container { width: 90%; max-width: 400px; background: black; border-radius: 25px; overflow: hidden; position: relative; }
-        #video-preview { width: 100%; aspect-ratio: 3/4; object-fit: cover; }
-        .camera-controls { padding: 20px; background: white; display: flex; justify-content: center; }
-        .btn-capture { width: 70px; height: 70px; border-radius: 50%; border: 5px solid #ddd; background: white; cursor: pointer; position: relative; }
-        .btn-capture::after { content: ''; position: absolute; top: 5px; left: 5px; right: 5px; bottom: 5px; background: var(--danger); border-radius: 50%; }
+        /* Countdown Strip */
+        .countdown-strip { background: #ef4444; color: white; padding: 8px; text-align: center; font-size: 0.75rem; font-weight: 700; margin-bottom: 15px; border-radius: 8px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- 1. LOGIN SCREEN -->
-        <div id="login-screen">
-            <div class="login-card">
-                <h1>VAN APP</h1>
-                <p style="color: var(--text-muted); margin-bottom: 30px;">Hệ thống quản lý tài xế chuyên nghiệp</p>
-                <div class="input-group">
-                    <label>HỌ VÀ TÊN</label>
-                    <input type="text" id="inp-name" placeholder="Ví dụ: Nguyễn Văn A">
-                </div>
-                <div class="input-group">
-                    <label>MÃ NHÂN VIÊN (SAP)</label>
-                    <input type="number" id="inp-id" placeholder="Nhập mã nhân viên">
-                </div>
-                <button class="btn-login" onclick="handleLogin()">VÀO ỨNG DỤNG</button>
-            </div>
-        </div>
-
-        <!-- 2. MAIN APP SCREEN -->
-        <div id="app-screen" class="hidden">
-            <header class="header">
-                <div class="user-info">
-                    <div class="avatar" id="user-avatar">?</div>
-                    <div class="user-text">
-                        <h2 id="display-name">Tài xế</h2>
-                        <p id="display-id">Mã NV: ---</p>
+        
+        <!-- PAGE: LOGIN -->
+        <div id="page-login" class="page active">
+            <div id="login-page">
+                <div class="login-card">
+                    <div style="font-size: 4rem; margin-bottom: 20px;">🚐</div>
+                    <h2>VanApp Login</h2>
+                    <div class="input-group">
+                        <label>Họ và tên</label>
+                        <input type="text" id="login-name" placeholder="Ví dụ: Nguyễn Văn Sơn">
                     </div>
-                </div>
-                <button class="btn-logout" onclick="handleLogout()">Đăng xuất</button>
-            </header>
-
-            <div class="content">
-                <div class="warning-banner">
-                    <strong>⚠️ LƯU Ý:</strong> Tài xế bắt buộc phải đăng ký phân ca và check-in đúng giờ. Trường hợp sai quy định tài xế tự chịu trách nhiệm.
-                </div>
-
-                <!-- Attendance Section -->
-                <div class="check-card">
-                    <h3><span class="status-badge status-on" id="work-status">TRẠNG THÁI: SẴN SÀNG</span></h3>
-                    <button class="btn-main-check" onclick="startCheckin()">
-                        <span>📍</span>
-                        <span>BẮT ĐẦU CA (CHECK-IN)</span>
-                    </button>
-                    <div class="last-time" id="last-check-text">Chưa ghi nhận hôm nay</div>
-                </div>
-
-                <!-- Grid Menu -->
-                <div class="menu-grid">
-                    <div class="menu-item" onclick="showScheduling()">
-                        <span class="icon">📅</span>
-                        <span>Đăng ký Phân ca</span>
+                    <div class="input-group">
+                        <label>Mã nhân viên</label>
+                        <input type="number" id="login-id" placeholder="Nhập mã SAP">
                     </div>
-                    <div class="menu-item" onclick="showProfile()">
-                        <span class="icon">👤</span>
-                        <span>Hồ sơ & Lịch sử</span>
-                    </div>
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSdeMUMCp55KATYMsYSpacilv4HnKiGKEsmbMEdRTyLS4wKc-w/viewform?usp=dialog" class="menu-item" target="_blank">
-                        <span class="icon">📝</span>
-                        <span>Đăng ký Nghỉ</span>
-                    </a>
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSe5vAY1wYKI_HoOzvgB9QGjHmmfLGyEqn2iFIFzmlBNoMjXAQ/viewform?usp=dialog" class="menu-item" target="_blank">
-                        <span class="icon">💡</span>
-                        <span>Góp ý / Phản hồi</span>
-                    </a>
-                </div>
-
-                <!-- Hotline Section -->
-                <div style="background: white; padding: 20px; border-radius: 20px; box-shadow: var(--shadow);">
-                    <h4 style="font-size: 0.9rem; margin-bottom: 15px; color: var(--text-muted);">Hotline Hỗ Trợ:</h4>
-                    <div style="display: flex; gap: 10px;">
-                        <a href="tel:1900232389" style="flex: 1; background: #f8fafc; padding: 12px; border-radius: 12px; text-decoration: none; text-align: center; color: var(--secondary); font-weight: 700; font-size: 0.8rem; border: 1px solid #edf2f7;">🚑 Cứu hộ VF</a>
-                        <a href="tel:02471096839" style="flex: 1; background: #f8fafc; padding: 12px; border-radius: 12px; text-decoration: none; text-align: center; color: var(--secondary); font-weight: 700; font-size: 0.8rem; border: 1px solid #edf2f7;">📞 CSKH</a>
-                    </div>
-                </div>
-                
-                <p style="text-align: center; margin-top: 20px; font-size: 0.7rem; color: #cbd5e1;">Phiên bản 2.0 - © VanApp 2026</p>
-            </div>
-        </div>
-
-        <!-- 3. MODALS -->
-        <!-- Scheduling Modal -->
-        <div id="modal-scheduling" class="modal-screen">
-            <div class="modal-body">
-                <div class="modal-header">
-                    <h3>Đăng ký phân ca</h3>
-                    <button class="close-btn" onclick="closeModal('modal-scheduling')">&times;</button>
-                </div>
-                <div id="lockdown-timer" class="countdown-strip">Đang tải hạn chót...</div>
-                <div class="modal-scroll" id="calendar-list">
-                    <!-- JS Renders Here -->
-                </div>
-                <div style="padding: 20px; border-top: 1px solid #eee;">
-                    <button class="btn-login" id="btn-submit-sch" onclick="confirmSchedule()">TIẾP TỤC & XÁC NHẬN</button>
+                    <button class="btn-action" onclick="app.login()">ĐĂNG NHẬP NGAY</button>
+                    <p style="margin-top: 20px; font-size: 0.8rem; color: var(--text-light);">Phiên bản 3.0 Pro</p>
                 </div>
             </div>
         </div>
 
-        <!-- Profile Modal -->
-        <div id="modal-profile" class="modal-screen">
-            <div class="modal-body">
-                <div class="modal-header">
-                    <h3>Hồ sơ & Lịch sử</h3>
-                    <button class="close-btn" onclick="closeModal('modal-profile')">&times;</button>
+        <!-- PAGE: HOME (DASHBOARD) -->
+        <div id="page-home" class="page">
+            <div class="page-header">
+                <div>
+                    <h1 id="user-name">---</h1>
+                    <p style="font-size: 0.8rem; color: var(--text-light);" id="user-sap">Mã NV: ---</p>
                 </div>
-                <div class="modal-scroll">
-                    <div style="background: #f8fafc; padding: 20px; border-radius: 20px; margin-bottom: 20px;">
-                        <p style="margin-bottom: 5px;"><strong>Họ tên:</strong> <span id="p-name">---</span></p>
-                        <p><strong>Mã SAP:</strong> <span id="p-id">---</span></p>
+                <button class="back-btn" onclick="app.logout()" style="color: #ef4444;">Đăng xuất</button>
+            </div>
+            
+            <div class="card" style="background: linear-gradient(135deg, #1abc9c, #16a085); color: white; border: none;">
+                <h3 style="font-size: 0.9rem; margin-bottom: 5px;">📍 Trạng thái hôm nay</h3>
+                <p style="font-size: 0.8rem; opacity: 0.9;" id="home-last-check">Chưa ghi nhận Check-in</p>
+            </div>
+
+            <h3 style="font-size: 1rem; margin-bottom: 15px;">Tiện ích nhanh</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="card" style="margin:0; text-align:center; padding: 25px;" onclick="app.nav('phanca')">
+                    <span style="font-size: 2rem; display:block; margin-bottom:10px;">📅</span>
+                    <span style="font-size: 0.8rem; font-weight:700;">Đăng ký Phân ca</span>
+                </div>
+                <div class="card" style="margin:0; text-align:center; padding: 25px;" onclick="app.nav('hoso')">
+                    <span style="font-size: 2rem; display:block; margin-bottom:10px;">👤</span>
+                    <span style="font-size: 0.8rem; font-weight:700;">Hồ sơ cá nhân</span>
+                </div>
+            </div>
+            
+            <div style="margin-top: 30px;">
+                <h3 style="font-size: 1rem; margin-bottom: 15px;">Hỗ trợ kỹ thuật</h3>
+                <div class="card" style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+                    <span style="font-size: 1.5rem;">📞</span>
+                    <div>
+                        <div style="font-size: 0.8rem; font-weight: 700;">Hotline Cứu hộ</div>
+                        <a href="tel:1900232389" style="font-size: 0.9rem; color: var(--secondary); text-decoration:none;">1900 23 23 89</a>
                     </div>
-                    <h4 style="font-size: 0.9rem; margin-bottom: 10px;">🕒 10 Lượt Check-in cuối:</h4>
-                    <div id="p-history" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;"></div>
-                    
-                    <h4 style="font-size: 0.9rem; margin-bottom: 10px;">📅 Lịch làm việc đã chốt:</h4>
-                    <div id="p-schedule" style="display: flex; flex-direction: column; gap: 8px;"></div>
                 </div>
             </div>
         </div>
 
-        <!-- Camera Modal -->
-        <div id="modal-camera" class="modal-screen">
-            <div class="camera-container">
-                <video id="video-preview" autoplay playsinline></video>
-                <div class="camera-controls">
-                    <button class="btn-capture" onclick="takePhoto()"></button>
-                </div>
-                <p style="color: white; text-align: center; padding: 10px; font-size: 0.8rem;">Vui lòng giữ điện thoại thẳng mặt</p>
+        <!-- PAGE: CHECK-IN -->
+        <div id="page-checkin" class="page">
+            <div class="page-header">
+                <h1>Check-in ca làm</h1>
+                <button class="back-btn" onclick="app.nav('home')">🏠 Trang chủ</button>
             </div>
-            <canvas id="photo-canvas" style="display:none;"></canvas>
+            <div class="warning-strip">Vui lòng đứng ở vị trí có sóng GPS tốt và để điện thoại thẳng mặt khi chụp ảnh.</div>
+            <div class="checkin-hero" onclick="app.startCheckinFlow()">
+                <div class="icon">📍</div>
+                <h3>BẤM ĐỂ CHECK-IN</h3>
+                <p style="font-size: 0.8rem; color: var(--text-light);">Tự động lấy GPS & Ảnh</p>
+            </div>
+            <div id="checkin-status" style="text-align: center; margin-top: 20px; font-weight: 700; color: var(--primary);"></div>
         </div>
+
+        <!-- PAGE: PHÂN CA -->
+        <div id="page-phanca" class="page">
+            <div class="page-header">
+                <h1>Đăng ký Phân ca</h1>
+                <button class="back-btn" onclick="app.nav('home')">🏠 Trang chủ</button>
+            </div>
+            <div id="phanca-lockdown" class="countdown-strip">Đang tải hạn chót...</div>
+            <div id="phanca-list">
+                <!-- Renders natively -->
+            </div>
+            <button class="btn-action" style="margin-top: 20px;" onclick="app.reviewSchedule()">TIẾP TỤC & CHỐT LỊCH</button>
+        </div>
+
+        <!-- PAGE: HỒ SƠ -->
+        <div id="page-hoso" class="page">
+            <div class="page-header">
+                <h1>Hồ sơ & Lịch sử</h1>
+                <button class="back-btn" onclick="app.nav('home')">🏠 Trang chủ</button>
+            </div>
+            <div class="card">
+                <p><strong>Họ tên:</strong> <span id="prof-name">---</span></p>
+                <p><strong>Mã NV:</strong> <span id="prof-sap">---</span></p>
+            </div>
+            <h4 style="margin-bottom: 10px; font-size: 0.9rem;">Lịch sử Check-in</h4>
+            <div id="history-list" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 25px;"></div>
+            
+            <h4 style="margin-bottom: 10px; font-size: 0.9rem;">Lịch phân ca đã chốt</h4>
+            <div id="schedule-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
+        </div>
+
+        <!-- NAVIGATION BAR -->
+        <nav class="bottom-nav hidden" id="main-nav">
+            <a onclick="app.nav('home')" class="nav-item" id="nav-home">
+                <span>🏠</span><span>Trang chủ</span>
+            </a>
+            <a onclick="app.nav('checkin')" class="nav-item" id="nav-checkin">
+                <span>📍</span><span>Check-in</span>
+            </a>
+            <a onclick="app.nav('phanca')" class="nav-item" id="nav-phanca">
+                <span>📅</span><span>Phân ca</span>
+            </a>
+            <a onclick="app.nav('hoso')" class="nav-item" id="nav-hoso">
+                <span>👤</span><span>Hồ sơ</span>
+            </a>
+        </nav>
+
+        <!-- OVERLAYS -->
+        <div id="overlay-camera" class="overlay">
+            <div class="modal-card">
+                <video id="camera-stream" autoplay playsinline style="width: 100%; aspect-ratio: 3/4; object-fit: cover;"></video>
+                <div style="padding: 20px; text-align: center;">
+                    <button class="btn-action" style="background: var(--danger);" onclick="app.takePhoto()">CHỤP ẢNH & GỬI</button>
+                    <p style="margin-top: 10px; font-size: 0.8rem; color: var(--text-light);">Vui lòng giữ điện thoại thẳng</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="overlay-review" class="overlay">
+            <div class="modal-card" style="padding: 25px;">
+                <h3 style="margin-bottom: 15px;">Xác nhận lịch trình</h3>
+                <div id="review-content" style="max-height: 300px; overflow-y: auto; font-size: 0.85rem; line-height: 1.6;"></div>
+                <div style="margin-top: 20px; display: flex; gap: 10px;">
+                    <button class="btn-action" style="background: #f1f5f9; color: #333;" onclick="app.closeReview()">SỬA LẠI</button>
+                    <button class="btn-action" id="btn-final-chot" onclick="app.finalSubmitSchedule()">XÁC NHẬN CHỐT</button>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwt1R_-vozEmoklFLbAmSFPS0lW79dWPqDfHVVKji_4WR5ujCaefhdh6I71mjYWbpw1/exec";
         const AREAS = ["Quận Phú Nhuận","Huyện Nhà Bè","Quận 5","Quận 3","Quận 4","Quận 1","Quận 6","Quận 8","Quận 7","Huyện Bình Chánh","Quận Tân Bình","Quận 11","Quận 10","Quận Gò Vấp","Quận Bình Thạnh","Quận Tân Phú","Quận 12","Huyện Hóc Môn","Quận Bình Tân","Thành phố Thủ Đức"];
         
-        let SHIFT_COUNTS = {};
-        let WEEK_DATES = [];
-        let LOCAL_NAME = "";
-        let LOCAL_ID = "";
+        const app = {
+            state: { name: '', id: '', currentStream: null, location: '', shiftCounts: {}, schedules: [] },
 
-        window.onload = () => {
-            LOCAL_NAME = localStorage.getItem('van_user_name');
-            LOCAL_ID = localStorage.getItem('van_user_id');
-            if (LOCAL_NAME && LOCAL_ID) showApp();
+            init() {
+                this.state.name = localStorage.getItem('van_user_name');
+                this.state.id = localStorage.getItem('van_user_id');
+                if (this.state.name && this.state.id) this.loginSuccess();
+                
+                // Handle hash navigation
+                window.onhashchange = () => this.handleRouting();
+                this.handleRouting();
+            },
+
+            login() {
+                const name = document.getElementById('login-name').value.trim();
+                const id = document.getElementById('login-id').value.trim();
+                if (!name || !id) return alert("Vui lòng nhập đủ thông tin!");
+
+                document.querySelector('.btn-action').innerText = "ĐANG XÁC THỰC...";
+                fetch(`${SCRIPT_URL}?action=login&name=${name}&id=${id}`)
+                    .then(r => r.text())
+                    .then(res => {
+                        if (res === "success") {
+                            localStorage.setItem('van_user_name', name);
+                            localStorage.setItem('van_user_id', id);
+                            this.state.name = name; this.state.id = id;
+                            this.loginSuccess();
+                        } else {
+                            alert("Sai thông tin!");
+                            document.querySelector('.btn-action').innerText = "ĐĂNG NHẬP NGAY";
+                        }
+                    });
+            },
+
+            loginSuccess() {
+                document.getElementById('page-login').classList.remove('active');
+                document.getElementById('main-nav').classList.remove('hidden');
+                document.getElementById('user-name').innerText = this.state.name;
+                document.getElementById('user-sap').innerText = "Mã NV: " + this.state.id;
+                this.nav('home');
+            },
+
+            nav(page) {
+                location.hash = "#/" + page;
+            },
+
+            handleRouting() {
+                const hash = location.hash.replace("#/", "") || "login";
+                if (hash === "login" && this.state.name) return this.nav('home');
+                
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                
+                const activePage = document.getElementById('page-' + hash);
+                if (activePage) activePage.classList.add('active');
+                const activeNav = document.getElementById('nav-' + hash);
+                if (activeNav) activeNav.classList.add('active');
+
+                if (hash === "phanca") this.loadPhanCa();
+                if (hash === "hoso") this.loadProfile();
+                if (hash === "home") {
+                    const last = localStorage.getItem('last_check_time');
+                    if (last) document.getElementById('home-last-check').innerText = "Check-in gần nhất: " + last;
+                }
+            },
+
+            logout() {
+                if(confirm("Bạn muốn đăng xuất?")) { localStorage.clear(); location.href = ""; }
+            },
+
+            // --- CHECK-IN LOGIC ---
+            async startCheckinFlow() {
+                try {
+                    document.getElementById('checkin-status').innerText = "Đang lấy vị trí GPS...";
+                    const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, {timeout: 8000}));
+                    this.state.location = `${pos.coords.latitude}, ${pos.coords.longitude}`;
+                    
+                    document.getElementById('checkin-status').innerText = "Đang mở camera...";
+                    this.state.currentStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                    document.getElementById('camera-stream').srcObject = this.state.currentStream;
+                    document.getElementById('overlay-camera').classList.add('active');
+                } catch(e) { alert("Lỗi: Vui lòng cấp quyền Camera và GPS!"); }
+            },
+
+            takePhoto() {
+                const video = document.getElementById('camera-stream');
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+                canvas.getContext('2d').drawImage(video, 0, 0);
+                const photo = canvas.toDataURL('image/jpeg', 0.5);
+                
+                this.state.currentStream.getTracks().forEach(t => t.stop());
+                document.getElementById('overlay-camera').classList.remove('active');
+                this.submitAttendance(photo);
+            },
+
+            submitAttendance(photo) {
+                document.getElementById('checkin-status').innerText = "Đang gửi dữ liệu lên máy chủ...";
+                const time = new Date().toLocaleString('vi-VN');
+                const payload = { name: this.state.name, id: this.state.id, type: "Check-in", timestamp: time, location: this.state.location, photo: photo };
+
+                fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload), mode: 'no-cors' })
+                    .then(() => {
+                        alert("Ghi nhận thành công!");
+                        localStorage.setItem('last_check_time', time);
+                        document.getElementById('checkin-status').innerText = "ĐÃ HOÀN TẤT CHECK-IN";
+                        this.nav('home');
+                    }).catch(() => alert("Gửi thất bại!"));
+            },
+
+            // --- PHÂN CA LOGIC ---
+            async loadPhanCa() {
+                this.renderPhanCaList();
+                this.startCountdown();
+                const r = await fetch(`${SCRIPT_URL}?action=get_shift_data`);
+                this.state.shiftCounts = await r.json();
+                this.renderPhanCaList();
+            },
+
+            renderPhanCaList() {
+                let now = new Date(); now.setHours(0,0,0,0);
+                let daysToSun = now.getDay() === 0 ? 0 : 7 - now.getDay();
+                let start = new Date(now); start.setDate(now.getDate() + 1);
+                let end = new Date(now); end.setDate(now.getDate() + daysToSun + 7);
+                let sunThis = new Date(now); sunThis.setDate(now.getDate() + daysToSun);
+
+                let html = ''; let curr = new Date(start); let i = 0;
+                while(curr <= end) {
+                    let dateStr = `${("0"+curr.getDate()).slice(-2)}/${("0"+(curr.getMonth()+1)).slice(-2)}/${curr.getFullYear()}`;
+                    let dName = curr.getDay() === 0 ? 'Chủ Nhật' : 'Thứ ' + (curr.getDay() + 1);
+                    let counts = this.state.shiftCounts[dateStr] || {};
+                    let c8 = counts['08:00-17:00'] || 0;
+
+                    html += `
+                        <div class="day-item">
+                            <span class="tag">${curr <= sunThis ? 'Tuần này' : 'Tuần tới'}</span>
+                            <h4>📅 ${dName} (${curr.getDate()}/${curr.getMonth()+1})</h4>
+                            <select class="select-native" id="s_${i}" onchange="app.toggleAreaSelect(${i})">
+                                <option value="">-- Chọn ca --</option>
+                                <option value="06:00-15:00">06:00-15:00</option>
+                                <option value="08:00-17:00" ${c8 >= 252 ? 'disabled' : ''}>08:00-17:00 (${c8}/252)</option>
+                                <option value="13:00-22:00">13:00-22:00</option>
+                                <option value="OFF" style="color:red">OFF (Nghỉ)</option>
+                            </select>
+                            <select class="select-native" id="a_${i}" disabled>
+                                <option value="">-- Chọn khu vực --</option>
+                                ${AREAS.map(a => `<option value="${a}">${a}</option>`).join('')}
+                            </select>
+                        </div>
+                    `;
+                    curr.setDate(curr.getDate() + 1); i++;
+                }
+                document.getElementById('phanca-list').innerHTML = html;
+                window.dayCount = i;
+            },
+
+            toggleAreaSelect(i) {
+                const s = document.getElementById(`s_${i}`).value;
+                document.getElementById(`a_${i}`).disabled = (s === "" || s === "OFF");
+            },
+
+            startCountdown() {
+                const timer = document.getElementById('phanca-lockdown');
+                if(this.timerInt) clearInterval(this.timerInt);
+                this.timerInt = setInterval(() => {
+                    let now = new Date(); let target = new Date();
+                    let dToS = now.getDay() === 0 ? 0 : 7 - now.getDay();
+                    target.setDate(now.getDate() + dToS); target.setHours(20,0,0,0);
+                    if(now > target) { timer.innerText = "Đã khóa đăng ký tuần tới!"; }
+                    else {
+                        let diff = target - now; let h = Math.floor(diff/3600000); let m = Math.floor((diff%3600000)/60000); let s = Math.floor((diff%60000)/1000);
+                        timer.innerText = `Đóng đăng ký tuần tới sau: ${h}h ${m}p ${s}s`;
+                    }
+                }, 1000);
+            },
+
+            reviewSchedule() {
+                this.state.schedules = []; let html = '';
+                for(let i=0; i<window.dayCount; i++) {
+                    const s = document.getElementById(`s_${i}`).value;
+                    const a = document.getElementById(`a_${i}`).value;
+                    if(!s || (s !== "OFF" && !a)) return alert("Vui lòng chọn đủ Ca và Khu vực!");
+                    this.state.schedules.push({ date: "", shift: s, area: a || "Nghỉ" });
+                    html += `<p><strong>${s}</strong>: ${a || 'OFF'}</p>`;
+                }
+                document.getElementById('review-content').innerHTML = html;
+                document.getElementById('overlay-review').classList.add('active');
+            },
+
+            closeReview() { document.getElementById('overlay-review').classList.remove('active'); },
+
+            async finalSubmitSchedule() {
+                const btn = document.getElementById('btn-final-chot');
+                btn.disabled = true; btn.innerText = "ĐANG GỬI...";
+                
+                // Re-calculate dates for submission
+                let now = new Date(); now.setHours(0,0,0,0);
+                let start = new Date(now); start.setDate(now.getDate() + 1);
+                this.state.schedules.forEach((item, idx) => {
+                    let d = new Date(start); d.setDate(start.getDate() + idx);
+                    item.date = `${("0"+d.getDate()).slice(-2)}/${("0"+(d.getMonth()+1)).slice(-2)}/${d.getFullYear()}`;
+                });
+
+                const payload = { action: "submit_schedule", driverName: this.state.name, driverId: this.state.id, schedules: this.state.schedules };
+                try {
+                    await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
+                    alert("Chốt lịch thành công!");
+                    location.reload();
+                } catch(e) { alert("Lỗi gửi dữ liệu!"); btn.disabled = false; btn.innerText = "XÁC NHẬN CHỐT"; }
+            },
+
+            // --- PROFILE LOGIC ---
+            async loadProfile() {
+                document.getElementById('prof-name').innerText = this.state.name;
+                document.getElementById('prof-sap').innerText = "Mã NV: " + this.state.id;
+                const hList = document.getElementById('history-list');
+                const sList = document.getElementById('schedule-list');
+                hList.innerHTML = "Đang tải..."; sList.innerHTML = "Đang tải...";
+                try {
+                    const [resH, resS] = await Promise.all([
+                        fetch(`${SCRIPT_URL}?action=history&id=${this.state.id}`),
+                        fetch(`${SCRIPT_URL}?action=my_schedule&id=${this.state.id}`)
+                    ]);
+                    const dataH = await resH.json(); const dataS = await resS.json();
+                    hList.innerHTML = dataH.reverse().slice(0, 10).map(r => `<div class="card" style="padding:10px; margin-bottom:5px; font-size:0.75rem; display:flex; justify-content:space-between;"><span>${r[0]}</span><strong>${r[3]}</strong></div>`).join('') || "Trống";
+                    sList.innerHTML = dataS.reverse().slice(0, 10).map(r => `<div class="card" style="padding:10px; margin-bottom:5px; font-size:0.75rem;"><div><strong>Ngày: ${r[4]}</strong> - ${r[5]}</div><div style="color:var(--text-light)">${r[3]}</div></div>`).join('') || "Trống";
+                } catch(e) { hList.innerHTML = "Lỗi!"; sList.innerHTML = "Lỗi!"; }
+            }
         };
 
-        function handleLogin() {
-            const name = document.getElementById('inp-name').value.trim();
-            const id = document.getElementById('inp-id').value.trim();
-            if (!name || !id) return alert("Vui lòng điền đủ thông tin!");
-
-            const btn = document.querySelector('.btn-login');
-            btn.innerText = "Đang xác nhận..."; btn.disabled = true;
-
-            fetch(`${SCRIPT_URL}?action=login&name=${name}&id=${id}`)
-                .then(r => r.text())
-                .then(res => {
-                    if (res === "success") {
-                        localStorage.setItem('van_user_name', name);
-                        localStorage.setItem('van_user_id', id);
-                        LOCAL_NAME = name; LOCAL_ID = id;
-                        showApp();
-                    } else {
-                        alert("Thông tin không đúng hoặc bạn chưa có trong danh sách!");
-                        btn.innerText = "VÀO ỨNG DỤNG"; btn.disabled = false;
-                    }
-                })
-                .catch(() => { alert("Lỗi kết nối máy chủ!"); btn.innerText = "VÀO ỨNG DỤNG"; btn.disabled = false; });
-        }
-
-        function showApp() {
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('app-screen').classList.remove('hidden');
-            document.getElementById('display-name').innerText = LOCAL_NAME;
-            document.getElementById('display-id').innerText = `Mã NV: ${LOCAL_ID}`;
-            document.getElementById('user-avatar').innerText = LOCAL_NAME.charAt(0);
-            
-            const lastTime = localStorage.getItem('last_check_time');
-            if (lastTime) document.getElementById('last-check-text').innerText = `Lần cuối lúc: ${lastTime}`;
-        }
-
-        function handleLogout() {
-            if(confirm("Đăng xuất khỏi hệ thống?")) { localStorage.clear(); location.reload(); }
-        }
-
-        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-
-        // --- CHECK-IN LOGIC ---
-        let currentStream = null;
-        async function startCheckin() {
-            try {
-                const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, {timeout: 10000}));
-                window.myLoc = `${pos.coords.latitude}, ${pos.coords.longitude}`;
-                
-                currentStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
-                document.getElementById('video-preview').srcObject = currentStream;
-                document.getElementById('modal-camera').classList.add('active');
-            } catch (e) { alert("Bạn cần cấp quyền Camera và Vị trí để Check-in!"); }
-        }
-
-        function takePhoto() {
-            const video = document.getElementById('video-preview');
-            const canvas = document.getElementById('photo-canvas');
-            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-            canvas.getContext('2d').drawImage(video, 0, 0);
-            const photo = canvas.toDataURL('image/jpeg', 0.5);
-            
-            currentStream.getTracks().forEach(t => t.stop());
-            document.getElementById('modal-camera').classList.remove('active');
-            
-            sendCheckin(photo);
-        }
-
-        function sendCheckin(photo) {
-            const btn = document.querySelector('.btn-main-check');
-            btn.disabled = true; btn.innerHTML = "<span>⏳</span><span>ĐANG GỬI...</span>";
-            
-            const time = new Date().toLocaleString('vi-VN');
-            const payload = { name: LOCAL_NAME, id: LOCAL_ID, type: "Check-in", timestamp: time, location: window.myLoc, photo: photo };
-
-            fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload), mode: 'no-cors' })
-                .then(() => {
-                    alert("Check-in thành công!");
-                    localStorage.setItem('last_check_time', time);
-                    document.getElementById('last-check-text').innerText = `Lần cuối lúc: ${time}`;
-                    btn.disabled = false; btn.innerHTML = "<span>📍</span><span>BẮT ĐẦU CA (CHECK-IN)</span>";
-                })
-                .catch(() => { alert("Lỗi gửi dữ liệu!"); btn.disabled = false; btn.innerHTML = "<span>📍</span><span>BẮT ĐẦU CA (CHECK-IN)</span>"; });
-        }
-
-        // --- SCHEDULING LOGIC ---
-        function showScheduling() {
-            generateDates();
-            document.getElementById('modal-scheduling').classList.add('active');
-            renderCalendar();
-            startCountdown();
-            fetch(`${SCRIPT_URL}?action=get_shift_data`).then(r => r.json()).then(res => { SHIFT_COUNTS = res; renderCalendar(); });
-        }
-
-        function generateDates() {
-            WEEK_DATES = []; let now = new Date(); now.setHours(0,0,0,0);
-            let daysToSun = now.getDay() === 0 ? 0 : 7 - now.getDay();
-            let start = new Date(now); start.setDate(now.getDate() + 1);
-            let end = new Date(now); end.setDate(now.getDate() + daysToSun + 7);
-            let sunThis = new Date(now); sunThis.setDate(now.getDate() + daysToSun);
-
-            let curr = new Date(start);
-            while(curr <= end) {
-                let dName = curr.getDay() === 0 ? 'Chủ Nhật' : 'Thứ ' + (curr.getDay() + 1);
-                let dateStr = `${("0"+curr.getDate()).slice(-2)}/${("0"+(curr.getMonth()+1)).slice(-2)}/${curr.getFullYear()}`;
-                WEEK_DATES.push({ label: `${dName} (${curr.getDate()}/${curr.getMonth()+1})`, value: dateStr, isNext: curr > sunThis });
-                curr.setDate(curr.getDate() + 1);
-            }
-        }
-
-        function renderCalendar() {
-            let html = '';
-            WEEK_DATES.forEach((d, i) => {
-                const count8 = (SHIFT_COUNTS[d.value] && SHIFT_COUNTS[d.value]['08:00-17:00']) || 0;
-                html += `
-                    <div class="day-box">
-                        <span class="tag-week">${d.isNext ? 'Tuần Tới' : 'Tuần Này'}</span>
-                        <h4>${d.label}</h4>
-                        <select class="native-select" id="s_${i}" onchange="toggleArea(${i})">
-                            <option value="">-- Chọn ca làm việc --</option>
-                            <option value="06:00-15:00">06:00-15:00</option>
-                            <option value="08:00-17:00" ${count8 >= 252 ? 'disabled' : ''}>08:00-17:00 (${count8}/252)</option>
-                            <option value="13:00-22:00">13:00-22:00</option>
-                            <option value="OFF" style="color:red">OFF (Nghỉ)</option>
-                        </select>
-                        <select class="native-select" id="a_${i}" disabled>
-                            <option value="">-- Chọn khu vực --</option>
-                            ${AREAS.map(a => `<option value="${a}">${a}</option>`).join('')}
-                        </select>
-                    </div>
-                `;
-            });
-            document.getElementById('calendar-list').innerHTML = html;
-        }
-
-        function toggleArea(i) {
-            const s = document.getElementById(`s_${i}`).value;
-            const a = document.getElementById(`a_${i}`);
-            a.disabled = (s === "" || s === "OFF");
-        }
-
-        function startCountdown() {
-            const el = document.getElementById('lockdown-timer');
-            setInterval(() => {
-                let now = new Date(); let target = new Date();
-                let dToS = now.getDay() === 0 ? 0 : 7 - now.getDay();
-                target.setDate(now.getDate() + dToS); target.setHours(20,0,0,0);
-                if(now > target) { el.innerText = "Hết giờ đăng ký tuần tới!"; document.getElementById('btn-submit-sch').disabled = true; }
-                else {
-                    let diff = target - now; let h = Math.floor(diff/3600000); let m = Math.floor((diff%3600000)/60000); let s = Math.floor((diff%60000)/1000);
-                    el.innerText = `Đóng đăng ký tuần tới sau: ${h}h ${m}p ${s}s`;
-                }
-            }, 1000);
-        }
-
-        function confirmSchedule() {
-            let final = [];
-            for(let i=0; i<WEEK_DATES.length; i++) {
-                const s = document.getElementById(`s_${i}`).value;
-                const a = document.getElementById(`a_${i}`).value;
-                if(!s || (s !== "OFF" && !a)) return alert("Vui lòng chọn đủ Ca và Khu vực!");
-                final.push({ date: WEEK_DATES[i].value, shift: s, area: a || "Nghỉ" });
-            }
-            if(!confirm("Xác nhận chốt lịch? Hệ thống sẽ KHÓA ngay sau khi gửi.")) return;
-            
-            const btn = document.getElementById('btn-submit-sch');
-            btn.innerText = "ĐANG GỬI..."; btn.disabled = true;
-            
-            fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "submit_schedule", driverName: LOCAL_NAME, driverId: LOCAL_ID, schedules: final }) })
-                .then(() => { alert("Chốt lịch thành công!"); location.reload(); })
-                .catch(() => { alert("Lỗi kết nối!"); btn.innerText = "TIẾP TỤC & XÁC NHẬN"; btn.disabled = false; });
-        }
-
-        // --- PROFILE LOGIC ---
-        async function showProfile() {
-            document.getElementById('modal-profile').classList.add('active');
-            document.getElementById('p-name').innerText = LOCAL_NAME;
-            document.getElementById('p-id').innerText = LOCAL_ID;
-            
-            const hList = document.getElementById('p-history');
-            const sList = document.getElementById('p-schedule');
-            hList.innerHTML = "Đang tải..."; sList.innerHTML = "Đang tải...";
-
-            try {
-                const [resH, resS] = await Promise.all([
-                    fetch(`${SCRIPT_URL}?action=history&id=${LOCAL_ID}`),
-                    fetch(`${SCRIPT_URL}?action=my_schedule&id=${LOCAL_ID}`)
-                ]);
-                const dataH = await resH.json(); const dataS = await resS.json();
-                
-                hList.innerHTML = dataH.reverse().slice(0, 10).map(r => `
-                    <div style="background:white; padding:12px; border-radius:12px; border:1px solid #eee; display:flex; justify-content:space-between; font-size:0.8rem;">
-                        <span>${r[0]}</span> <strong style="color:var(--primary-dark)">${r[3]}</strong>
-                    </div>`).join('') || "Chưa có dữ liệu.";
-                
-                sList.innerHTML = dataS.reverse().slice(0, 10).map(r => `
-                    <div style="background:white; padding:12px; border-radius:12px; border:1px solid #eee; font-size:0.8rem;">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><strong>Ngày: ${r[4]}</strong> <span>${r[5]}</span></div>
-                        <div style="color:var(--text-muted)">Khu vực: ${r[3]}</div>
-                    </div>`).join('') || "Chưa có lịch trình.";
-            } catch (e) { hList.innerHTML = "Lỗi tải."; sList.innerHTML = "Lỗi tải."; }
-        }
+        app.init();
     </script>
 </body>
 </html>
