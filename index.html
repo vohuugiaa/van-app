@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <!-- Login Screen -->
     <div id="login-screen" class="container">
@@ -48,7 +50,8 @@
         <!-- Warning Banner -->
         <div class="warning-banner">
             <strong>⚠️ LƯU Ý QUAN TRỌNG:</strong>
-            Tài Xế xe Van bắt buộc phải đăng ký phân ca và check-in theo đúng khung giờ đăng ký mỗi ngày để chứng minh đang ở khu vực phân ca. Trường hợp không tuân thủ quy định, Tài xế tự chịu trách nhiệm.
+            Tài Xế xe Van bắt buộc phải đăng ký phân ca và check-in theo đúng khung giờ đăng ký mỗi ngày để chứng minh
+            đang ở khu vực phân ca. Trường hợp không tuân thủ quy định, Tài xế tự chịu trách nhiệm.
         </div>
 
         <!-- Check-in/Out Module -->
@@ -57,8 +60,9 @@
                 <h3>Trạng thái làm việc</h3>
                 <span id="work-status" class="status-badge status-off">Nghỉ ca</span>
             </div>
-            <div class="check-grid" style="grid-template-columns: 1fr;">
-                <button id="btn-checkin" class="btn-check btn-in" onclick="startAttendanceFlow('Check-in')" style="padding: 25px;">
+            <div id="check-section" class="check-grid" style="grid-template-columns: 1fr;">
+                <button id="btn-checkin" class="btn-check btn-in" onclick="startAttendanceFlow('Check-in')"
+                    style="padding: 25px;">
                     <span style="font-size: 2rem;">📍</span>
                     <span style="font-size: 1.2rem;">BẮT ĐẦU CA (CHECK-IN)</span>
                 </button>
@@ -67,34 +71,121 @@
         </div>
 
         <!-- Main Buttons -->
-        <button onclick="togglePhanCa()" class="action-btn btn-teal" style="background: linear-gradient(135deg, #1abc9c, #16a085); width: 100%;">
-            📅 ĐĂNG KÝ PHÂN CA
+        <button onclick="showSchedulingScreen()" class="action-btn btn-teal"
+            style="background: linear-gradient(135deg, #1abc9c, #16a085); width: 100%;">
+            📅 ĐĂNG KÝ PHÂN CA MỚI
         </button>
 
-        <div id="phanca-container" class="hidden" style="margin-top: 10px; animation: slideUp 0.5s ease;">
-            <iframe id="iframe-phanca" src="" style="width:100%; height:500px; border:none; border-radius:20px; box-shadow: var(--shadow); background: white;"></iframe>
+        <button onclick="viewMySchedule()" class="action-btn"
+            style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd;">
+            🔍 XEM LỊCH PHÂN CA ĐÃ ĐĂNG KÝ
+        </button>
+
+        <button onclick="showProfile()" class="action-btn"
+            style="background: #fff; color: var(--primary-blue); border: 2px solid var(--primary-blue);">
+            👤 HỒ SƠ & LỊCH SỬ CỦA TÔI
+        </button>
+
+        <!-- Profile & History Modal -->
+        <div id="profile-screen" class="hidden-screen">
+            <div class="modal-content-custom">
+                <div class="modal-header-custom" style="background: #1abc9c;">
+                    <h3>Hồ sơ tài xế</h3>
+                    <button onclick="closeProfile()"
+                        style="background:none; border:none; color:white; font-size:1.5rem;">&times;</button>
+                </div>
+                <div style="padding: 20px; max-height: 75vh; overflow-y: auto;">
+                    <div class="data-card" style="margin-bottom: 20px; padding: 15px; background: #f8fafc;">
+                        <p><strong>Họ tên:</strong> <span id="prof-name">---</span></p>
+                        <p><strong>Mã nhân viên:</strong> <span id="prof-id">---</span></p>
+                    </div>
+
+                    <h4 style="font-size: 1rem; margin-bottom: 10px;">🕒 Lịch sử Check-in:</h4>
+                    <div id="prof-history-list"
+                        style="margin-bottom: 25px; display: flex; flex-direction: column; gap: 8px;">
+                    </div>
+
+                    <h4 style="font-size: 1rem; margin-bottom: 10px;">📅 Lịch phân ca đã chốt:</h4>
+                    <div id="prof-schedule-list" style="display: flex; flex-direction: column; gap: 8px;">
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSdeMUMCp55KATYMsYSpacilv4HnKiGKEsmbMEdRTyLS4wKc-w/viewform?usp=dialog" class="action-btn btn-red" target="_blank">📝 ĐĂNG KÝ LỊCH OFF</a>
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSc4a_ebdFUlhKv4EDPFB70dIJD-8rMUw9gl3elkE3Im6BqiOw/viewform" class="action-btn btn-blue" target="_blank">💬 PHẢN HỒI LƯƠNG THÁNG 4</a>
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSe5vAY1wYKI_HoOzvgB9QGjHmmfLGyEqn2iFIFzmlBNoMjXAQ/viewform?usp=dialog" class="action-btn btn-teal" target="_blank">💡 PHẢN HỒI Ý KIẾN</a>
+        <!-- New Native Scheduling Screen -->
+        <div id="scheduling-screen" class="hidden-screen">
+            <div class="modal-content-custom">
+                <div class="modal-header-custom">
+                    <h3>Đăng ký Phân ca</h3>
+                    <button onclick="closeSchedulingScreen()"
+                        style="background:none; border:none; color:white; font-size:1.5rem;">&times;</button>
+                </div>
+                <div id="countdown-timer" class="countdown-banner-mini">Đang tải hạn chót...</div>
 
-        <button onclick="viewMyHistory()" class="action-btn" style="background: #f1f5f9; color: var(--text-main); border: 1px solid #cbd5e1;">
+                <div id="calendar-list" style="padding: 15px; max-height: 60vh; overflow-y: auto;">
+                    <!-- JS renders days here -->
+                </div>
+
+                <div style="padding: 15px; border-top: 1px solid #eee;">
+                    <button id="btn-submit-schedule" onclick="prepareScheduleReview()" class="action-btn btn-teal">TIẾP
+                        TỤC & KIỂM TRA</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Schedule Review Screen -->
+        <div id="review-screen" class="hidden-screen">
+            <div class="modal-content-custom">
+                <div class="modal-header-custom" style="background: #f1c40f;">
+                    <h3>Xác nhận lịch trình</h3>
+                </div>
+                <div id="review-list" style="padding: 20px; max-height: 60vh; overflow-y: auto;"></div>
+                <div style="padding: 15px; display: flex; gap: 10px;">
+                    <button onclick="closeReviewScreen()" class="action-btn" style="background: #eee; color: #333;">SỬA
+                        LẠI</button>
+                    <button onclick="submitNativeSchedule()" id="btn-final-confirm" class="action-btn btn-red">CHỐT LỊCH
+                        NGAY</button>
+                </div>
+            </div>
+        </div>
+
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSdeMUMCp55KATYMsYSpacilv4HnKiGKEsmbMEdRTyLS4wKc-w/viewform?usp=dialog"
+            class="action-btn btn-red" target="_blank">📝 ĐĂNG KÝ LỊCH OFF</a>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSc4a_ebdFUlhKv4EDPFB70dIJD-8rMUw9gl3elkE3Im6BqiOw/viewform"
+            class="action-btn btn-blue" target="_blank">💬 PHẢN HỒI LƯƠNG THÁNG 4</a>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSe5vAY1wYKI_HoOzvgB9QGjHmmfLGyEqn2iFIFzmlBNoMjXAQ/viewform?usp=dialog"
+            class="action-btn btn-teal" target="_blank">💡 PHẢN HỒI Ý KIẾN</a>
+
+        <button onclick="viewMyHistory()" class="action-btn"
+            style="background: #f1f5f9; color: var(--text-main); border: 1px solid #cbd5e1;">
             📅 LỊCH SỬ CỦA TÔI
         </button>
 
         <div id="history-container" class="hidden" style="margin-top: 10px; animation: slideUp 0.5s ease;">
             <div class="data-card" style="padding: 15px; font-size: 0.85rem;">
                 <h4 style="margin-bottom: 10px;">Lịch sử gần đây:</h4>
-                <div id="history-list" style="max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
+                <div id="history-list"
+                    style="max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
                     <!-- History items will appear here -->
                 </div>
             </div>
         </div>
 
-        <!-- Hotline Section (Rút gọn) -->
+        <!-- Schedule Container -->
+        <div id="schedule-container" class="hidden" style="margin-top: 10px; animation: slideUp 0.5s ease;">
+            <div class="data-card" style="padding: 15px; font-size: 0.85rem;">
+                <h4 style="margin-bottom: 10px;">Lịch đã đăng ký:</h4>
+                <div id="schedule-list"
+                    style="max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
+                </div>
+            </div>
+        </div>
+
+        <!-- Hotline Section -->
         <div class="hotline-card">
-            <div class="hotline-header"><h2>Hotline Hỗ Trợ</h2></div>
+            <div class="hotline-header">
+                <h2>Hotline Hỗ Trợ</h2>
+            </div>
             <div class="hotline-list">
                 <div class="hotline-item">
                     <div class="label">Cứu hộ xe VF</div>
@@ -121,16 +212,17 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwENfLXgkcNVX6NOUojt-r6uFo7WRZg1Rbr2_Xph1IcwiISgJEeN15yDID87zZdIS2R/exec";
-        let currentType = '';
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwt1R_-vozEmoklFLbAmSFPS0lW79dWPqDfHVVKji_4WR5ujCaefhdh6I71mjYWbpw1/exec";
+        let SHIFT_COUNTS = {};
+        let WEEK_DATES = [];
+        let SELECTED_SCHEDULE = [];
 
-        // Elements
         const loginScreen = document.getElementById('login-screen');
         const appScreen = document.getElementById('app-screen');
         const cameraModal = document.getElementById('camera-modal');
         const video = document.getElementById('camera-preview');
         const canvas = document.getElementById('photo-canvas');
-        
+
         window.onload = () => {
             const savedName = localStorage.getItem('van_user_name');
             const savedId = localStorage.getItem('van_user_id');
@@ -144,12 +236,11 @@
             const name = document.getElementById('full-name').value.trim();
             const id = document.getElementById('employee-id').value.trim();
             if (!name || !id) return alert('Nhập đủ thông tin!');
-            
+
             const btn = document.querySelector('.btn-login');
             btn.innerHTML = "Đang xác thực...";
             btn.disabled = true;
 
-            // Kiểm tra danh sách tài xế từ Google Sheet
             fetch(`${SCRIPT_URL}?action=login&name=${name}&id=${id}`)
                 .then(res => res.text())
                 .then(result => {
@@ -178,21 +269,18 @@
             appScreen.classList.remove('hidden');
         }
 
-        // Attendance Flow with Camera & GPS
         async function startAttendanceFlow(type) {
             currentType = type;
             try {
-                // 1. Get GPS Location
                 const position = await new Promise((resolve, reject) => {
                     navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 });
                 });
                 window.lastLocation = `${position.coords.latitude}, ${position.coords.longitude}`;
-                
-                // 2. Start Camera
+
                 const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
                 video.srcObject = stream;
                 cameraModal.classList.remove('hidden');
-                
+
                 document.getElementById('btn-capture-photo').onclick = () => capturePhoto(stream);
             } catch (err) {
                 alert("Lỗi: " + (err.message || "Không thể lấy vị trí/camera. Vui lòng cấp quyền!"));
@@ -203,12 +291,11 @@
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
             canvas.getContext('2d').drawImage(video, 0, 0);
-            const photoData = canvas.toDataURL('image/jpeg', 0.5); // Nén ảnh
-            
-            // Dừng camera
+            const photoData = canvas.toDataURL('image/jpeg', 0.5);
+
             stream.getTracks().forEach(track => track.stop());
             cameraModal.classList.add('hidden');
-            
+
             submitFinalData(photoData, window.lastLocation);
         }
 
@@ -247,13 +334,13 @@
         function updateUIAfterCheck(type, time) {
             const btn = document.getElementById('btn-checkin');
             const status = document.getElementById('work-status');
-            
-            btn.innerHTML = `<span style="font-size: 2rem;">📍</span><span style="font-size: 1.2rem;">BẮT ĐẦU CA (CHECK-IN)</span>`;
-            btn.disabled = false; // Cho phép bấm lại nếu cần
 
-            status.innerText = "Đã ghi nhận"; 
+            btn.innerHTML = `<span style="font-size: 2rem;">📍</span><span style="font-size: 1.2rem;">BẮT ĐẦU CA (CHECK-IN)</span>`;
+            btn.disabled = false;
+
+            status.innerText = "Đã ghi nhận";
             status.className = "status-badge status-on";
-            
+
             document.getElementById('check-time').innerText = `Lần cuối: lúc ${time}`;
             localStorage.setItem('last_check_time', time);
         }
@@ -274,19 +361,6 @@
             }
         }
 
-        function togglePhanCa() {
-            const container = document.getElementById('phanca-container');
-            const iframe = document.getElementById('iframe-phanca');
-            const url = "https://script.google.com/macros/s/AKfycbxu89KJKpKEdBiU57ZEEfmw9A7AOV-sbR4utBsfbI6vYUWAlvZiaFUz7libxO8OeuBI/exec";
-            
-            if (container.classList.contains('hidden')) {
-                if (!iframe.src) iframe.src = url;
-                container.classList.remove('hidden');
-            } else {
-                container.classList.add('hidden');
-            }
-        }
-
         async function viewMyHistory() {
             const container = document.getElementById('history-container');
             const list = document.getElementById('history-list');
@@ -295,7 +369,7 @@
             if (container.classList.contains('hidden')) {
                 list.innerHTML = "Đang tải...";
                 container.classList.remove('hidden');
-                
+
                 try {
                     const res = await fetch(`${SCRIPT_URL}?action=history&id=${id}`);
                     const data = await res.json();
@@ -313,6 +387,73 @@
             }
         }
 
+        async function viewMySchedule() {
+            const container = document.getElementById('schedule-container');
+            const list = document.getElementById('schedule-list');
+            const id = localStorage.getItem('van_user_id');
+
+            if (container.classList.contains('hidden')) {
+                list.innerHTML = "Đang tải dữ liệu...";
+                container.classList.remove('hidden');
+
+                try {
+                    const res = await fetch(`${SCRIPT_URL}?action=my_schedule&id=${id}`);
+                    const data = await res.json();
+                    list.innerHTML = data.reverse().map(r => `
+                        <div style="padding: 12px; border-radius: 12px; background: white; border: 1px solid #bae6fd; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <strong style="color: #0369a1;">Ngày: ${r[4]}</strong>
+                                <span style="font-weight: 700; color: #1e293b;">${r[5]}</span>
+                            </div>
+                            <div style="font-size: 0.75rem; color: #64748b;">Khu vực: ${r[3]}</div>
+                        </div>
+                    `).join('') || "Bạn chưa có lịch phân ca nào được đăng ký.";
+                } catch (err) {
+                    list.innerHTML = "Lỗi tải lịch phân ca.";
+                }
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+
+        async function showProfile() {
+            const name = localStorage.getItem('van_user_name');
+            const id = localStorage.getItem('van_user_id');
+            document.getElementById('prof-name').innerText = name;
+            document.getElementById('prof-id').innerText = id;
+            document.getElementById('profile-screen').classList.add('active');
+
+            const hList = document.getElementById('prof-history-list');
+            const sList = document.getElementById('prof-schedule-list');
+            hList.innerHTML = "Đang tải..."; sList.innerHTML = "Đang tải...";
+
+            try {
+                const [resH, resS] = await Promise.all([
+                    fetch(`${SCRIPT_URL}?action=history&id=${id}`),
+                    fetch(`${SCRIPT_URL}?action=my_schedule&id=${id}`)
+                ]);
+                const dataH = await resH.json();
+                const dataS = await resS.json();
+
+                hList.innerHTML = dataH.reverse().slice(0, 10).map(r => `
+                    <div style="padding: 10px; background: white; border: 1px solid #eee; border-radius: 10px; display: flex; justify-content: space-between; font-size: 0.8rem;">
+                        <span>${r[0]}</span> <strong style="color: #1abc9c;">${r[3]}</strong>
+                    </div>`).join('') || "Chưa có lịch sử.";
+
+                sList.innerHTML = dataS.reverse().slice(0, 10).map(r => `
+                    <div style="padding: 10px; background: white; border: 1px solid #eee; border-radius: 10px; font-size: 0.8rem;">
+                        <div style="display: flex; justify-content: space-between;"><strong>Ngày: ${r[4]}</strong> <span>${r[5]}</span></div>
+                        <div style="color: #64748b;">${r[3]}</div>
+                    </div>`).join('') || "Chưa có lịch trình.";
+            } catch (e) {
+                hList.innerHTML = "Lỗi kết nối."; sList.innerHTML = "Lỗi kết nối.";
+            }
+        }
+
+        function closeProfile() {
+            document.getElementById('profile-screen').classList.remove('active');
+        }
+
         function handleAdminLogin() {
             const pass = prompt("Nhập mã Admin:");
             if (pass === "1234") { // Demo pass
@@ -323,4 +464,5 @@
         }
     </script>
 </body>
+
 </html>
