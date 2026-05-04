@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -9,355 +8,68 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #1abc9c;
-            --primary-dark: #16a085;
-            --bg: #f8fafc;
-            --text: #1e293b;
-            --text-light: #64748b;
-            --danger: #ef4444;
-            --nav-height: 70px;
-        }
+        :root { --primary: #1abc9c; --primary-dark: #16a085; --bg: #f8fafc; --text: #1e293b; --text-light: #64748b; --danger: #ef4444; --nav-height: 70px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; }
+        .container { max-width: 500px; margin: 0 auto; height: 100vh; display: flex; flex-direction: column; background: white; position: relative; }
+        .page { flex: 1; overflow-y: auto; display: none; padding: 20px; padding-bottom: calc(var(--nav-height) + 20px); animation: fadeIn 0.2s ease; scroll-behavior: smooth; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        
+        .bottom-nav { position: absolute; bottom: 0; width: 100%; height: var(--nav-height); background: white; display: flex; border-top: 1px solid #f1f5f9; box-shadow: 0 -5px 15px rgba(0,0,0,0.03); z-index: 1000; }
+        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: var(--text-light); cursor: pointer; }
+        .nav-item span:first-child { font-size: 1.4rem; margin-bottom: 2px; }
+        .nav-item span:last-child { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; }
+        .nav-item.active { color: var(--primary); }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
+        .card { background: #f8fafc; border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid #f1f5f9; transition: 0.3s; }
+        .card.error-focus { border: 2px solid var(--danger); background: #fff1f2; animation: shake 0.4s ease-in-out; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
 
-        body {
-            background: var(--bg);
-            color: var(--text);
-            overflow: hidden;
-            height: 100vh;
-        }
+        .btn-action { width: 100%; padding: 16px; border-radius: 16px; border: none; background: var(--primary); color: white; font-weight: 800; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; }
+        .btn-action:active { transform: scale(0.98); }
+        .btn-action:disabled { background: #cbd5e1; cursor: not-allowed; opacity: 0.8; }
+        
+        .spinner-small { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background: white;
-            position: relative;
-        }
+        .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px); background: #333; color: white; padding: 12px 24px; border-radius: 30px; font-size: 0.85rem; font-weight: 600; z-index: 5000; opacity: 0; transition: 0.3s; pointer-events: none; text-align: center; white-space: nowrap; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .toast.active { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .toast.error { background: var(--danger); }
+        .toast.success { background: var(--primary-dark); }
 
-        .page {
-            flex: 1;
-            overflow-y: auto;
-            display: none;
-            padding: 20px;
-            padding-bottom: calc(var(--nav-height) + 20px);
-            animation: fadeIn 0.2s ease;
-            scroll-behavior: smooth;
-        }
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .menu-btn { background: white; padding: 15px; border-radius: 18px; border: 1px solid #f1f5f9; text-align: center; text-decoration: none; color: inherit; box-shadow: 0 4px 6px rgba(0,0,0,0.02); transition: 0.2s; }
+        .menu-btn span { display: block; font-size: 1.2rem; margin-bottom: 5px; }
+        .menu-btn label { font-size: 0.75rem; font-weight: 700; cursor: pointer; }
 
-        .page.active {
-            display: block;
-        }
+        .hotline-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #eee; text-decoration: none; color: inherit; }
+        .hotline-item .label { font-size: 0.8rem; font-weight: 600; color: var(--text-light); }
+        .hotline-item .phone { font-size: 0.9rem; font-weight: 800; color: #3b82f6; }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.98);
-            }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 3000; display: none; flex-direction: column; }
+        .overlay.active { display: flex; }
+        #video-preview { flex: 1; object-fit: cover; }
+        .camera-ui { padding: 25px; background: white; border-top-left-radius: 30px; border-top-right-radius: 30px; display: flex; justify-content: space-around; align-items: center; }
+        .btn-shutter { width: 70px; height: 70px; border-radius: 50%; border: 5px solid #eee; background: var(--danger); }
 
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        .bottom-nav {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            height: var(--nav-height);
-            background: white;
-            display: flex;
-            border-top: 1px solid #f1f5f9;
-            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.03);
-            z-index: 1000;
-        }
-
-        .nav-item {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            color: var(--text-light);
-            cursor: pointer;
-        }
-
-        .nav-item span:first-child {
-            font-size: 1.4rem;
-            margin-bottom: 2px;
-        }
-
-        .nav-item span:last-child {
-            font-size: 0.6rem;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .nav-item.active {
-            color: var(--primary);
-        }
-
-        .card {
-            background: #f8fafc;
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 15px;
-            border: 1px solid #f1f5f9;
-            transition: 0.3s;
-        }
-
-        .card.error-focus {
-            border: 2px solid var(--danger);
-            background: #fff1f2;
-            animation: shake 0.4s ease-in-out;
-        }
-
-        @keyframes shake {
-
-            0%,
-            100% {
-                transform: translateX(0);
-            }
-
-            25% {
-                transform: translateX(-5px);
-            }
-
-            75% {
-                transform: translateX(5px);
-            }
-        }
-
-        .btn-action {
-            width: 100%;
-            padding: 16px;
-            border-radius: 16px;
-            border: none;
-            background: var(--primary);
-            color: white;
-            font-weight: 800;
-            font-size: 1rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: 0.2s;
-        }
-
-        .btn-action:active {
-            transform: scale(0.98);
-        }
-
-        .btn-action:disabled {
-            background: #cbd5e1;
-            cursor: not-allowed;
-            opacity: 0.8;
-        }
-
-        .spinner-small {
-            width: 18px;
-            height: 18px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        .toast {
-            position: fixed;
-            bottom: 90px;
-            left: 50%;
-            transform: translateX(-50%) translateY(20px);
-            background: #333;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 30px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            z-index: 5000;
-            opacity: 0;
-            transition: 0.3s;
-            pointer-events: none;
-            text-align: center;
-            white-space: nowrap;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .toast.active {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        .toast.error {
-            background: var(--danger);
-        }
-
-        .toast.success {
-            background: var(--primary-dark);
-        }
-
-        .menu-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .menu-btn {
-            background: white;
-            padding: 15px;
-            border-radius: 18px;
-            border: 1px solid #f1f5f9;
-            text-align: center;
-            text-decoration: none;
-            color: inherit;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
-            transition: 0.2s;
-        }
-
-        .menu-btn span {
-            display: block;
-            font-size: 1.2rem;
-            margin-bottom: 5px;
-        }
-
-        .menu-btn label {
-            font-size: 0.75rem;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .hotline-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .hotline-item .label {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--text-light);
-        }
-
-        .hotline-item .phone {
-            font-size: 0.9rem;
-            font-weight: 800;
-            color: #3b82f6;
-        }
-
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 3000;
-            display: none;
-            flex-direction: column;
-        }
-
-        .overlay.active {
-            display: flex;
-        }
-
-        #video-preview {
-            flex: 1;
-            object-fit: cover;
-        }
-
-        .camera-ui {
-            padding: 25px;
-            background: white;
-            border-top-left-radius: 30px;
-            border-top-right-radius: 30px;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-        }
-
-        .btn-shutter {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            border: 5px solid #eee;
-            background: var(--danger);
-        }
-
-        .day-box {
-            background: white;
-            border: 1px solid #f1f5f9;
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 12px;
-        }
-
-        .native-select {
-            width: 100%;
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid #e2e8f0;
-            font-size: 0.9rem;
-            margin-bottom: 8px;
-            outline: none;
-        }
-
-        #global-loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: white;
-            z-index: 9999;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
+        .day-box { background: white; border: 1px solid #f1f5f9; border-radius: 15px; padding: 15px; margin-bottom: 12px; }
+        .native-select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 0.9rem; margin-bottom: 8px; outline: none; }
+        
+        #global-loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
     </style>
 </head>
-
 <body>
-    <div id="global-loading">
-        <div class="spinner-small"
-            style="width:40px; height:40px; border-width:4px; border-top-color:var(--primary); margin-bottom:15px;">
-        </div>
-        <p style="font-weight:700; color:var(--text-light);">Đang tải dữ liệu...</p>
-    </div>
+    <div id="global-loading"><div class="spinner-small" style="width:40px; height:40px; border-width:4px; border-top-color:var(--primary); margin-bottom:15px;"></div><p style="font-weight:700; color:var(--text-light);">Đang tải dữ liệu...</p></div>
     <div id="toast" class="toast">Thông báo</div>
 
     <div class="container">
         <!-- LOGIN -->
         <div id="page-login" class="page active">
-            <div
-                style="height: 100%; display: flex; flex-direction: column; justify-content: center; text-align: center; padding: 30px;">
+            <div style="height: 100%; display: flex; flex-direction: column; justify-content: center; text-align: center; padding: 30px;">
                 <h2 style="font-size: 2.5rem; font-weight: 900; color: var(--primary); margin-bottom: 5px;">VanApp</h2>
                 <p style="color: var(--text-light); margin-bottom: 40px; font-weight: 500;">Hệ thống quản lý tài xế</p>
-                <input type="number" id="login-id" placeholder="Nhập mã SAP của bạn..."
-                    style="width: 100%; padding: 18px; border-radius: 18px; border: 2px solid #f1f5f9; margin-bottom: 25px; font-size: 1.1rem; text-align: center; outline: none; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+                <input type="number" id="login-id" placeholder="Nhập mã SAP của bạn..." style="width: 100%; padding: 18px; border-radius: 18px; border: 2px solid #f1f5f9; margin-bottom: 25px; font-size: 1.1rem; text-align: center; outline: none; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
                 <button class="btn-action" id="btn-login" onclick="app.login()"><span>ĐĂNG NHẬP</span></button>
             </div>
         </div>
@@ -365,82 +77,56 @@
         <!-- HOME -->
         <div id="page-home" class="page">
             <div class="page-header">
-                <div>
-                    <h1 id="user-name">Tài xế</h1>
-                    <p id="user-sap" style="font-size: 0.8rem; color: var(--text-light);">Mã NV: ---</p>
-                </div>
-                <button onclick="app.logout()"
-                    style="border:none; background:none; color: var(--danger); font-weight: 700;">Đăng xuất</button>
+                <div><h1 id="user-name">Tài xế</h1><p id="user-sap" style="font-size: 0.8rem; color: var(--text-light);">Mã NV: ---</p></div>
+                <button onclick="app.logout()" style="border:none; background:none; color: var(--danger); font-weight: 700;">Đăng xuất</button>
             </div>
-            <div class="card"
-                style="background: linear-gradient(135deg, #1abc9c, #16a085); color: white; border: none; box-shadow: 0 10px 20px rgba(26,188,156,0.2);">
+            <div class="card" style="background: linear-gradient(135deg, #1abc9c, #16a085); color: white; border: none; box-shadow: 0 10px 20px rgba(26,188,156,0.2);">
                 <h3 style="font-size: 0.9rem; margin-bottom: 5px;">📍 Điểm danh hôm nay</h3>
                 <p style="font-size: 0.8rem; opacity: 0.9;" id="home-last-check">Đang kiểm tra...</p>
             </div>
             <div class="menu-grid">
-                <a href="https://docs.google.com/forms/d/e/1FAIpQLSdeMUMCp55KATYMsYSpacilv4HnKiGKEsmbMEdRTyLS4wKc-w/viewform?usp=dialog"
-                    target="_blank" class="menu-btn"><span>📅</span><label>Đăng ký Nghỉ</label></a>
-                <a href="https://docs.google.com/forms/d/e/1FAIpQLSc4a_ebdFUlhKv4EDPFB70dIJD-8rMUw9gl3elkE3Im6BqiOw/viewform"
-                    target="_blank" class="menu-btn"><span>💵</span><label>Phản hồi Lương</label></a>
-                <a href="https://docs.google.com/forms/d/e/1FAIpQLSe5vAY1wYKI_HoOzvgB9QGjHmmfLGyEqn2iFIFzmlBNoMjXAQ/viewform?usp=dialog"
-                    target="_blank" class="menu-btn"><span>💡</span><label>Góp ý</label></a>
-                <a href="https://docs.google.com/forms/d/e/1FAIpQLSe7ruc7QFEaO0g6IAEYYsxoIQ33r2PGdvvmw8z4ASxOjsAk-Q/viewform?usp=dialog"
-                    target="_blank" class="menu-btn"><span>🎫</span><label>Đăng ký VETC</label></a>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSdeMUMCp55KATYMsYSpacilv4HnKiGKEsmbMEdRTyLS4wKc-w/viewform?usp=dialog" target="_blank" class="menu-btn"><span>📅</span><label>Đăng ký Nghỉ</label></a>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSc4a_ebdFUlhKv4EDPFB70dIJD-8rMUw9gl3elkE3Im6BqiOw/viewform" target="_blank" class="menu-btn"><span>💵</span><label>Phản hồi Lương</label></a>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSe5vAY1wYKI_HoOzvgB9QGjHmmfLGyEqn2iFIFzmlBNoMjXAQ/viewform?usp=dialog" target="_blank" class="menu-btn"><span>💡</span><label>Góp ý</label></a>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSe7ruc7QFEaO0g6IAEYYsxoIQ33r2PGdvvmw8z4ASxOjsAk-Q/viewform?usp=dialog" target="_blank" class="menu-btn"><span>🎫</span><label>Đăng ký VETC</label></a>
             </div>
             <h3 style="font-size: 1rem; margin-bottom: 12px;">☎️ HOTLINE HỖ TRỢ</h3>
             <div class="card" style="padding: 0; overflow: hidden;">
-                <a href="tel:1900232389" class="hotline-item"><span class="label">Cứu hộ xe VF</span><span
-                        class="phone">1900.232389</span></a>
-                <a href="tel:02471096839" class="hotline-item"><span class="label">Chăm sóc TX</span><span
-                        class="phone">0247.109.6839</span></a>
-                <a href="tel:1900545458" class="hotline-item"><span class="label">BH PVI (Techcom)</span><span
-                        class="phone">1900.545458</span></a>
+                <a href="tel:1900232389" class="hotline-item"><span class="label">Cứu hộ xe VF</span><span class="phone">1900.232389</span></a>
+                <a href="tel:1900636984" class="hotline-item"><span class="label">Sạc pin & App VF</span><span class="phone">1900.636984</span></a>
+                <a href="tel:02471096839" class="hotline-item"><span class="label">Chăm sóc TX</span><span class="phone">0247.109.6839</span></a>
+                <a href="tel:19002088" class="hotline-item"><span class="label">Đặt xe</span><span class="phone">1900.2088</span></a>
+                <a href="tel:19002097" class="hotline-item"><span class="label">Hóa đơn điện tử</span><span class="phone">1900.2097</span></a>
+                <a href="tel:1900545458" class="hotline-item"><span class="label">BH PVI (Techcom)</span><span class="phone">1900.545458</span></a>
             </div>
         </div>
 
         <!-- CHECK-IN -->
         <div id="page-checkin" class="page">
-            <div class="page-header">
-                <h1>Điểm danh</h1>
-            </div>
+            <div class="page-header"><h1>Điểm danh</h1></div>
             <div id="checkin-limit-msg" style="display:none;" class="card">
-                <div style="text-align:center; padding:20px;"><span
-                        style="font-size:3rem; display:block; margin-bottom:15px;">✅</span>
-                    <h3>BẠN ĐÃ ĐIỂM DANH XONG</h3>
-                </div>
+                <div style="text-align:center; padding:20px;"><span style="font-size:3rem; display:block; margin-bottom:15px;">✅</span><h3>BẠN ĐÃ ĐIỂM DANH XONG</h3></div>
             </div>
             <div id="checkin-content">
-                <div onclick="app.startCamera()"
-                    style="height: 250px; background: #f1f5f9; border-radius: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; cursor: pointer; border: 2px dashed #cbd5e1;">
-                    <span style="font-size: 4rem;">📸</span>
-                    <h3 style="font-weight: 800; color: var(--primary-dark);">CHỤP ẢNH & GPS</h3>
-                </div>
-                <div id="checkin-status"
-                    style="margin-top: 20px; text-align: center; font-size: 0.8rem; color: var(--text-light); font-weight: 600;">
-                </div>
+                <div onclick="app.startCamera()" style="height: 250px; background: #f1f5f9; border-radius: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; cursor: pointer; border: 2px dashed #cbd5e1;"><span style="font-size: 4rem;">📸</span><h3 style="font-weight: 800; color: var(--primary-dark);">CHỤP ẢNH & GPS</h3></div>
+                <div id="checkin-status" style="margin-top: 20px; text-align: center; font-size: 0.8rem; color: var(--text-light); font-weight: 600;"></div>
             </div>
         </div>
 
         <!-- PHÂN CA -->
         <div id="page-phanca" class="page">
-            <div class="page-header">
-                <h1>Đăng ký Phân ca</h1>
-            </div>
-            <div id="phanca-timer"
-                style="background: var(--danger); color: white; padding: 8px; border-radius: 12px; text-align: center; font-size: 0.75rem; font-weight: 800; margin-bottom: 20px;">
-                Đang tải...</div>
+            <div class="page-header"><h1>Đăng ký Phân ca</h1></div>
+            <div id="phanca-timer" style="background: var(--danger); color: white; padding: 8px; border-radius: 12px; text-align: center; font-size: 0.75rem; font-weight: 800; margin-bottom: 20px;">Đang tải...</div>
             <div id="phanca-list"></div>
-            <button class="btn-action" style="margin-top: 20px; margin-bottom: 40px;" id="btn-phanca-submit"
-                onclick="app.reviewSchedule()">TIẾP TỤC & CHỐT LỊCH</button>
+            <button class="btn-action" style="margin-top: 20px; margin-bottom: 40px;" id="btn-phanca-submit" onclick="app.reviewSchedule()">TIẾP TỤC & CHỐT LỊCH</button>
         </div>
 
         <!-- PROFILE -->
         <div id="page-hoso" class="page">
-            <div class="page-header">
-                <h1>Hồ sơ & Lịch trình</h1>
-            </div>
+            <div class="page-header"><h1>Hồ sơ & Lịch trình</h1></div>
             <div class="card">
-                <p style="font-weight:700;">Mã SAP: <span id="p-id" style="color:var(--primary-dark);">---</span></p>
+                <p style="font-weight:800; font-size:1.1rem; color:var(--primary-dark); margin-bottom:5px;" id="p-name">Tài xế ---</p>
+                <p style="font-weight:600; font-size:0.85rem; color:var(--text-light);">Mã SAP: <span id="p-id">---</span></p>
             </div>
             <h4 style="font-size: 0.9rem; margin-bottom: 12px;">Lịch sử gần đây</h4>
             <div id="p-history" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 30px;"></div>
@@ -450,8 +136,7 @@
 
         <nav class="bottom-nav" id="main-nav" style="display:none;">
             <div onclick="app.nav('home')" class="nav-item" id="nav-home"><span>🏠</span><span>Trang chủ</span></div>
-            <div onclick="app.nav('checkin')" class="nav-item" id="nav-checkin"><span>📍</span><span>Check-in</span>
-            </div>
+            <div onclick="app.nav('checkin')" class="nav-item" id="nav-checkin"><span>📍</span><span>Check-in</span></div>
             <div onclick="app.nav('phanca')" class="nav-item" id="nav-phanca"><span>📅</span><span>Phân ca</span></div>
             <div onclick="app.nav('hoso')" class="nav-item" id="nav-hoso"><span>👤</span><span>Hồ sơ</span></div>
         </nav>
@@ -459,25 +144,18 @@
         <div id="overlay-camera" class="overlay">
             <video id="video-preview" autoplay playsinline></video>
             <div class="camera-ui">
-                <button class="btn-action"
-                    style="width:60px; height:60px; border-radius:50%; background:#f1f5f9; color:#333;"
-                    onclick="app.switchCamera()">🔄</button>
+                <button class="btn-action" style="width:60px; height:60px; border-radius:50%; background:#f1f5f9; color:#333;" onclick="app.switchCamera()">🔄</button>
                 <div class="btn-shutter" onclick="app.takePhoto()"></div>
-                <button class="btn-action"
-                    style="width:60px; height:60px; border-radius:50%; background:#fee2e2; color:red;"
-                    onclick="app.closeCamera()">✖</button>
+                <button class="btn-action" style="width:60px; height:60px; border-radius:50%; background:#fee2e2; color:red;" onclick="app.closeCamera()">✖</button>
             </div>
         </div>
 
-        <div id="overlay-review" class="overlay"
-            style="background: rgba(0,0,0,0.8); justify-content: center; padding: 20px;">
+        <div id="overlay-review" class="overlay" style="background: rgba(0,0,0,0.8); justify-content: center; padding: 20px;">
             <div style="background: white; width: 100%; border-radius: 25px; padding: 25px;">
                 <h3 style="margin-bottom: 15px;">Xác nhận lịch trình</h3>
-                <div id="review-content"
-                    style="max-height: 250px; overflow-y: auto; font-size: 0.85rem; line-height: 1.6;"></div>
+                <div id="review-content" style="max-height: 250px; overflow-y: auto; font-size: 0.85rem; line-height: 1.6;"></div>
                 <div style="margin-top: 25px; display: flex; gap: 12px;">
-                    <button class="btn-action" style="background: #eee; color: #333;"
-                        onclick="document.getElementById('overlay-review').classList.remove('active')">SỬA LẠI</button>
+                    <button class="btn-action" style="background: #eee; color: #333;" onclick="document.getElementById('overlay-review').classList.remove('active')">SỬA LẠI</button>
                     <button class="btn-action" id="btn-final-chot" onclick="app.finalSubmit()">CHỐT NGAY</button>
                 </div>
             </div>
@@ -493,6 +171,7 @@
             state: { name: '', id: '', bundle: null, camMode: 'user', addr: '' },
             init() {
                 this.state.id = localStorage.getItem('van_user_id');
+                this.state.name = localStorage.getItem('van_user_name');
                 if (this.state.id) this.loginSuccess();
                 window.onhashchange = () => this.routing();
                 this.routing();
@@ -508,15 +187,19 @@
                 const i = document.getElementById('login-id').value.trim();
                 const btn = document.getElementById('btn-login');
                 if (!i) return this.showToast("Vui lòng điền mã SAP!", "error");
-
+                
                 btn.disabled = true;
                 btn.innerHTML = `<div class="spinner-small"></div> Đang kiểm tra...`;
 
                 try {
                     const res = await fetch(`${SCRIPT_URL}?action=login&id=${i}`).then(r => r.text());
-                    if (res.trim() === "success") {
+                    if (res.trim().startsWith("success")) {
+                        const parts = res.trim().split("|");
+                        const driverName = parts[1] || "Tài xế";
                         localStorage.setItem('van_user_id', i);
+                        localStorage.setItem('van_user_name', driverName);
                         this.state.id = i;
+                        this.state.name = driverName;
                         this.showToast("Đăng nhập thành công!", "success");
                         setTimeout(() => this.loginSuccess(), 500);
                     } else {
@@ -532,6 +215,7 @@
             loginSuccess() {
                 document.getElementById('page-login').classList.remove('active');
                 document.getElementById('main-nav').style.display = 'flex';
+                document.getElementById('user-name').innerText = "Chào, " + this.state.name;
                 document.getElementById('user-sap').innerText = "Mã NV: " + this.state.id;
                 this.nav('home');
                 this.refreshBundle();
@@ -590,7 +274,7 @@
                         const data = await res.json();
                         this.state.addr = data.display_name || `${pos.coords.latitude}, ${pos.coords.longitude}`;
                         st.innerText = "✅ " + this.state.addr;
-                    } catch (e) { st.innerText = "✅ Vị trí: " + pos.coords.latitude.toFixed(4); }
+                    } catch(e) { st.innerText = "✅ Vị trí: " + pos.coords.latitude.toFixed(4); }
                 }, null, { timeout: 5000 });
                 this.state.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: this.state.camMode } });
                 document.getElementById('video-preview').srcObject = this.state.stream;
@@ -605,7 +289,7 @@
             },
             closeCamera() { if (this.state.stream) this.state.stream.getTracks().forEach(t => t.stop()); document.getElementById('overlay-camera').classList.remove('active'); },
             async submitCheckin(photo) {
-                const payload = { id: this.state.id, type: "Check-in", timestamp: new Date().toLocaleString('vi-VN'), location: this.state.addr, photo: photo };
+                const payload = { id: this.state.id, name: this.state.name, type: "Check-in", timestamp: new Date().toLocaleString('vi-VN'), location: this.state.addr, photo: photo };
                 await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload), mode: 'no-cors' });
                 this.showToast("Điểm danh thành công!", "success");
                 setTimeout(() => location.reload(), 1500);
@@ -624,7 +308,7 @@
                 WEEK_DATES.forEach((d, i) => {
                     const c8 = this.state.bundle.shiftCounts[d.value] || 0;
                     const left = Math.max(0, 252 - c8);
-                    html += `<div class="day-box" id="day_box_${i}"><span style="font-size:0.6rem; font-weight:800; color:var(--primary);">${d.isNext ? 'TUẦN TỚI' : 'TUẦN NÀY'}</span><h4>${d.label}</h4><select class="native-select" id="s_${i}" onchange="app.onShiftChange(${i})"><option value="">-- Chọn ca --</option><option value="06:00-15:00">06:00-15:00</option><option value="08:00-17:00" ${left <= 0 ? 'disabled' : ''}>08:00-17:00 (Trống: ${left})</option><option value="13:00-22:00">13:00-22:00</option><option value="OFF">OFF (Nghỉ)</option></select><select class="native-select" id="a_${i}" disabled><option value="">-- Khu vực --</option>${AREAS.map(a => `<option value="${a}">${a}</option>`).join('')}</select></div>`;
+                    html += `<div class="day-box" id="day_box_${i}"><span style="font-size:0.6rem; font-weight:800; color:var(--primary);">${d.isNext?'TUẦN TỚI':'TUẦN NÀY'}</span><h4>${d.label}</h4><select class="native-select" id="s_${i}" onchange="app.onShiftChange(${i})"><option value="">-- Chọn ca --</option><option value="06:00-15:00">06:00-15:00</option><option value="08:00-17:00" ${left <= 0 ? 'disabled' : ''}>08:00-17:00 (Trống: ${left})</option><option value="13:00-22:00">13:00-22:00</option><option value="OFF">OFF (Nghỉ)</option></select><select class="native-select" id="a_${i}" disabled><option value="">-- Khu vực --</option>${AREAS.map(a => `<option value="${a}">${a}</option>`).join('')}</select></div>`;
                 });
                 listEl.innerHTML = html;
             },
@@ -677,7 +361,7 @@
                 const btn = document.getElementById('btn-final-chot');
                 btn.disabled = true; btn.innerHTML = `<div class="spinner-small"></div> Đang gửi...`;
                 try {
-                    await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "submit_schedule", driverId: this.state.id, schedules: this.state.schedules }) });
+                    await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "submit_schedule", driverId: this.state.id, driverName: this.state.name, schedules: this.state.schedules }) });
                     this.showToast("Chốt lịch thành công!", "success");
                     setTimeout(() => location.reload(), 1500);
                 } catch (e) {
@@ -688,6 +372,7 @@
             renderProfile() {
                 if (!this.state.bundle) return;
                 document.getElementById('p-id').innerText = this.state.id;
+                document.getElementById('p-name').innerText = this.state.name;
                 const hL = document.getElementById('p-history'), sL = document.getElementById('p-schedule');
                 hL.innerHTML = this.state.bundle.history.reverse().map(r => `<div class="card" style="padding:10px; font-size:0.75rem; display:flex; justify-content:space-between;"><span>${r[0]}</span><strong>${r[3]}</strong></div>`).join('') || "Trống";
                 const today = new Date(); today.setHours(0, 0, 0, 0); const seen = new Set();
@@ -702,5 +387,4 @@
         app.init();
     </script>
 </body>
-
 </html>
