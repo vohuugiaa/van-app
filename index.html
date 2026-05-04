@@ -596,7 +596,8 @@
                         localStorage.setItem('van_user_name', driverName);
                         this.state.id = i; this.state.name = driverName;
                         this.showToast("Chào mừng " + driverName + "!", "success");
-                        setTimeout(() => this.loginSuccess(), 800);
+                        this.loginSuccess();
+                        this.preFetchLocation();
                     } else {
                         this.showToast("Mã SAP không đúng!", "error");
                         btn.disabled = false; btn.innerHTML = `<span>VÀO HỆ THỐNG</span>`;
@@ -664,37 +665,26 @@
                 const loadEl = document.getElementById('loc-loading');
                 const readyEl = document.getElementById('loc-ready');
                 const addrEl = document.getElementById('checkin-page-addr');
-                if (!loadEl || !readyEl) return;
 
-                loadEl.style.display = 'block';
-                readyEl.style.display = 'none';
-                this.state.addr = "";
-
-                // Tự động hiện nút Thử lại sau 5 giây nếu bị treo
+                // Tự động xử lý nếu bị treo sau 3 giây
                 const timeoutTimer = setTimeout(() => {
-                    if (this.state.addr === "") {
-                        addrEl.innerText = "⚠️ GPS đang load lâu, hãy chắc chắn bạn đã BẬT ĐỊNH VỊ và cho phép trình duyệt truy cập.";
-                        loadEl.style.display = 'none';
-                        readyEl.style.display = 'block';
+                    if (this.state.addr === "" && addrEl) {
+                        addrEl.innerText = "📍 Đang đợi tín hiệu GPS... (Nếu thấy bảng xin quyền, hãy bấm CHO PHÉP)";
+                        if (loadEl) loadEl.style.display = 'none';
+                        if (readyEl) readyEl.style.display = 'block';
                     }
-                }, 6000);
+                }, 3000);
 
-                const gpsOptions = { 
-                    enableHighAccuracy: true, 
-                    timeout: 10000, 
-                    maximumAge: 60000 // Dùng lại vị trí cũ trong vòng 1 phút để hiện cực nhanh
-                };
+                const gpsOptions = { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 };
 
                 navigator.geolocation.getCurrentPosition(async pos => {
                     clearTimeout(timeoutTimer);
                     const lat = pos.coords.latitude.toFixed(6);
                     const lon = pos.coords.longitude.toFixed(6);
-                    
-                    // Hiện tọa độ trước để tài xế biết là đã lấy được GPS
                     this.state.addr = `Tọa độ: ${lat}, ${lon}`;
-                    addrEl.innerText = "📍 " + this.state.addr;
-                    loadEl.style.display = 'none';
-                    readyEl.style.display = 'block';
+                    if (addrEl) addrEl.innerText = "📍 " + this.state.addr;
+                    if (loadEl) loadEl.style.display = 'none';
+                    if (readyEl) readyEl.style.display = 'block';
 
                     try {
                         const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`, {
@@ -702,16 +692,14 @@
                         });
                         const data = await res.json();
                         this.state.addr = data.display_name || `Tọa độ: ${lat}, ${lon}`;
-                        addrEl.innerText = "📍 " + (data.address.road || data.display_name.split(',')[0] || this.state.addr);
-                    } catch (e) {
-                        // Vẫn giữ tọa độ nếu lỗi mạng
-                    }
+                        if (addrEl) addrEl.innerText = "📍 " + (data.address.road || data.display_name.split(',')[0] || this.state.addr);
+                    } catch (e) {}
                 }, err => {
                     clearTimeout(timeoutTimer);
-                    addrEl.innerText = "❌ Lỗi: Hãy BẬT ĐỊNH VỊ và cho phép truy cập!";
-                    loadEl.style.display = 'none';
-                    readyEl.style.display = 'block';
-                    this.state.addr = "Lỗi GPS";
+                    if (addrEl) addrEl.innerText = "❌ Lỗi: Hãy bật định vị và Bấm để thử lại!";
+                    if (loadEl) loadEl.style.display = 'none';
+                    if (readyEl) readyEl.style.display = 'block';
+                    this.state.addr = "";
                 }, gpsOptions);
             },
 
