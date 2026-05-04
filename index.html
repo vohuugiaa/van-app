@@ -670,33 +670,49 @@
                 readyEl.style.display = 'none';
                 this.state.addr = "";
 
+                // Tự động hiện nút Thử lại sau 5 giây nếu bị treo
+                const timeoutTimer = setTimeout(() => {
+                    if (this.state.addr === "") {
+                        addrEl.innerText = "⚠️ GPS đang load lâu, hãy chắc chắn bạn đã BẬT ĐỊNH VỊ và cho phép trình duyệt truy cập.";
+                        loadEl.style.display = 'none';
+                        readyEl.style.display = 'block';
+                    }
+                }, 6000);
+
+                const gpsOptions = { 
+                    enableHighAccuracy: true, 
+                    timeout: 10000, 
+                    maximumAge: 60000 // Dùng lại vị trí cũ trong vòng 1 phút để hiện cực nhanh
+                };
+
                 navigator.geolocation.getCurrentPosition(async pos => {
+                    clearTimeout(timeoutTimer);
                     const lat = pos.coords.latitude.toFixed(6);
                     const lon = pos.coords.longitude.toFixed(6);
+                    
+                    // Hiện tọa độ trước để tài xế biết là đã lấy được GPS
+                    this.state.addr = `Tọa độ: ${lat}, ${lon}`;
+                    addrEl.innerText = "📍 " + this.state.addr;
+                    loadEl.style.display = 'none';
+                    readyEl.style.display = 'block';
+
                     try {
                         const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`, {
                             headers: { 'Accept-Language': 'vi' }
                         });
                         const data = await res.json();
-                        // Ưu tiên lấy tên đường
                         this.state.addr = data.display_name || `Tọa độ: ${lat}, ${lon}`;
-                        addrEl.innerText = "📍 " + (data.address.road || data.display_name.split(',')[0]);
-                        
-                        loadEl.style.display = 'none';
-                        readyEl.style.display = 'block';
+                        addrEl.innerText = "📍 " + (data.address.road || data.display_name.split(',')[0] || this.state.addr);
                     } catch (e) {
-                        // Nếu lỗi mạng, vẫn cho dùng tọa độ nhưng hiện cảnh báo
-                        this.state.addr = `Tọa độ: ${lat}, ${lon}`;
-                        addrEl.innerText = "📍 " + this.state.addr;
-                        loadEl.style.display = 'none';
-                        readyEl.style.display = 'block';
+                        // Vẫn giữ tọa độ nếu lỗi mạng
                     }
                 }, err => {
-                    addrEl.innerText = "❌ Lỗi: Hãy bật định vị và cho phép truy cập!";
+                    clearTimeout(timeoutTimer);
+                    addrEl.innerText = "❌ Lỗi: Hãy BẬT ĐỊNH VỊ và cho phép truy cập!";
                     loadEl.style.display = 'none';
                     readyEl.style.display = 'block';
                     this.state.addr = "Lỗi GPS";
-                }, { enableHighAccuracy: true, timeout: 15000 });
+                }, gpsOptions);
             },
 
             async startCamera() {
