@@ -69,7 +69,6 @@
             }
         }
 
-        /* Nav */
         .bottom-nav {
             position: absolute;
             bottom: 0;
@@ -108,7 +107,6 @@
             color: var(--primary);
         }
 
-        /* Elements */
         .card {
             background: #f8fafc;
             border-radius: 20px;
@@ -243,7 +241,6 @@
             outline: none;
         }
 
-        /* Loading Overlay */
         #global-loading {
             position: fixed;
             top: 0;
@@ -252,7 +249,7 @@
             height: 100%;
             background: white;
             z-index: 9999;
-            display: flex;
+            display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
@@ -281,11 +278,10 @@
 </head>
 
 <body>
-    <div id="global-loading" style="display:none;">
+    <div id="global-loading">
         <div class="spinner"></div>
-        <p style="font-weight:700; color:var(--text-light);">Đang đồng bộ dữ liệu...</p>
+        <p style="font-weight:700; color:var(--text-light);">Đang tải dữ liệu...</p>
     </div>
-
     <div class="container">
         <!-- LOGIN -->
         <div id="page-login" class="page active">
@@ -293,21 +289,16 @@
                 style="height: 100%; display: flex; flex-direction: column; justify-content: center; text-align: center;">
                 <h2 style="font-size: 2.2rem; font-weight: 900; color: var(--primary); margin-bottom: 10px;">VanApp Pro
                 </h2>
-                <p style="margin-bottom: 30px; color: var(--text-light); font-size: 0.9rem;">Ứng dụng quản lý tài xế tối
-                    ưu</p>
-                <input type="text" id="login-name" placeholder="Họ và tên..."
-                    style="width: 100%; padding: 16px; border-radius: 16px; border: 2px solid #f1f5f9; margin-bottom: 15px; font-size: 1rem;">
                 <input type="number" id="login-id" placeholder="Mã nhân viên (SAP)..."
                     style="width: 100%; padding: 16px; border-radius: 16px; border: 2px solid #f1f5f9; margin-bottom: 25px; font-size: 1rem;">
                 <button class="btn-action" onclick="app.login()">ĐĂNG NHẬP</button>
             </div>
         </div>
-
         <!-- HOME -->
         <div id="page-home" class="page">
             <div class="page-header">
                 <div>
-                    <h1 id="user-name">---</h1>
+                    <h1 id="user-name">Tài xế</h1>
                     <p id="user-sap" style="font-size: 0.8rem; color: var(--text-light);">Mã NV: ---</p>
                 </div>
                 <button onclick="app.logout()"
@@ -324,7 +315,7 @@
                 <a href="https://docs.google.com/forms/d/e/1FAIpQLSc4a_ebdFUlhKv4EDPFB70dIJD-8rMUw9gl3elkE3Im6BqiOw/viewform"
                     target="_blank" class="menu-btn"><span>💵</span><label>Phản hồi Lương</label></a>
                 <a href="https://docs.google.com/forms/d/e/1FAIpQLSe5vAY1wYKI_HoOzvgB9QGjHmmfLGyEqn2iFIFzmlBNoMjXAQ/viewform?usp=dialog"
-                    target="_blank" class="menu-btn"><span>💡</span><label>Góp ý / Ý kiến</label></a>
+                    target="_blank" class="menu-btn"><span>💡</span><label>Góp ý</label></a>
                 <a href="https://docs.google.com/forms/d/e/1FAIpQLSe7ruc7QFEaO0g6IAEYYsxoIQ33r2PGdvvmw8z4ASxOjsAk-Q/viewform?usp=dialog"
                     target="_blank" class="menu-btn"><span>🎫</span><label>Đăng ký VETC</label></a>
             </div>
@@ -332,15 +323,12 @@
             <div class="card" style="padding: 0; overflow: hidden;">
                 <a href="tel:1900232389" class="hotline-item"><span class="label">Cứu hộ xe VF</span><span
                         class="phone">1900.232389</span></a>
-                <a href="tel:1900636984" class="hotline-item"><span class="label">Sạc pin, App VF</span><span
-                        class="phone">1900.636984</span></a>
                 <a href="tel:02471096839" class="hotline-item"><span class="label">Chăm sóc TX</span><span
                         class="phone">0247.109.6839</span></a>
                 <a href="tel:1900545458" class="hotline-item"><span class="label">BH PVI (Techcom)</span><span
                         class="phone">1900.545458</span></a>
             </div>
         </div>
-
         <!-- CHECK-IN -->
         <div id="page-checkin" class="page">
             <div class="page-header">
@@ -348,7 +336,7 @@
             </div>
             <div id="checkin-limit-msg" style="display:none;" class="card">
                 <div style="text-align:center; padding:20px;"><span style="font-size:3rem;">✅</span>
-                    <h3 style="color:var(--primary-dark); margin-top:10px;">ĐÃ ĐIỂM DANH XONG</h3>
+                    <h3>ĐÃ ĐIỂM DANH XONG</h3>
                 </div>
             </div>
             <div id="checkin-content">
@@ -361,7 +349,6 @@
                     style="margin-top: 20px; text-align: center; font-size: 0.8rem; color: var(--text-light);"></div>
             </div>
         </div>
-
         <!-- PHÂN CA -->
         <div id="page-phanca" class="page">
             <div class="page-header">
@@ -374,14 +361,12 @@
             <button class="btn-action" style="margin-top: 20px;" id="btn-phanca-submit"
                 onclick="app.reviewSchedule()">TIẾP TỤC & CHỐT LỊCH</button>
         </div>
-
         <!-- PROFILE -->
         <div id="page-hoso" class="page">
             <div class="page-header">
                 <h1>Hồ sơ & Lịch sử</h1>
             </div>
             <div class="card">
-                <p><strong>Họ tên:</strong> <span id="p-name">---</span></p>
                 <p><strong>Mã SAP:</strong> <span id="p-id">---</span></p>
             </div>
             <h4 style="font-size: 0.9rem; margin-bottom: 10px;">Lịch sử Check-in</h4>
@@ -389,7 +374,6 @@
             <h4 style="font-size: 0.9rem; margin-bottom: 10px;">Lịch trình sắp tới</h4>
             <div id="p-schedule" style="display: flex; flex-direction: column; gap: 8px;"></div>
         </div>
-
         <nav class="bottom-nav" id="main-nav" style="display:none;">
             <div onclick="app.nav('home')" class="nav-item" id="nav-home"><span>🏠</span><span>Trang chủ</span></div>
             <div onclick="app.nav('checkin')" class="nav-item" id="nav-checkin"><span>📍</span><span>Check-in</span>
@@ -397,7 +381,6 @@
             <div onclick="app.nav('phanca')" class="nav-item" id="nav-phanca"><span>📅</span><span>Phân ca</span></div>
             <div onclick="app.nav('hoso')" class="nav-item" id="nav-hoso"><span>👤</span><span>Hồ sơ</span></div>
         </nav>
-
         <div id="overlay-camera" class="overlay">
             <video id="video-preview" autoplay playsinline></video>
             <div class="camera-ui">
@@ -410,7 +393,6 @@
                     onclick="app.closeCamera()">✖</button>
             </div>
         </div>
-
         <div id="overlay-review" class="overlay"
             style="background: rgba(0,0,0,0.8); justify-content: center; padding: 20px;">
             <div style="background: white; width: 100%; border-radius: 25px; padding: 25px;">
@@ -425,64 +407,47 @@
             </div>
         </div>
     </div>
-
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwNBXzxd2BsiPUGwRn9gxNC4KmEbVhD6i8dMuX5YOkl0e3-G9GXUznYr7AtM8loATCV/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxgg2-NGbqenlm3lU5tPee3Iity1EIwFxbvmhVQD4oz8bp_fo5ERsQZO2ltK180kS8a/exec";
         const AREAS = ["Quận Phú Nhuận", "Huyện Nhà Bè", "Quận 5", "Quận 3", "Quận 4", "Quận 1", "Quận 6", "Quận 8", "Quận 7", "Huyện Bình Chánh", "Quận Tân Bình", "Quận 11", "Quận 10", "Quận Gò Vấp", "Quận Bình Thạnh", "Quận Tân Phú", "Quận 12", "Huyện Hóc Môn", "Quận Bình Tân", "Thành phố Thủ Đức"];
         let WEEK_DATES = [];
-
         const app = {
             state: { name: '', id: '', bundle: null, camMode: 'user', addr: '' },
-
             init() {
-                this.state.name = localStorage.getItem('van_user_name');
                 this.state.id = localStorage.getItem('van_user_id');
-                if (this.state.name && this.state.id) this.loginSuccess();
+                if (this.state.id) this.loginSuccess();
                 window.onhashchange = () => this.routing();
                 this.routing();
             },
-
             async login() {
-                const n = document.getElementById('login-name').value.trim();
                 const i = document.getElementById('login-id').value.trim();
-                if (!n || !i) return alert("Điền đủ thông tin!");
-                const res = await fetch(`${SCRIPT_URL}?action=login&name=${n}&id=${i}`).then(r => r.text());
-                if (res === "success") {
-                    localStorage.setItem('van_user_name', n); localStorage.setItem('van_user_id', i);
-                    this.state.name = n; this.state.id = i; this.loginSuccess();
-                } else alert("Sai thông tin!");
+                if (!i) return alert("Điền mã SAP!");
+                const res = await fetch(`${SCRIPT_URL}?action=login&id=${i}`).then(r => r.text());
+                if (res === "success") { localStorage.setItem('van_user_id', i); this.state.id = i; this.loginSuccess(); }
+                else alert("Sai mã SAP!");
             },
-
             async loginSuccess() {
                 document.getElementById('page-login').classList.remove('active');
                 document.getElementById('main-nav').style.display = 'flex';
-                document.getElementById('user-name').innerText = this.state.name;
                 document.getElementById('user-sap').innerText = "Mã NV: " + this.state.id;
                 this.nav('home');
-                await this.refreshBundle(); // Tải gộp dữ liệu ngay khi vào
+                await this.refreshBundle();
             },
-
             async refreshBundle() {
                 document.getElementById('global-loading').style.display = 'flex';
                 try {
                     const res = await fetch(`${SCRIPT_URL}?action=get_bundle&id=${this.state.id}`);
                     this.state.bundle = await res.json();
-                    this.updateUIFromBundle();
-                } catch (e) { console.error("Lỗi đồng bộ!"); }
+                    this.updateUI();
+                } catch (e) { console.error(e); }
                 document.getElementById('global-loading').style.display = 'none';
             },
-
-            updateUIFromBundle() {
+            updateUI() {
                 const today = new Date().toLocaleDateString('vi-VN');
-                const lastCheck = this.state.bundle.history[this.state.bundle.history.length - 1];
-                if (lastCheck) {
-                    document.getElementById('home-last-check').innerText = "Lần cuối: " + lastCheck[0];
-                    if (lastCheck[0].split(',')[0].includes(today)) localStorage.setItem('last_check_date', today);
-                }
-                // Pre-render pages to make it instant
+                const last = this.state.bundle.history[this.state.bundle.history.length - 1];
+                if (last && last[0].split(',')[0].includes(today)) localStorage.setItem('last_check_date', today);
                 this.renderPhanCa(); this.renderProfile();
             },
-
             nav(p) { location.hash = "#/" + p; },
             routing() {
                 const h = location.hash.replace("#/", "") || "login";
@@ -493,20 +458,17 @@
                 if (h === "checkin") this.checkCheckinLimit();
                 if (h === "phanca") this.startTimer();
             },
-
             logout() { if (confirm("Đăng xuất?")) { localStorage.clear(); location.href = ""; } },
-            fmt(dObj) {
-                const d = new Date(dObj);
-                return isNaN(d) ? String(dObj).trim() : `${("0" + d.getDate()).slice(-2)}/${("0" + (d.getMonth() + 1)).slice(-2)}/${d.getFullYear()}`;
+            fmt(d) {
+                const date = new Date(d);
+                return isNaN(date) ? String(d).trim() : `${("0" + date.getDate()).slice(-2)}/${("0" + (date.getMonth() + 1)).slice(-2)}/${date.getFullYear()}`;
             },
-
             checkCheckinLimit() {
                 const today = new Date().toLocaleDateString('vi-VN');
                 const isDone = localStorage.getItem('last_check_date') === today;
                 document.getElementById('checkin-limit-msg').style.display = isDone ? 'block' : 'none';
                 document.getElementById('checkin-content').style.display = isDone ? 'none' : 'block';
             },
-
             async startCamera() {
                 const st = document.getElementById('checkin-status'); st.innerText = "📍 Đang lấy địa chỉ...";
                 navigator.geolocation.getCurrentPosition(async pos => {
@@ -515,12 +477,10 @@
                     this.state.addr = data.display_name || `${pos.coords.latitude}, ${pos.coords.longitude}`;
                     st.innerText = "✅ " + this.state.addr;
                 }, null, { timeout: 5000 });
-
                 this.state.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: this.state.camMode } });
                 document.getElementById('video-preview').srcObject = this.state.stream;
                 document.getElementById('overlay-camera').classList.add('active');
             },
-
             switchCamera() { this.state.camMode = (this.state.camMode === 'user' ? 'environment' : 'user'); this.startCamera(); },
             takePhoto() {
                 const v = document.getElementById('video-preview'); const c = document.createElement('canvas');
@@ -529,11 +489,10 @@
             },
             closeCamera() { if (this.state.stream) this.state.stream.getTracks().forEach(t => t.stop()); document.getElementById('overlay-camera').classList.remove('active'); },
             async submitCheckin(photo) {
-                const payload = { name: this.state.name, id: this.state.id, type: "Check-in", timestamp: new Date().toLocaleString('vi-VN'), location: this.state.addr, photo: photo };
+                const payload = { id: this.state.id, type: "Check-in", timestamp: new Date().toLocaleString('vi-VN'), location: this.state.addr, photo: photo };
                 await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload), mode: 'no-cors' });
                 alert("Thành công!"); location.reload();
             },
-
             renderPhanCa() {
                 if (!this.state.bundle) return;
                 const listEl = document.getElementById('phanca-list');
@@ -550,7 +509,6 @@
                 });
                 listEl.innerHTML = html;
             },
-
             generateDates() {
                 WEEK_DATES = []; let now = new Date(); now.setHours(0, 0, 0, 0);
                 let dToS = now.getDay() === 0 ? 0 : 7 - now.getDay();
@@ -561,7 +519,6 @@
                     WEEK_DATES.push({ label: `${c.getDay() === 0 ? 'Chủ Nhật' : 'Thứ ' + (c.getDay() + 1)} (${c.getDate()}/${c.getMonth() + 1})`, value: this.fmt(c), isNext: c > sunT });
                 }
             },
-
             startTimer() {
                 const el = document.getElementById('phanca-timer');
                 this.tInt = setInterval(() => {
@@ -575,7 +532,6 @@
                     }
                 }, 1000);
             },
-
             reviewSchedule() {
                 this.state.schedules = []; let html = '';
                 for (let i = 0; i < WEEK_DATES.length; i++) {
@@ -587,15 +543,12 @@
                 document.getElementById('review-content').innerHTML = html;
                 document.getElementById('overlay-review').classList.add('active');
             },
-
             async finalSubmit() {
-                await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "submit_schedule", driverName: this.state.name, driverId: this.state.id, schedules: this.state.schedules }) });
+                await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "submit_schedule", driverId: this.state.id, schedules: this.state.schedules }) });
                 alert("Thành công!"); location.reload();
             },
-
             renderProfile() {
                 if (!this.state.bundle) return;
-                document.getElementById('p-name').innerText = this.state.name;
                 document.getElementById('p-id').innerText = this.state.id;
                 const hL = document.getElementById('p-history'), sL = document.getElementById('p-schedule');
                 hL.innerHTML = this.state.bundle.history.reverse().map(r => `<div class="card" style="padding:10px; font-size:0.75rem; display:flex; justify-content:space-between;"><span>${r[0]}</span><strong>${r[3]}</strong></div>`).join('') || "Trống";
