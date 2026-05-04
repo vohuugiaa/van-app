@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -18,56 +19,286 @@
             --nav-height: 70px;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; }
-        .container { max-width: 500px; margin: 0 auto; height: 100vh; display: flex; flex-direction: column; background: white; position: relative; }
-        .page { flex: 1; overflow-y: auto; display: none; padding: 20px; padding-bottom: calc(var(--nav-height) + 20px); animation: fadeIn 0.3s ease; }
-        .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-        /* Header & Nav */
-        .page-header { margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
-        .page-header h1 { font-size: 1.3rem; font-weight: 800; }
-        .bottom-nav { position: absolute; bottom: 0; width: 100%; height: var(--nav-height); background: white; display: flex; border-top: 1px solid #f1f5f9; box-shadow: 0 -5px 15px rgba(0,0,0,0.03); z-index: 1000; }
-        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: var(--text-light); cursor: pointer; }
-        .nav-item span:first-child { font-size: 1.4rem; margin-bottom: 2px; }
-        .nav-item span:last-child { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; }
-        .nav-item.active { color: var(--primary); }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            position: relative;
+        }
+
+        .page {
+            flex: 1;
+            overflow-y: auto;
+            display: none;
+            padding: 20px;
+            padding-bottom: calc(var(--nav-height) + 20px);
+            animation: fadeIn 0.2s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Nav */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: var(--nav-height);
+            background: white;
+            display: flex;
+            border-top: 1px solid #f1f5f9;
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.03);
+            z-index: 1000;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: var(--text-light);
+            cursor: pointer;
+        }
+
+        .nav-item span:first-child {
+            font-size: 1.4rem;
+            margin-bottom: 2px;
+        }
+
+        .nav-item span:last-child {
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
 
         /* Elements */
-        .card { background: #f8fafc; border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid #f1f5f9; }
-        .btn-action { width: 100%; padding: 16px; border-radius: 16px; border: none; background: var(--primary); color: white; font-weight: 800; font-size: 1rem; cursor: pointer; }
-        
-        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-        .menu-btn { background: white; padding: 15px; border-radius: 18px; border: 1px solid #f1f5f9; text-align: center; text-decoration: none; color: inherit; box-shadow: 0 4px 6px rgba(0,0,0,0.02); transition: 0.2s; }
-        .menu-btn:active { transform: scale(0.95); background: #f8fafc; }
-        .menu-btn span { display: block; font-size: 1.2rem; margin-bottom: 5px; }
-        .menu-btn label { font-size: 0.75rem; font-weight: 700; cursor: pointer; }
+        .card {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid #f1f5f9;
+        }
 
-        .hotline-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #eee; text-decoration: none; color: inherit; }
-        .hotline-item:last-child { border-bottom: none; }
-        .hotline-item .label { font-size: 0.8rem; font-weight: 600; color: var(--text-light); }
-        .hotline-item .phone { font-size: 0.9rem; font-weight: 800; color: #3b82f6; }
+        .btn-action {
+            width: 100%;
+            padding: 16px;
+            border-radius: 16px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+        }
 
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 3000; display: none; flex-direction: column; }
-        .overlay.active { display: flex; }
-        #video-preview { flex: 1; object-fit: cover; }
-        .camera-ui { padding: 25px; background: white; border-top-left-radius: 30px; border-top-right-radius: 30px; display: flex; justify-content: space-around; align-items: center; }
-        .btn-shutter { width: 70px; height: 70px; border-radius: 50%; border: 5px solid #eee; background: var(--danger); }
-        .btn-switch { background: #f1f5f9; border: none; padding: 10px 15px; border-radius: 12px; font-size: 1.2rem; }
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
 
-        .day-box { background: white; border: 1px solid #f1f5f9; border-radius: 15px; padding: 15px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-        .native-select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 0.9rem; margin-bottom: 8px; outline: none; background: #fff; }
+        .menu-btn {
+            background: white;
+            padding: 15px;
+            border-radius: 18px;
+            border: 1px solid #f1f5f9;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            transition: 0.2s;
+        }
+
+        .menu-btn span {
+            display: block;
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .menu-btn label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .hotline-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .hotline-item:last-child {
+            border-bottom: none;
+        }
+
+        .hotline-item .label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .hotline-item .phone {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: #3b82f6;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 3000;
+            display: none;
+            flex-direction: column;
+        }
+
+        .overlay.active {
+            display: flex;
+        }
+
+        #video-preview {
+            flex: 1;
+            object-fit: cover;
+        }
+
+        .camera-ui {
+            padding: 25px;
+            background: white;
+            border-top-left-radius: 30px;
+            border-top-right-radius: 30px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .btn-shutter {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 5px solid #eee;
+            background: var(--danger);
+        }
+
+        .day-box {
+            background: white;
+            border: 1px solid #f1f5f9;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 12px;
+        }
+
+        .native-select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            outline: none;
+        }
+
+        /* Loading Overlay */
+        #global-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
+
 <body>
+    <div id="global-loading" style="display:none;">
+        <div class="spinner"></div>
+        <p style="font-weight:700; color:var(--text-light);">Đang đồng bộ dữ liệu...</p>
+    </div>
+
     <div class="container">
         <!-- LOGIN -->
         <div id="page-login" class="page active">
-            <div style="height: 100%; display: flex; flex-direction: column; justify-content: center; text-align: center;">
-                <h2 style="font-size: 2.2rem; font-weight: 900; color: var(--primary); margin-bottom: 10px;">Thông Tin Tài Xế Van</h2>
-                <input type="text" id="login-name" placeholder="Họ và tên..." style="width: 100%; padding: 16px; border-radius: 16px; border: 2px solid #f1f5f9; margin-bottom: 15px; font-size: 1rem;">
-                <input type="number" id="login-id" placeholder="Mã nhân viên (SAP)..." style="width: 100%; padding: 16px; border-radius: 16px; border: 2px solid #f1f5f9; margin-bottom: 25px; font-size: 1rem;">
+            <div
+                style="height: 100%; display: flex; flex-direction: column; justify-content: center; text-align: center;">
+                <h2 style="font-size: 2.2rem; font-weight: 900; color: var(--primary); margin-bottom: 10px;">VanApp Pro
+                </h2>
+                <p style="margin-bottom: 30px; color: var(--text-light); font-size: 0.9rem;">Ứng dụng quản lý tài xế tối
+                    ưu</p>
+                <input type="text" id="login-name" placeholder="Họ và tên..."
+                    style="width: 100%; padding: 16px; border-radius: 16px; border: 2px solid #f1f5f9; margin-bottom: 15px; font-size: 1rem;">
+                <input type="number" id="login-id" placeholder="Mã nhân viên (SAP)..."
+                    style="width: 100%; padding: 16px; border-radius: 16px; border: 2px solid #f1f5f9; margin-bottom: 25px; font-size: 1rem;">
                 <button class="btn-action" onclick="app.login()">ĐĂNG NHẬP</button>
             </div>
         </div>
@@ -75,63 +306,94 @@
         <!-- HOME -->
         <div id="page-home" class="page">
             <div class="page-header">
-                <div><h1 id="user-name">---</h1><p id="user-sap" style="font-size: 0.8rem; color: var(--text-light);">Mã NV: ---</p></div>
-                <button onclick="app.logout()" style="border:none; background:none; color: var(--danger); font-weight: 700; font-size: 0.8rem;">Đăng xuất</button>
+                <div>
+                    <h1 id="user-name">---</h1>
+                    <p id="user-sap" style="font-size: 0.8rem; color: var(--text-light);">Mã NV: ---</p>
+                </div>
+                <button onclick="app.logout()"
+                    style="border:none; background:none; color: var(--danger); font-weight: 700;">Đăng xuất</button>
             </div>
-            <div class="card" style="background: linear-gradient(135deg, #1abc9c, #16a085); color: white; border: none;">
+            <div class="card"
+                style="background: linear-gradient(135deg, #1abc9c, #16a085); color: white; border: none;">
                 <h3 style="font-size: 0.9rem; margin-bottom: 5px;">📍 Điểm danh hôm nay</h3>
                 <p style="font-size: 0.8rem; opacity: 0.9;" id="home-last-check">Chưa ghi nhận</p>
             </div>
             <div class="menu-grid">
-                <a href="https://docs.google.com/forms/d/e/1FAIpQLSdeMUMCp55KATYMsYSpacilv4HnKiGKEsmbMEdRTyLS4wKc-w/viewform?usp=dialog" target="_blank" class="menu-btn"><span>📅</span><label>Đăng ký Nghỉ</label></a>
-                <a href="https://docs.google.com/forms/d/e/1FAIpQLSc4a_ebdFUlhKv4EDPFB70dIJD-8rMUw9gl3elkE3Im6BqiOw/viewform" target="_blank" class="menu-btn"><span>💵</span><label>Phản hồi Lương</label></a>
-                <a href="https://docs.google.com/forms/d/e/1FAIpQLSe5vAY1wYKI_HoOzvgB9QGjHmmfLGyEqn2iFIFzmlBNoMjXAQ/viewform?usp=dialog" target="_blank" class="menu-btn"><span>💡</span><label>Góp ý / Ý kiến</label></a>
-                <a href="https://docs.google.com/forms/d/e/1FAIpQLSe7ruc7QFEaO0g6IAEYYsxoIQ33r2PGdvvmw8z4ASxOjsAk-Q/viewform?usp=dialog" target="_blank" class="menu-btn"><span>🎫</span><label>Đăng ký VETC</label></a>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSdeMUMCp55KATYMsYSpacilv4HnKiGKEsmbMEdRTyLS4wKc-w/viewform?usp=dialog"
+                    target="_blank" class="menu-btn"><span>📅</span><label>Đăng ký Nghỉ</label></a>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSc4a_ebdFUlhKv4EDPFB70dIJD-8rMUw9gl3elkE3Im6BqiOw/viewform"
+                    target="_blank" class="menu-btn"><span>💵</span><label>Phản hồi Lương</label></a>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSe5vAY1wYKI_HoOzvgB9QGjHmmfLGyEqn2iFIFzmlBNoMjXAQ/viewform?usp=dialog"
+                    target="_blank" class="menu-btn"><span>💡</span><label>Góp ý / Ý kiến</label></a>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSe7ruc7QFEaO0g6IAEYYsxoIQ33r2PGdvvmw8z4ASxOjsAk-Q/viewform?usp=dialog"
+                    target="_blank" class="menu-btn"><span>🎫</span><label>Đăng ký VETC</label></a>
             </div>
             <h3 style="font-size: 1rem; margin-bottom: 12px;">☎️ HOTLINE TỔNG ĐÀI</h3>
             <div class="card" style="padding: 0; overflow: hidden;">
-                <a href="tel:1900232389" class="hotline-item"><span class="label">Cứu hộ xe VF</span><span class="phone">1900.232389</span></a>
-                <a href="tel:1900636984" class="hotline-item"><span class="label">Sạc pin, App VF</span><span class="phone">1900.636984</span></a>
-                <a href="tel:02471096839" class="hotline-item"><span class="label">Chăm sóc TX</span><span class="phone">0247.109.6839</span></a>
-                <a href="tel:19002088" class="hotline-item"><span class="label">Tổng đài đặt xe</span><span class="phone">1900.2088</span></a>
-                <a href="tel:19002097" class="hotline-item"><span class="label">CSKH & Hóa đơn</span><span class="phone">1900.2097</span></a>
-                <a href="tel:1900545458" class="hotline-item"><span class="label">BH PVI (Techcom)</span><span class="phone">1900.545458</span></a>
+                <a href="tel:1900232389" class="hotline-item"><span class="label">Cứu hộ xe VF</span><span
+                        class="phone">1900.232389</span></a>
+                <a href="tel:1900636984" class="hotline-item"><span class="label">Sạc pin, App VF</span><span
+                        class="phone">1900.636984</span></a>
+                <a href="tel:02471096839" class="hotline-item"><span class="label">Chăm sóc TX</span><span
+                        class="phone">0247.109.6839</span></a>
+                <a href="tel:1900545458" class="hotline-item"><span class="label">BH PVI (Techcom)</span><span
+                        class="phone">1900.545458</span></a>
             </div>
         </div>
 
         <!-- CHECK-IN -->
         <div id="page-checkin" class="page">
-            <div class="page-header"><h1>Điểm danh</h1></div>
+            <div class="page-header">
+                <h1>Điểm danh</h1>
+            </div>
             <div id="checkin-limit-msg" style="display:none;" class="card">
-                <div style="text-align:center; padding:20px;"><span style="font-size:3rem;">✅</span><h3 style="color:var(--primary-dark); margin-top:10px;">ĐÃ ĐIỂM DANH XONG</h3><p style="font-size:0.8rem; color:var(--text-light); margin-top:5px;">Bạn đã Check-in hôm nay. Hẹn gặp lại ngày mai!</p></div>
+                <div style="text-align:center; padding:20px;"><span style="font-size:3rem;">✅</span>
+                    <h3 style="color:var(--primary-dark); margin-top:10px;">ĐÃ ĐIỂM DANH XONG</h3>
+                </div>
             </div>
             <div id="checkin-content">
-                <div onclick="app.startCamera()" style="height: 250px; background: #f1f5f9; border-radius: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; cursor: pointer;"><span style="font-size: 4rem;">📸</span><h3 style="font-weight: 800; color: var(--primary-dark);">BẤM ĐỂ CHỤP ẢNH</h3></div>
-                <div id="checkin-status" style="margin-top: 20px; text-align: center; font-size: 0.85rem; font-weight: 600;"></div>
+                <div onclick="app.startCamera()"
+                    style="height: 250px; background: #f1f5f9; border-radius: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; cursor: pointer;">
+                    <span style="font-size: 4rem;">📸</span>
+                    <h3 style="font-weight: 800; color: var(--primary-dark);">CHỤP ẢNH & GPS</h3>
+                </div>
+                <div id="checkin-status"
+                    style="margin-top: 20px; text-align: center; font-size: 0.8rem; color: var(--text-light);"></div>
             </div>
         </div>
 
         <!-- PHÂN CA -->
         <div id="page-phanca" class="page">
-            <div class="page-header"><h1>Đăng ký Phân ca</h1></div>
-            <div id="phanca-timer" style="background: var(--danger); color: white; padding: 8px; border-radius: 10px; text-align: center; font-size: 0.75rem; font-weight: 700; margin-bottom: 15px;">Đang tải...</div>
+            <div class="page-header">
+                <h1>Đăng ký Phân ca</h1>
+            </div>
+            <div id="phanca-timer"
+                style="background: var(--danger); color: white; padding: 6px; border-radius: 10px; text-align: center; font-size: 0.75rem; font-weight: 700; margin-bottom: 15px;">
+            </div>
             <div id="phanca-list"></div>
-            <button class="btn-action" style="margin-top: 20px;" id="btn-phanca-submit" onclick="app.reviewSchedule()">TIẾP TỤC & CHỐT LỊCH</button>
+            <button class="btn-action" style="margin-top: 20px;" id="btn-phanca-submit"
+                onclick="app.reviewSchedule()">TIẾP TỤC & CHỐT LỊCH</button>
         </div>
 
         <!-- PROFILE -->
         <div id="page-hoso" class="page">
-            <div class="page-header"><h1>Hồ sơ & Lịch sử</h1></div>
-            <div class="card"><p><strong>Họ tên:</strong> <span id="p-name">---</span></p><p><strong>Mã SAP:</strong> <span id="p-id">---</span></p></div>
+            <div class="page-header">
+                <h1>Hồ sơ & Lịch sử</h1>
+            </div>
+            <div class="card">
+                <p><strong>Họ tên:</strong> <span id="p-name">---</span></p>
+                <p><strong>Mã SAP:</strong> <span id="p-id">---</span></p>
+            </div>
             <h4 style="font-size: 0.9rem; margin-bottom: 10px;">Lịch sử Check-in</h4>
             <div id="p-history" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;"></div>
-            <h4 style="font-size: 0.9rem; margin-bottom: 10px;">Lịch trình Hiện tại & Tuần tới</h4>
+            <h4 style="font-size: 0.9rem; margin-bottom: 10px;">Lịch trình sắp tới</h4>
             <div id="p-schedule" style="display: flex; flex-direction: column; gap: 8px;"></div>
         </div>
 
         <nav class="bottom-nav" id="main-nav" style="display:none;">
             <div onclick="app.nav('home')" class="nav-item" id="nav-home"><span>🏠</span><span>Trang chủ</span></div>
-            <div onclick="app.nav('checkin')" class="nav-item" id="nav-checkin"><span>📍</span><span>Check-in</span></div>
+            <div onclick="app.nav('checkin')" class="nav-item" id="nav-checkin"><span>📍</span><span>Check-in</span>
+            </div>
             <div onclick="app.nav('phanca')" class="nav-item" id="nav-phanca"><span>📅</span><span>Phân ca</span></div>
             <div onclick="app.nav('hoso')" class="nav-item" id="nav-hoso"><span>👤</span><span>Hồ sơ</span></div>
         </nav>
@@ -139,18 +401,25 @@
         <div id="overlay-camera" class="overlay">
             <video id="video-preview" autoplay playsinline></video>
             <div class="camera-ui">
-                <button class="btn-switch" onclick="app.switchCamera()">🔄</button>
-                <button class="btn-shutter" onclick="app.takePhoto()"></button>
-                <button class="btn-switch" onclick="app.closeCamera()" style="background: #fee2e2; color: red;">✖</button>
+                <button class="btn-action"
+                    style="width:60px; height:60px; border-radius:50%; background:#f1f5f9; color:#333;"
+                    onclick="app.switchCamera()">🔄</button>
+                <div class="btn-shutter" onclick="app.takePhoto()"></div>
+                <button class="btn-action"
+                    style="width:60px; height:60px; border-radius:50%; background:#fee2e2; color:red;"
+                    onclick="app.closeCamera()">✖</button>
             </div>
         </div>
 
-        <div id="overlay-review" class="overlay" style="background: rgba(0,0,0,0.8); justify-content: center; padding: 20px;">
+        <div id="overlay-review" class="overlay"
+            style="background: rgba(0,0,0,0.8); justify-content: center; padding: 20px;">
             <div style="background: white; width: 100%; border-radius: 25px; padding: 25px;">
                 <h3 style="margin-bottom: 15px;">Xác nhận lịch trình</h3>
-                <div id="review-content" style="max-height: 300px; overflow-y: auto; font-size: 0.85rem; line-height: 1.5;"></div>
+                <div id="review-content"
+                    style="max-height: 250px; overflow-y: auto; font-size: 0.85rem; line-height: 1.5;"></div>
                 <div style="margin-top: 20px; display: flex; gap: 10px;">
-                    <button class="btn-action" style="background: #eee; color: #333;" onclick="document.getElementById('overlay-review').classList.remove('active')">SỬA LẠI</button>
+                    <button class="btn-action" style="background: #eee; color: #333;"
+                        onclick="document.getElementById('overlay-review').classList.remove('active')">SỬA LẠI</button>
                     <button class="btn-action" id="btn-final-chot" onclick="app.finalSubmit()">CHỐT NGAY</button>
                 </div>
             </div>
@@ -158,12 +427,12 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwt1R_-vozEmoklFLbAmSFPS0lW79dWPqDfHVVKji_4WR5ujCaefhdh6I71mjYWbpw1/exec";
-        const AREAS = ["Quận Phú Nhuận","Huyện Nhà Bè","Quận 5","Quận 3","Quận 4","Quận 1","Quận 6","Quận 8","Quận 7","Huyện Bình Chánh","Quận Tân Bình","Quận 11","Quận 10","Quận Gò Vấp","Quận Bình Thạnh","Quận Tân Phú","Quận 12","Huyện Hóc Môn","Quận Bình Tân","Thành phố Thủ Đức"];
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxtCDbuhDIb0HSut4gdY50iEeRa8PgnhU7c1Q_lAVu47-yYwDYR0g_PWNFB_yXq6Yu1/exec";
+        const AREAS = ["Quận Phú Nhuận", "Huyện Nhà Bè", "Quận 5", "Quận 3", "Quận 4", "Quận 1", "Quận 6", "Quận 8", "Quận 7", "Huyện Bình Chánh", "Quận Tân Bình", "Quận 11", "Quận 10", "Quận Gò Vấp", "Quận Bình Thạnh", "Quận Tân Phú", "Quận 12", "Huyện Hóc Môn", "Quận Bình Tân", "Thành phố Thủ Đức"];
         let WEEK_DATES = [];
 
         const app = {
-            state: { name: '', id: '', stream: null, addr: '', camMode: 'user', shiftCounts: {} },
+            state: { name: '', id: '', bundle: null, camMode: 'user', addr: '' },
 
             init() {
                 this.state.name = localStorage.getItem('van_user_name');
@@ -173,175 +442,133 @@
                 this.routing();
             },
 
-            login() {
+            async login() {
                 const n = document.getElementById('login-name').value.trim();
                 const i = document.getElementById('login-id').value.trim();
                 if (!n || !i) return alert("Điền đủ thông tin!");
-                fetch(`${SCRIPT_URL}?action=login&name=${n}&id=${i}`).then(r => r.text()).then(res => {
-                    if (res === "success") {
-                        localStorage.setItem('van_user_name', n); localStorage.setItem('van_user_id', i);
-                        this.state.name = n; this.state.id = i; this.loginSuccess();
-                    } else alert("Thông tin sai!");
-                });
+                const res = await fetch(`${SCRIPT_URL}?action=login&name=${n}&id=${i}`).then(r => r.text());
+                if (res === "success") {
+                    localStorage.setItem('van_user_name', n); localStorage.setItem('van_user_id', i);
+                    this.state.name = n; this.state.id = i; this.loginSuccess();
+                } else alert("Sai thông tin!");
             },
 
-            loginSuccess() {
-                if (window.history.replaceState) window.history.replaceState({}, document.title, window.location.pathname);
+            async loginSuccess() {
                 document.getElementById('page-login').classList.remove('active');
                 document.getElementById('main-nav').style.display = 'flex';
                 document.getElementById('user-name').innerText = this.state.name;
                 document.getElementById('user-sap').innerText = "Mã NV: " + this.state.id;
                 this.nav('home');
+                await this.refreshBundle(); // Tải gộp dữ liệu ngay khi vào
+            },
+
+            async refreshBundle() {
+                document.getElementById('global-loading').style.display = 'flex';
+                try {
+                    const res = await fetch(`${SCRIPT_URL}?action=get_bundle&id=${this.state.id}`);
+                    this.state.bundle = await res.json();
+                    this.updateUIFromBundle();
+                } catch (e) { console.error("Lỗi đồng bộ!"); }
+                document.getElementById('global-loading').style.display = 'none';
+            },
+
+            updateUIFromBundle() {
+                const today = new Date().toLocaleDateString('vi-VN');
+                const lastCheck = this.state.bundle.history[this.state.bundle.history.length - 1];
+                if (lastCheck) {
+                    document.getElementById('home-last-check').innerText = "Lần cuối: " + lastCheck[0];
+                    if (lastCheck[0].split(',')[0].includes(today)) localStorage.setItem('last_check_date', today);
+                }
+                // Pre-render pages to make it instant
+                this.renderPhanCa(); this.renderProfile();
             },
 
             nav(p) { location.hash = "#/" + p; },
-
             routing() {
                 const h = location.hash.replace("#/", "") || "login";
-                if (h === "login" && this.state.name) return this.nav('home');
                 document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
                 document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
                 if (document.getElementById('page-' + h)) document.getElementById('page-' + h).classList.add('active');
                 if (document.getElementById('nav-' + h)) document.getElementById('nav-' + h).classList.add('active');
-                
                 if (h === "checkin") this.checkCheckinLimit();
-                if (h === "phanca") this.loadPhanCa();
-                if (h === "hoso") this.loadProfile();
-                if (h === "home") {
-                    const l = localStorage.getItem('last_check_time');
-                    if (l) document.getElementById('home-last-check').innerText = "Lần cuối: " + l;
-                }
+                if (h === "phanca") this.startTimer();
             },
 
             logout() { if (confirm("Đăng xuất?")) { localStorage.clear(); location.href = ""; } },
-
-            // Helper to format dates consistently
-            fmt(dateObj) {
-                if (!dateObj) return "";
-                const d = new Date(dateObj);
-                if (isNaN(d)) return String(dateObj).trim(); // Fallback if string
-                return `${("0" + d.getDate()).slice(-2)}/${("0" + (d.getMonth() + 1)).slice(-2)}/${d.getFullYear()}`;
+            fmt(dObj) {
+                const d = new Date(dObj);
+                return isNaN(d) ? String(dObj).trim() : `${("0" + d.getDate()).slice(-2)}/${("0" + (d.getMonth() + 1)).slice(-2)}/${d.getFullYear()}`;
             },
 
             checkCheckinLimit() {
                 const today = new Date().toLocaleDateString('vi-VN');
-                if (localStorage.getItem('last_check_date') === today) {
-                    document.getElementById('checkin-limit-msg').style.display = 'block';
-                    document.getElementById('checkin-content').style.display = 'none';
-                } else {
-                    document.getElementById('checkin-limit-msg').style.display = 'none';
-                    document.getElementById('checkin-content').style.display = 'block';
-                }
+                const isDone = localStorage.getItem('last_check_date') === today;
+                document.getElementById('checkin-limit-msg').style.display = isDone ? 'block' : 'none';
+                document.getElementById('checkin-content').style.display = isDone ? 'none' : 'block';
             },
 
             async startCamera() {
-                const st = document.getElementById('checkin-status');
-                st.innerText = "📍 Đang lấy địa chỉ...";
-                try {
-                    const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, { timeout: 8000 }));
-                    const resAddr = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&addressdetails=1`);
-                    const addrData = await resAddr.json();
-                    this.state.addr = addrData.display_name || `${pos.coords.latitude}, ${pos.coords.longitude}`;
-                    st.innerText = "✅ Địa chỉ: " + this.state.addr;
-                    this.openStream();
-                } catch (e) { alert("Cấp quyền Camera & GPS!"); }
-            },
+                const st = document.getElementById('checkin-status'); st.innerText = "📍 Đang lấy địa chỉ...";
+                navigator.geolocation.getCurrentPosition(async pos => {
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`);
+                    const data = await res.json();
+                    this.state.addr = data.display_name || `${pos.coords.latitude}, ${pos.coords.longitude}`;
+                    st.innerText = "✅ " + this.state.addr;
+                }, null, { timeout: 5000 });
 
-            async openStream() {
-                if (this.state.stream) this.state.stream.getTracks().forEach(t => t.stop());
                 this.state.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: this.state.camMode } });
                 document.getElementById('video-preview').srcObject = this.state.stream;
                 document.getElementById('overlay-camera').classList.add('active');
             },
 
-            switchCamera() { this.state.camMode = (this.state.camMode === 'user' ? 'environment' : 'user'); this.openStream(); },
-
+            switchCamera() { this.state.camMode = (this.state.camMode === 'user' ? 'environment' : 'user'); this.startCamera(); },
             takePhoto() {
-                const v = document.getElementById('video-preview');
-                const c = document.createElement('canvas');
-                c.width = v.videoWidth; c.height = v.videoHeight;
-                c.getContext('2d').drawImage(v, 0, 0);
-                const photo = c.toDataURL('image/jpeg', 0.5);
-                this.closeCamera();
-                this.submitCheckin(photo);
+                const v = document.getElementById('video-preview'); const c = document.createElement('canvas');
+                c.width = v.videoWidth; c.height = v.videoHeight; c.getContext('2d').drawImage(v, 0, 0);
+                this.submitCheckin(c.toDataURL('image/jpeg', 0.5)); this.closeCamera();
             },
-
             closeCamera() { if (this.state.stream) this.state.stream.getTracks().forEach(t => t.stop()); document.getElementById('overlay-camera').classList.remove('active'); },
-
-            submitCheckin(photo) {
-                const time = new Date().toLocaleString('vi-VN');
-                const payload = { name: this.state.name, id: this.state.id, type: "Check-in", timestamp: time, location: this.state.addr, photo: photo };
-                fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload), mode: 'no-cors' }).then(() => {
-                    alert("Thành công!");
-                    localStorage.setItem('last_check_time', time);
-                    localStorage.setItem('last_check_date', new Date().toLocaleDateString('vi-VN'));
-                    this.nav('home');
-                });
-            },
-
-            async loadPhanCa() {
-                const listEl = document.getElementById('phanca-list');
-                const btnEl = document.getElementById('btn-phanca-submit');
-                listEl.innerHTML = "Đang kiểm tra lịch đã chốt..."; btnEl.style.display = 'none';
-                try {
-                    const resMy = await fetch(`${SCRIPT_URL}?action=my_schedule&id=${this.state.id}`);
-                    const myData = await resMy.json();
-                    this.generateDates();
-                    
-                    const shownDates = WEEK_DATES.map(d => d.value);
-                    const already = myData.some(r => {
-                        const sheetDate = this.fmt(r[4]); // Convert sheet date to DD/MM/YYYY
-                        return shownDates.includes(sheetDate);
-                    });
-
-                    if (already) {
-                        listEl.innerHTML = `<div class="card" style="text-align:center; padding:40px 20px; border:2px dashed var(--primary);"><span style="font-size:3rem; display:block; margin-bottom:15px;">✅</span><h3 style="color:var(--primary-dark);">BẠN ĐÃ CHỐT LỊCH!</h3><p style="font-size:0.85rem; color:var(--text-light); margin-top:10px;">Lịch trình sắp tới đã được ghi nhận. Vui lòng xem chi tiết tại mục Hồ sơ.</p></div>`;
-                        return;
-                    }
-
-                    btnEl.style.display = 'block';
-                    const r = await fetch(`${SCRIPT_URL}?action=get_shift_data`);
-                    this.state.shiftCounts = await r.json();
-                    this.renderPhanCa();
-                    this.startTimer();
-                } catch (e) { listEl.innerHTML = "Lỗi tải dữ liệu!"; }
-            },
-
-            generateDates() {
-                WEEK_DATES = []; let now = new Date(); now.setHours(0,0,0,0);
-                let dToS = now.getDay() === 0 ? 0 : 7 - now.getDay();
-                let start = new Date(now); start.setDate(now.getDate() + 1);
-                let end = new Date(now); end.setDate(now.getDate() + dToS + 7);
-                let sunT = new Date(now); sunT.setDate(now.getDate() + dToS);
-                let curr = new Date(start);
-                while (curr <= end) {
-                    WEEK_DATES.push({ 
-                        label: `${curr.getDay() === 0 ? 'Chủ Nhật' : 'Thứ ' + (curr.getDay() + 1)} (${curr.getDate()}/${curr.getMonth() + 1})`, 
-                        value: this.fmt(curr), 
-                        isNext: curr > sunT 
-                    });
-                    curr.setDate(curr.getDate() + 1);
-                }
+            async submitCheckin(photo) {
+                const payload = { name: this.state.name, id: this.state.id, type: "Check-in", timestamp: new Date().toLocaleString('vi-VN'), location: this.state.addr, photo: photo };
+                await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload), mode: 'no-cors' });
+                alert("Thành công!"); location.reload();
             },
 
             renderPhanCa() {
+                if (!this.state.bundle) return;
+                const listEl = document.getElementById('phanca-list');
+                this.generateDates();
+                const already = this.state.bundle.mySchedule.some(r => WEEK_DATES.map(d => d.value).includes(this.fmt(r[4])));
+                if (already) {
+                    listEl.innerHTML = `<div class="card" style="text-align:center; padding:30px;"><span style="font-size:3rem;">✅</span><h3>BẠN ĐÃ CHỐT LỊCH!</h3></div>`;
+                    document.getElementById('btn-phanca-submit').style.display = 'none'; return;
+                }
                 let html = '';
                 WEEK_DATES.forEach((d, i) => {
-                    let c8 = (this.state.shiftCounts[d.value] && this.state.shiftCounts[d.value]['08:00-17:00']) || 0;
-                    html += `<div class="day-box"><span style="font-size:0.6rem; background:#fef9c3; padding:2px 6px; border-radius:4px; font-weight:800;">${d.isNext ? 'TUẦN TỚI' : 'TUẦN NÀY'}</span><h4 style="margin:5px 0;">${d.label}</h4><select class="native-select" id="s_${i}" onchange="document.getElementById('a_${i}').disabled = (this.value===''||this.value==='OFF')"><option value="">-- Chọn ca --</option><option value="06:00-15:00">06:00-15:00</option><option value="08:00-17:00" ${c8 >= 252 ? 'disabled' : ''}>08:00-17:00 (${c8}/252)</option><option value="13:00-22:00">13:00-22:00</option><option value="OFF" style="color:red">OFF (Nghỉ)</option></select><select class="native-select" id="a_${i}" disabled><option value="">-- Khu vực --</option>${AREAS.map(a => `<option value="${a}">${a}</option>`).join('')}</select></div>`;
+                    const c8 = this.state.bundle.shiftCounts[d.value] || 0;
+                    html += `<div class="day-box"><span style="font-size:0.6rem; font-weight:800; color:var(--primary);">${d.isNext ? 'TUẦN TỚI' : 'TUẦN NÀY'}</span><h4>${d.label}</h4><select class="native-select" id="s_${i}" onchange="document.getElementById('a_${i}').disabled=(this.value===''||this.value==='OFF')"><option value="">-- Chọn ca --</option><option value="06:00-15:00">06:00-15:00</option><option value="08:00-17:00" ${c8 >= 252 ? 'disabled' : ''}>08:00-17:00 (${c8}/252)</option><option value="13:00-22:00">13:00-22:00</option><option value="OFF">OFF (Nghỉ)</option></select><select class="native-select" id="a_${i}" disabled><option value="">-- Khu vực --</option>${AREAS.map(a => `<option value="${a}">${a}</option>`).join('')}</select></div>`;
                 });
-                document.getElementById('phanca-list').innerHTML = html;
-                window.dCnt = WEEK_DATES.length;
+                listEl.innerHTML = html;
+            },
+
+            generateDates() {
+                WEEK_DATES = []; let now = new Date(); now.setHours(0, 0, 0, 0);
+                let dToS = now.getDay() === 0 ? 0 : 7 - now.getDay();
+                let start = new Date(now); start.setDate(now.getDate() + 1);
+                let sunT = new Date(now); sunT.setDate(now.getDate() + dToS);
+                for (let i = 0; i < 14; i++) {
+                    let c = new Date(start); c.setDate(start.getDate() + i);
+                    WEEK_DATES.push({ label: `${c.getDay() === 0 ? 'Chủ Nhật' : 'Thứ ' + (c.getDay() + 1)} (${c.getDate()}/${c.getMonth() + 1})`, value: this.fmt(c), isNext: c > sunT });
+                }
             },
 
             startTimer() {
                 const el = document.getElementById('phanca-timer');
-                if (this.tInt) clearInterval(this.tInt);
                 this.tInt = setInterval(() => {
                     let now = new Date(); let target = new Date();
                     let dToS = now.getDay() === 0 ? 0 : 7 - now.getDay();
                     target.setDate(now.getDate() + dToS); target.setHours(20, 0, 0, 0);
-                    if (now > target) el.innerText = "Hết giờ đăng ký tuần tới!";
+                    if (now > target) el.innerText = "Đóng đăng ký tuần tới!";
                     else {
                         let diff = target - now; let h = Math.floor(diff / 3600000); let m = Math.floor((diff % 3600000) / 60000); let s = Math.floor((diff % 60000) / 1000);
                         el.innerText = `Đóng tuần tới sau: ${h}h ${m}p ${s}s`;
@@ -351,49 +578,38 @@
 
             reviewSchedule() {
                 this.state.schedules = []; let html = '';
-                for (let i = 0; i < window.dCnt; i++) {
+                for (let i = 0; i < WEEK_DATES.length; i++) {
                     const s = document.getElementById(`s_${i}`).value, a = document.getElementById(`a_${i}`).value;
                     if (!s || (s !== 'OFF' && !a)) return alert("Chọn đủ!");
                     this.state.schedules.push({ date: WEEK_DATES[i].value, shift: s, area: a || "Nghỉ" });
-                    html += `<p style="margin-bottom:5px; border-bottom:1px dashed #eee;">${s}: ${a || 'OFF'}</p>`;
+                    html += `<p>${s}: ${a || 'OFF'}</p>`;
                 }
                 document.getElementById('review-content').innerHTML = html;
                 document.getElementById('overlay-review').classList.add('active');
             },
 
             async finalSubmit() {
-                const btn = document.getElementById('btn-final-chot');
-                btn.disabled = true; btn.innerText = "ĐANG GỬI...";
-                try {
-                    await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "submit_schedule", driverName: this.state.name, driverId: this.state.id, schedules: this.state.schedules }) });
-                    alert("Thành công!"); location.reload();
-                } catch (e) { alert("Lỗi!"); btn.disabled = false; btn.innerText = "CHỐT NGAY"; }
+                await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "submit_schedule", driverName: this.state.name, driverId: this.state.id, schedules: this.state.schedules }) });
+                alert("Thành công!"); location.reload();
             },
 
-            async loadProfile() {
-                document.getElementById('p-name').innerText = this.state.name; document.getElementById('p-id').innerText = this.state.id;
+            renderProfile() {
+                if (!this.state.bundle) return;
+                document.getElementById('p-name').innerText = this.state.name;
+                document.getElementById('p-id').innerText = this.state.id;
                 const hL = document.getElementById('p-history'), sL = document.getElementById('p-schedule');
-                hL.innerHTML = "Đang tải..."; sL.innerHTML = "Đang tải...";
-                try {
-                    const [rH, rS] = await Promise.all([fetch(`${SCRIPT_URL}?action=history&id=${this.state.id}`), fetch(`${SCRIPT_URL}?action=my_schedule&id=${this.state.id}`)]);
-                    const dH = await rH.json(), dS = await rS.json();
-                    hL.innerHTML = dH.reverse().slice(0, 10).map(r => `<div class="card" style="padding:10px; margin-bottom:5px; font-size:0.75rem; display:flex; justify-content:space-between;"><span>${r[0]}</span><strong>${r[3]}</strong></div>`).join('') || "Trống";
-                    
-                    const todayDate = new Date(); todayDate.setHours(0,0,0,0);
-                    const seenDates = new Set();
-                    sL.innerHTML = dS.filter(r => {
-                        const sheetDate = this.fmt(r[4]);
-                        const parts = sheetDate.split('/');
-                        const d = new Date(parts[2], parts[1]-1, parts[0]);
-                        if (d < todayDate) return false;
-                        if (seenDates.has(sheetDate)) return false;
-                        seenDates.add(sheetDate);
-                        return true;
-                    }).reverse().map(r => `<div class="card" style="padding:10px; margin-bottom:5px; font-size:0.75rem;"><div><strong>Ngày: ${this.fmt(r[4])}</strong> - ${r[5]}</div><div style="color:var(--text-light)">${r[3]}</div></div>`).join('') || "Chưa có lịch sắp tới.";
-                } catch (e) { hL.innerHTML = "Lỗi!"; sL.innerHTML = "Lỗi!"; }
+                hL.innerHTML = this.state.bundle.history.reverse().map(r => `<div class="card" style="padding:10px; font-size:0.75rem; display:flex; justify-content:space-between;"><span>${r[0]}</span><strong>${r[3]}</strong></div>`).join('') || "Trống";
+                const today = new Date(); today.setHours(0, 0, 0, 0); const seen = new Set();
+                sL.innerHTML = this.state.bundle.mySchedule.filter(r => {
+                    const parts = this.fmt(r[4]).split('/');
+                    const d = new Date(parts[2], parts[1] - 1, parts[0]);
+                    if (d < today || seen.has(this.fmt(r[4]))) return false;
+                    seen.add(this.fmt(r[4])); return true;
+                }).reverse().map(r => `<div class="card" style="padding:10px; font-size:0.75rem;"><strong>Ngày: ${this.fmt(r[4])}</strong> - ${r[5]}<br><small>${r[3]}</small></div>`).join('') || "Trống";
             }
         };
         app.init();
     </script>
 </body>
+
 </html>
