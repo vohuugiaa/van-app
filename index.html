@@ -535,7 +535,7 @@
                 <button class="btn-action"
                     style="width:65px; height:65px; border-radius:50%; background:#f1f5f9; color:#333;"
                     onclick="app.switchCamera()">🔄</button>
-                <div id="btn-snap" class="btn-shutter" onclick="app.takePhoto()"></div>
+                <div id="btn-snap" class="btn-shutter" onclick="app.takePhoto()" style="display: none;"></div>
                 <button class="btn-action"
                     style="width:65px; height:65px; border-radius:50%; background:#fee2e2; color:red;"
                     onclick="app.closeCamera()">✖</button>
@@ -678,14 +678,19 @@
                             headers: { 'Accept-Language': 'vi' }
                         });
                         const data = await res.json();
+                        // Ưu tiên lấy tên đường
                         this.state.addr = data.display_name || `Tọa độ: ${lat}, ${lon}`;
                         addrEl.innerText = "📍 " + (data.address.road || data.display_name.split(',')[0]);
+                        
+                        loadEl.style.display = 'none';
+                        readyEl.style.display = 'block';
                     } catch (e) {
+                        // Nếu lỗi mạng, vẫn cho dùng tọa độ nhưng hiện cảnh báo
                         this.state.addr = `Tọa độ: ${lat}, ${lon}`;
                         addrEl.innerText = "📍 " + this.state.addr;
+                        loadEl.style.display = 'none';
+                        readyEl.style.display = 'block';
                     }
-                    loadEl.style.display = 'none';
-                    readyEl.style.display = 'block';
                 }, err => {
                     addrEl.innerText = "❌ Lỗi: Hãy bật định vị và cho phép truy cập!";
                     loadEl.style.display = 'none';
@@ -696,7 +701,12 @@
 
             async startCamera() {
                 const st = document.getElementById('checkin-status');
+                const btnSnap = document.getElementById('btn-snap');
+                
                 st.innerText = "✅ Vị trí: " + this.state.addr;
+                st.style.color = "green";
+                if (btnSnap) btnSnap.style.display = "block"; // Chỉ hiện nút chụp khi vào đây
+
                 try {
                     this.state.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: this.state.camMode } });
                     document.getElementById('video-preview').srcObject = this.state.stream;
