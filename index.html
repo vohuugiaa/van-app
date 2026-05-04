@@ -657,18 +657,43 @@
             },
 
             async startCamera() {
-                const st = document.getElementById('checkin-status'); st.innerText = "📍 Đang xác định tọa độ...";
+                const st = document.getElementById('checkin-status'); 
+                st.innerText = "📍 Đang xác định vị trí...";
+                this.state.addr = "Đang lấy vị trí...";
+
+                // Cấu hình GPS chính xác hơn
+                const gpsOptions = { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 };
+
                 navigator.geolocation.getCurrentPosition(async pos => {
+                    const lat = pos.coords.latitude.toFixed(6);
+                    const lon = pos.coords.longitude.toFixed(6);
+                    
+                    // Gán tạm tọa độ trước (đề phòng không lấy được địa chỉ)
+                    this.state.addr = `Tọa độ: ${lat}, ${lon}`;
+                    st.innerText = "✅ Đã lấy tọa độ, đang tìm địa chỉ...";
+
                     try {
-                        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`);
+                        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`, {
+                            headers: { 'Accept-Language': 'vi' }
+                        });
                         const data = await res.json();
-                        this.state.addr = data.display_name || `${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`;
-                        st.innerText = "✅ Vị trí: " + this.state.addr;
-                    } catch (e) { st.innerText = "✅ Tọa độ: " + pos.coords.latitude.toFixed(4) + ", " + pos.coords.longitude.toFixed(4); }
-                }, null, { timeout: 8000 });
-                this.state.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: this.state.camMode } });
-                document.getElementById('video-preview').srcObject = this.state.stream;
-                document.getElementById('overlay-camera').classList.add('active');
+                        this.state.addr = data.display_name || `Tọa độ: ${lat}, ${lon}`;
+                        st.innerText = "✅ Vị trí: " + (data.address.road || data.display_name.split(',')[0]);
+                    } catch (e) { 
+                        st.innerText = "✅ Đã lấy tọa độ (Lỗi tìm địa chỉ)"; 
+                    }
+                }, err => {
+                    st.innerText = "❌ Lỗi GPS: Hãy bật định vị!";
+                    this.state.addr = "Không lấy được vị trí (Người dùng từ chối hoặc lỗi GPS)";
+                }, gpsOptions);
+
+                try {
+                    this.state.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: this.state.camMode } });
+                    document.getElementById('video-preview').srcObject = this.state.stream;
+                    document.getElementById('overlay-camera').classList.add('active');
+                } catch(e) {
+                    this.showToast("Không mở được camera!", "error");
+                }
             },
 
             switchCamera() { this.state.camMode = (this.state.camMode === 'user' ? 'environment' : 'user'); this.startCamera(); },
