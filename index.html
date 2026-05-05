@@ -644,6 +644,14 @@
             },
 
             logout() { if (confirm("Bạn muốn đăng xuất?")) { localStorage.clear(); location.href = ""; } },
+            checkCheckinLimit() {
+                const today = new Date().toLocaleDateString('vi-VN');
+                const isDone = localStorage.getItem('last_check_date') === today;
+                const limitMsg = document.getElementById('checkin-limit-msg');
+                const content = document.getElementById('checkin-content');
+                if (limitMsg) limitMsg.style.display = isDone ? 'block' : 'none';
+                if (content) content.style.display = isDone ? 'none' : 'block';
+            },
             fmt(d) {
                 const date = new Date(d);
                 return isNaN(date) ? String(d).trim() : `${("0" + date.getDate()).slice(-2)}/${("0" + (date.getMonth() + 1)).slice(-2)}/${date.getFullYear()}`;
@@ -706,9 +714,17 @@
                     return;
                 }
                 const payload = { id: this.state.id, name: this.state.name, type: "Check-in", timestamp: new Date().toLocaleString('vi-VN'), location: this.state.addr, photo: photo };
-                await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload), mode: 'no-cors' });
-                this.showToast("Điểm danh thành công!", "success");
-                setTimeout(() => this.refreshBundle(), 1500);
+                try {
+                    await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload), mode: 'no-cors' });
+                    localStorage.setItem('last_check_date', new Date().toLocaleDateString('vi-VN'));
+                    this.showToast("Điểm danh thành công!", "success");
+                    setTimeout(() => {
+                        this.checkCheckinLimit();
+                        this.refreshBundle();
+                    }, 1000);
+                } catch(e) {
+                    this.showToast("Lỗi gửi dữ liệu!", "error");
+                }
             },
 
             renderPhanCa() {
