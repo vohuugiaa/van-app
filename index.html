@@ -72,15 +72,18 @@
         }
 
         .bottom-nav {
-            position: absolute;
+            position: fixed;
             bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
             width: 100%;
+            max-width: 500px;
             height: var(--nav-height);
             background: white;
             display: flex;
             border-top: 1px solid #f1f5f9;
-            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.03);
-            z-index: 1000;
+            box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.05);
+            z-index: 5000;
         }
 
         .nav-item {
@@ -649,9 +652,14 @@
 
             checkZalo() {
                 const ua = navigator.userAgent.toLowerCase();
-                const isZalo = ua.indexOf("zalo") > -1;
+                const isZalo = ua.indexOf("zalo") > -1 || ua.indexOf("zaloview") > -1;
+                // Một số dòng máy cũ hoặc cấu hình đặc biệt có thể dùng string khác, 
+                // nhưng 'zalo' là phổ biến nhất.
                 if (isZalo) {
-                    document.getElementById('zalo-overlay').style.display = 'flex';
+                    const overlay = document.getElementById('zalo-overlay');
+                    overlay.style.display = 'flex';
+                    // Khóa cuộn trang khi hiện overlay
+                    document.body.style.overflow = 'hidden';
                 }
             },
 
