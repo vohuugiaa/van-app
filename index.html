@@ -8,6 +8,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
     <style>
         :root {
             --primary: #1abc9c;
@@ -473,9 +478,10 @@
         }
 
         /* Lớp khóa menu khi bật camera */
-        body.camera-active #main-nav {
-            display: none !important;
-        }
+        /* VanMap Styles */
+        #van-map { width: 100%; height: 100%; z-index: 1; min-height: 500px; }
+        .map-stats { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); z-index: 1000; background: rgba(255,255,255,0.95); padding: 8px 15px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; box-shadow: 0 4px 15px rgba(0,0,0,0.15); white-space: nowrap; color: var(--primary); }
+        .btn-refresh-map { position: absolute; bottom: 90px; right: 20px; z-index: 1000; width: 50px; height: 50px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 20px rgba(0,0,0,0.25); color: var(--primary); font-size: 1.2rem; cursor: pointer; }
     </style>
 </head>
 
@@ -641,6 +647,13 @@
             <div id="p-schedule" style="display: flex; flex-direction: column; gap: 12px;"></div>
         </div>
 
+        <!-- PAGE: MAP -->
+        <div id="page-map" class="page" style="padding:0; overflow:hidden; position:relative;">
+            <div id="van-map"></div>
+            <div class="map-stats" id="map-stats">Đang kết nối vệ tinh...</div>
+            <div class="btn-refresh-map" onclick="app.syncMap()">🔄</div>
+        </div>
+
         <!-- PAGE: HUY CHUYEN -->
         <div id="page-huychuyen" class="page">
             <div class="page-header">
@@ -700,8 +713,8 @@
 
         <nav class="bottom-nav" id="main-nav" style="display:none;">
             <div onclick="app.nav('home')" class="nav-item" id="nav-home"><span>🏠</span><span>Trang chủ</span></div>
-            <div onclick="app.nav('checkin')" class="nav-item" id="nav-checkin"><span>📍</span><span>Điểm danh</span>
-            </div>
+            <div onclick="app.nav('checkin')" class="nav-item" id="nav-checkin"><span>📍</span><span>Điểm danh</span></div>
+            <div onclick="app.nav('map')" class="nav-item" id="nav-map"><span>🗺️</span><span>Bản đồ</span></div>
             <div onclick="app.nav('phanca')" class="nav-item" id="nav-phanca"><span>📅</span><span>Phân ca</span></div>
             <div onclick="app.nav('hoso')" class="nav-item" id="nav-hoso"><span>👤</span><span>Hồ sơ</span></div>
         </nav>
@@ -739,18 +752,24 @@
 
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyGCgmfV3kmTVU3EaQPkmna8Nv5itlzbBNnP_NnANqheQwNVmGIjpRT4SQcZkvwP3pl3g/exec";
+        const FIREBASE_URL = "https://vanmap-live-default-rtdb.asia-southeast1.firebasedatabase.app/";
         const AREAS = ["Quận Phú Nhuận", "Huyện Nhà Bè", "Quận 5", "Quận 3", "Quận 4", "Quận 1", "Quận 6", "Quận 8", "Quận 7", "Huyện Bình Chánh", "Quận Tân Bình", "Quận 11", "Quận 10", "Quận Gò Vấp", "Quận Bình Thạnh", "Quận Tân Phú", "Quận 12", "Huyện Hóc Môn", "Quận Bình Tân", "Thành phố Thủ Đức"];
         let WEEK_DATES = [];
 
         const app = {
-            state: { name: '', id: '', contractType: '', bundle: null, camMode: 'user', addr: '', isLocked: false, photo: null },
+            state: { name: '', id: '', contractType: '', bundle: null, camMode: 'user', addr: '', isLocked: false, photo: null, map: null, markers: null, myMarker: null, lastUpdate: 0 },
             init() {
                 this.checkZalo();
                 this.state.id = localStorage.getItem('van_user_id');
                 this.state.name = localStorage.getItem('van_user_name');
-                if (this.state.id) this.loginSuccess();
+                if (this.state.id) {
+                    this.loginSuccess();
+                    this.initMap();
+                }
                 window.onhashchange = () => this.routing();
                 this.routing();
+                // Tự động cập nhật vị trí mỗi 2 phút
+                setInterval(() => this.broadcastLocation(), 120000);
             },
 
             checkZalo() {
@@ -1084,6 +1103,97 @@
                     const d = (r.cancelTime || "").replace('T', ' ').substring(0, 16);
                     return `<div class="card" style="padding: 15px; border-left: 4px solid ${r.status === 'Đã xử lý' ? 'var(--primary)' : 'var(--warning)'};"><div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;"><span style="font-size: 0.75rem; font-weight: 800; color: var(--text-light);">${d}</span><span class="week-tag" style="background: ${r.status === 'Đã xử lý' ? '#dcfce7' : '#fef3c7'}; color: ${r.status === 'Đã xử lý' ? '#166534' : '#92400e'};">${r.status}</span></div><p style="font-size: 0.85rem; line-height: 1.4; color: var(--text);">${r.note}</p>${r.feedback ? `<div style="margin-top: 10px; padding: 10px; background: #f8fafc; border-radius: 10px; font-size: 0.8rem; color: var(--primary-dark);"><strong>Phản hồi:</strong> ${r.feedback}</div>` : ''}</div>`;
                 }).join('');
+            },
+
+            // --- VANMAP MODULE ---
+            initMap() {
+                if (this.state.map) return;
+                this.state.map = L.map('van-map', { zoomControl: false }).setView([10.8231, 106.6297], 13);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap'
+                }).addTo(this.state.map);
+                this.state.markers = L.markerClusterGroup({
+                    showCoverageOnHover: false,
+                    maxClusterRadius: 50
+                });
+                this.state.map.addLayer(this.state.markers);
+                this.syncMap();
+            },
+
+            async broadcastLocation() {
+                if (!this.state.id) return;
+                navigator.geolocation.getCurrentPosition(async pos => {
+                    const lat = pos.coords.latitude;
+                    const lng = pos.coords.longitude;
+                    const payload = {
+                        name: this.state.name,
+                        lat: lat,
+                        lng: lng,
+                        ts: Date.now()
+                    };
+                    try {
+                        await fetch(`${FIREBASE_URL}locations/${this.state.id}.json`, {
+                            method: 'PATCH',
+                            body: JSON.stringify(payload)
+                        });
+                    } catch (e) {}
+                }, null, { enableHighAccuracy: true });
+            },
+
+            async syncMap() {
+                if (!this.state.map) return;
+                const stats = document.getElementById('map-stats');
+                stats.innerText = "🔄 Đang đồng bộ...";
+                
+                try {
+                    const res = await fetch(`${FIREBASE_URL}locations.json`);
+                    const data = await res.json();
+                    if (!data) return;
+
+                    this.state.markers.clearLayers();
+                    let count = 0;
+                    const now = Date.now();
+
+                    Object.keys(data).forEach(sap => {
+                        const driver = data[sap];
+                        if (now - driver.ts > 3600000) return; // Không hiện xe offline quá 1 tiếng
+
+                        const isMe = sap === this.state.id;
+                        const markerColor = isMe ? '#2563eb' : (now - driver.ts < 300000 ? '#10b981' : '#f59e0b');
+                        
+                        const marker = L.circleMarker([driver.lat, driver.lng], {
+                            radius: isMe ? 10 : 8,
+                            fillColor: markerColor,
+                            color: '#fff',
+                            weight: 2,
+                            fillOpacity: 0.9
+                        });
+
+                        const popupContent = `
+                            <div style="font-family: inherit; padding: 5px;">
+                                <strong style="color:var(--primary)">${driver.name}</strong><br>
+                                <small>SAP: ${sap}</small><br>
+                                <small>Cập nhật: ${new Date(driver.ts).toLocaleTimeString('vi-VN')}</small>
+                                <hr style="margin: 8px 0; border: 0; border-top: 1px solid #eee;">
+                                <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${driver.lat},${driver.lng}')" 
+                                        style="width:100%; background:var(--primary); color:white; border:0; padding:8px; border-radius:8px; font-size:12px; cursor:pointer;">
+                                    <i class="fas fa-directions"></i> Dẫn đường đến đây
+                                </button>
+                            </div>
+                        `;
+                        marker.bindPopup(popupContent);
+                        this.state.markers.addLayer(marker);
+                        if (isMe) {
+                            this.state.myMarker = marker;
+                            this.state.map.panTo([driver.lat, driver.lng]);
+                        }
+                        count++;
+                    });
+                    
+                    stats.innerText = `📍 Có ${count} tài xế đang trực tuyến`;
+                } catch (e) {
+                    stats.innerText = "❌ Lỗi đồng bộ";
+                }
             }
         };
         app.init();
