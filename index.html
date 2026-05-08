@@ -915,7 +915,14 @@
                 if (!this.state.photo || !this.state.addr) return this.showToast("Thiếu ảnh hoặc vị trí!", "warning");
                 const btn = document.getElementById('btn-submit-checkin');
                 btn.disabled = true; btn.innerHTML = `<div class="spinner-small"></div> ĐANG GỬI...`;
-                const payload = { id: this.state.id, name: this.state.name, timestamp: new Date().toLocaleString('vi-VN'), location: this.state.addr, photo: this.state.photo };
+                const payload = {
+                    id: this.state.id,
+                    name: this.state.name,
+                    timestamp: new Date().toLocaleString('vi-VN'),
+                    location: this.state.addr,
+                    photo: this.state.photo,
+                    folderId: "1gtEfBj_TfuXCHwbx_ZxqcmqWSdmcGcPC" // Thư mục Check-in
+                };
                 try {
                     await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload), mode: 'no-cors' });
                     localStorage.setItem('last_check_date', new Date().toLocaleDateString('vi-VN'));
@@ -1057,8 +1064,9 @@
                     name: this.state.name,
                     contractType: this.state.contractType,
                     cancelTime: time,
-                    photo: eBase64, // Đổi từ evidence sang photo để Script nhận diện
-                    note: n
+                    photo: eBase64,
+                    note: n,
+                    folderId: "1Hnu92gVr7D0_yWmw1uaKtgLayBHMmbJm" // Thư mục Hủy cuốc
                 };
                 try {
                     await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(p), mode: 'no-cors' });
