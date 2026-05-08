@@ -535,8 +535,6 @@
             <div class="menu-grid">
                 <a href="https://docs.google.com/forms/d/e/1FAIpQLSdeMUMCp55KATYMsYSpacilv4HnKiGKEsmbMEdRTyLS4wKc-w/viewform?usp=dialog"
                     target="_blank" class="menu-btn"><span>📅</span><label>Đăng ký Nghỉ</label></a>
-                <a href="https://docs.google.com/forms/d/e/1FAIpQLSc4a_ebdFUlhKv4EDPFB70dIJD-8rMUw9gl3elkE3Im6BqiOw/viewform"
-                    target="_blank" class="menu-btn"><span>💵</span><label>Phản hồi Lương</label></a>
                 <a href="https://docs.google.com/forms/d/e/1FAIpQLSe5vAY1wYKI_HoOzvgB9QGjHmmfLGyEqn2iFIFzmlBNoMjXAQ/viewform?usp=dialog"
                     target="_blank" class="menu-btn"><span>💡</span><label>Góp ý</label></a>
                 <a href="#/huychuyen" class="menu-btn"><span>🚫</span><label>Hủy chuyến</label></a>
@@ -636,8 +634,12 @@
             </div>
             
             <div id="contract-info-card" class="card" style="border-left: 5px solid var(--warning);">
-                <p style="font-weight:900; font-size:1.1rem; color:var(--text); margin-bottom:5px;">Loại hợp đồng: <span id="display-contract-type" style="color:var(--primary-dark)">---</span></p>
-                <div id="contract-rules" style="font-size: 0.85rem; line-height: 1.6; color: var(--text-light);">
+                <p style="font-weight:900; font-size:1.0rem; color:var(--text); margin-bottom:10px;">Vui lòng chọn Loại hợp đồng của bạn:</p>
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <button id="btn-type-thuviec" class="btn-action" style="padding: 10px; font-size: 0.75rem; background: #f1f5f9; color: #333;" onclick="app.setContractType('Thử việc')">THỬ VIỆC</button>
+                    <button id="btn-type-chinhthuc" class="btn-action" style="padding: 10px; font-size: 0.75rem; background: #f1f5f9; color: #333;" onclick="app.setContractType('Chính thức')">CHÍNH THỨC</button>
+                </div>
+                <div id="contract-rules" style="font-size: 0.85rem; line-height: 1.6; color: var(--text-light); padding-top: 10px; border-top: 1px dashed #ddd;">
                     <!-- Rules will be injected here -->
                 </div>
             </div>
@@ -710,7 +712,7 @@
         let WEEK_DATES = [];
 
         const app = {
-            state: { name: '', id: '', contractType: 'Thử việc', bundle: null, camMode: 'user', addr: '', isLocked: false, photo: null },
+            state: { name: '', id: '', contractType: '', bundle: null, camMode: 'user', addr: '', isLocked: false, photo: null },
             init() {
                 this.checkZalo();
                 this.state.id = localStorage.getItem('van_user_id');
@@ -1055,25 +1057,39 @@
                 }).reverse().map(r => `<div class="card" style="padding:12px; font-size:0.8rem;"><strong>📅 Ngày: ${this.fmt(r[4])}</strong><br><span style="color:var(--primary-dark)">Ca: ${r[5]}</span> | ${r[3]}</div>`).join('') || "Chưa có lịch trình";
             },
 
+            setContractType(type) {
+                this.state.contractType = type;
+                localStorage.setItem('van_user_contract', type);
+                this.renderCancellationRules();
+            },
+
             renderCancellationRules() {
                 const type = this.state.contractType;
-                const displayType = document.getElementById('display-contract-type');
                 const rulesEl = document.getElementById('contract-rules');
-                if (!displayType || !rulesEl) return;
+                const btnThuViec = document.getElementById('btn-type-thuviec');
+                const btnChinhThuc = document.getElementById('btn-type-chinhthuc');
+                if (!rulesEl || !btnThuViec || !btnChinhThuc) return;
 
-                displayType.innerText = type;
+                // Cập nhật màu nút để biết đang chọn cái nào
+                btnThuViec.style.background = (type === "Thử việc") ? "var(--primary)" : "#f1f5f9";
+                btnThuViec.style.color = (type === "Thử việc") ? "white" : "#333";
+                btnChinhThuc.style.background = (type === "Chính thức") ? "var(--primary)" : "#f1f5f9";
+                btnChinhThuc.style.color = (type === "Chính thức") ? "white" : "#333";
+
                 if (type === "Thử việc") {
                     rulesEl.innerHTML = `
                         <p>• Bill tối thiểu: <b>640.000 VNĐ</b></p>
                         <p>• Tỉ lệ nhận: <b>80%</b></p>
                         <p>• Tỉ lệ hoàn thành: <b>85%</b></p>
                     `;
-                } else {
+                } else if (type === "Chính thức") {
                     rulesEl.innerHTML = `
                         <p>• Bill tối thiểu: <b>800.000 VNĐ</b></p>
                         <p>• Tỉ lệ nhận: <b>80%</b></p>
                         <p>• Tỉ lệ hoàn thành: <b>90%</b></p>
                     `;
+                } else {
+                    rulesEl.innerHTML = `<p style="color:var(--danger)">Vui lòng chọn loại hợp đồng để xem quy định.</p>`;
                 }
             },
 
