@@ -771,8 +771,8 @@
                 }
                 window.onhashchange = () => this.routing();
                 this.routing();
-                // Tự động cập nhật vị trí mỗi 2 phút
-                setInterval(() => this.broadcastLocation(), 120000);
+                // Đã tắt tự động gửi vị trí từ điện thoại (Dùng định vị xe tự động)
+                // setInterval(() => this.broadcastLocation(), 120000);
             },
 
             checkZalo() {
@@ -1173,10 +1173,15 @@
                         if (now - driver.ts > 3600000) return; // Không hiện xe offline quá 1 tiếng
 
                         const isMe = sap === this.state.id;
-                        const markerColor = isMe ? '#2563eb' : (now - driver.ts < 300000 ? '#10b981' : '#f59e0b');
+                        const isGPS = driver.type === "GPS_VEHICLE";
                         
+                        // Màu sắc: Xanh dương (Bạn), Xanh lá (Xe đang chạy), Cam (Xe đứng yên)
+                        let markerColor = isMe ? '#2563eb' : '#10b981';
+                        if (driver.speed === 0) markerColor = '#f59e0b';
+                        if (now - driver.ts > 600000) markerColor = '#94a3b8'; // Xám nếu mất tín hiệu > 10p
+
                         const marker = L.circleMarker([driver.lat, driver.lng], {
-                            radius: isMe ? 10 : 8,
+                            radius: isMe ? 10 : (isGPS ? 9 : 8),
                             fillColor: markerColor,
                             color: '#fff',
                             weight: 2,
@@ -1184,14 +1189,17 @@
                         });
 
                         const popupContent = `
-                            <div style="font-family: inherit; padding: 5px;">
-                                <strong style="color:var(--primary)">${driver.name}</strong><br>
-                                <small>SAP: ${sap}</small><br>
+                            <div style="font-family: inherit; padding: 5px; min-width:150px;">
+                                <strong style="color:var(--primary); font-size:1.1rem;">${driver.name}</strong><br>
+                                <small style="color:#666;">${isGPS ? '📡 Định vị từ xe' : '📱 Định vị điện thoại'}</small><br>
+                                <div style="margin: 5px 0; font-weight:700;">
+                                    ${driver.speed !== undefined ? `⚡ Tốc độ: ${driver.speed} km/h` : ''}
+                                </div>
                                 <small>Cập nhật: ${new Date(driver.ts).toLocaleTimeString('vi-VN')}</small>
                                 <hr style="margin: 8px 0; border: 0; border-top: 1px solid #eee;">
                                 <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${driver.lat},${driver.lng}')" 
-                                        style="width:100%; background:var(--primary); color:white; border:0; padding:8px; border-radius:8px; font-size:12px; cursor:pointer;">
-                                    <i class="fas fa-directions"></i> Dẫn đường đến đây
+                                        style="width:100%; background:var(--primary); color:white; border:0; padding:10px; border-radius:10px; font-size:12px; cursor:pointer; font-weight:700;">
+                                    <i class="fas fa-directions"></i> DẪN ĐƯỜNG ĐẾN ĐÂY
                                 </button>
                             </div>
                         `;
@@ -1215,7 +1223,7 @@
                 const stats = document.getElementById('map-stats');
                 stats.innerText = "📍 Đang tìm vị trí của bạn...";
                 navigator.geolocation.getCurrentPosition(pos => {
-                    this.state.map.flyTo([pos.coords.latitude, pos.coords.longitude], 16, {
+                    this.state.map.flyTo([pos.coords.latitude, pos.coords.longitude], 17, {
                         animate: true,
                         duration: 1.5
                     });
