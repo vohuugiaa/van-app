@@ -1159,10 +1159,10 @@
             async syncMap() {
                 if (!this.state.map) return;
                 const stats = document.getElementById('map-stats');
-                stats.innerText = "🔄 Đang đồng bộ...";
                 
                 try {
-                    const res = await fetch(`${FIREBASE_URL}locations.json`);
+                    // Gọi qua GAS để tiết kiệm băng thông Firebase
+                    const res = await fetch(`${SCRIPT_URL}?action=get_map`);
                     const data = await res.json();
                     if (!data) return;
 
