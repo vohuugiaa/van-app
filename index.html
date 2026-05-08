@@ -471,6 +471,11 @@
             margin-right: 10px;
             cursor: pointer;
         }
+
+        /* Lớp khóa menu khi bật camera */
+        body.camera-active #main-nav {
+            display: none !important;
+        }
     </style>
 </head>
 
@@ -862,7 +867,7 @@
                     this.state.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: this.state.camMode } });
                     document.getElementById('video-preview').srcObject = this.state.stream;
                     document.getElementById('overlay-camera').classList.add('active');
-                    document.getElementById('main-nav').style.display = 'none'; // Ẩn thanh menu
+                    document.body.classList.add('camera-active'); // Thêm class ẩn menu
                 } catch (e) {
                     this.showToast("Không mở được camera!", "error");
                     return;
@@ -904,7 +909,7 @@
             closeCamera() {
                 if (this.state.stream) this.state.stream.getTracks().forEach(t => t.stop());
                 document.getElementById('overlay-camera').classList.remove('active');
-                document.getElementById('main-nav').style.display = 'flex'; // Hiện lại thanh menu
+                document.body.classList.remove('camera-active'); // Xóa class hiện lại menu
             },
             async submitCheckin() {
                 if (!this.state.photo || !this.state.addr) return this.showToast("Thiếu ảnh hoặc vị trí!", "warning");
@@ -1046,7 +1051,15 @@
                 if (f.files && f.files[0]) {
                     eBase64 = await new Promise(r => { const rd = new FileReader(); rd.onload = (e) => r(e.target.result); rd.readAsDataURL(f.files[0]); });
                 }
-                const p = { action: "submit_cancellation", id: this.state.id, name: this.state.name, contractType: this.state.contractType, cancelTime: time, evidence: eBase64, note: n };
+                const p = {
+                    action: "submit_cancellation",
+                    id: this.state.id,
+                    name: this.state.name,
+                    contractType: this.state.contractType,
+                    cancelTime: time,
+                    photo: eBase64, // Đổi từ evidence sang photo để Script nhận diện
+                    note: n
+                };
                 try {
                     await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(p), mode: 'no-cors' });
                     this.showToast("Đã gửi báo cáo thành công!", "success");
