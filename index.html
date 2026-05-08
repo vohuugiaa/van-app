@@ -1133,7 +1133,7 @@
                 btn.innerHTML = `<div class="spinner-small"></div> Đang gửi...`;
 
                 let evidenceBase64 = "";
-                if (fileInput.files && fileInput.files[0]) {
+                if (fileInput.files && fileInput.files.length > 0) {
                     evidenceBase64 = await new Promise((resolve) => {
                         const reader = new FileReader();
                         reader.onload = (e) => resolve(e.target.result);
