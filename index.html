@@ -973,20 +973,47 @@
             },
 
             renderPhanCa() {
-                if (!this.state.bundle) return;
-                const listEl = document.getElementById('phanca-list');
+                const listEl = document.getElementById('phanca-list') || document.getElementById('schedule-list');
+                if (!listEl) return;
+
                 this.generateDates();
-                const already = this.state.bundle.mySchedule.some(r => WEEK_DATES.map(d => d.value).includes(this.fmt(r[4])));
+                
+                // Nếu chưa có bundle hoặc lỗi fetch, vẫn cho hiện lịch để điền
+                const bundle = this.state.bundle || { shiftCounts: {}, mySchedule: [] };
+                const shiftCounts = bundle.shiftCounts || {};
+                const mySchedule = bundle.mySchedule || [];
+
+                const already = mySchedule.some(r => WEEK_DATES.map(d => d.value).includes(this.fmt(r[4])));
                 if (already) {
                     listEl.innerHTML = `<div class="card" style="text-align:center; padding:40px;"><span style="font-size:4rem;">✅</span><h3 style="margin-top:15px; color:var(--primary-dark);">LỊCH ĐÃ ĐƯỢC CHỐT!</h3><p style="font-size:0.85rem; color:var(--text-light); margin-top:10px;">Bạn có thể xem lại trong mục Hồ sơ.</p></div>`;
-                    document.getElementById('btn-phanca-submit').style.display = 'none'; return;
+                    const btn = document.getElementById('btn-phanca-submit');
+                    if (btn) btn.style.display = 'none'; 
+                    return;
                 }
+
                 let html = '';
                 WEEK_DATES.forEach((d, i) => {
-                    const c8 = this.state.bundle.shiftCounts[d.value] || 0;
+                    const c8 = shiftCounts[d.value] || 0;
                     const left = Math.max(0, 252 - c8);
                     const isLocked = this.state.isLocked && d.isNext;
-                    html += `<div class="day-box ${isLocked ? 'locked' : ''}" id="day_box_${i}"><span class="week-tag ${d.isNext ? 'tag-next' : 'tag-now'}">${d.isNext ? 'TUẦN TỚI' : 'TUẦN NÀY'}</span><h4 style="margin-bottom:10px;">${d.label}</h4><select class="native-select" id="s_${i}" onchange="app.onShiftChange(${i})"><option value="">-- Chọn ca trực --</option><option value="06:00-15:00">Ca 06:00-15:00</option><option value="08:00-17:00" ${left <= 0 ? 'disabled' : ''}>Ca 08:00-17:00 (Còn trống: ${left})</option><option value="13:00-22:00">Ca 13:00-22:00</option><option value="OFF" style="color:red">OFF (Nghỉ)</option></select><select class="native-select" id="a_${i}" disabled><option value="">-- Chọn Khu vực --</option>${AREAS.map(a => `<option value="${a}">${a}</option>`).join('')}</select></div>`;
+                    
+                    html += `
+                        <div class="day-box ${isLocked ? 'locked' : ''}" id="day_box_${i}">
+                            <span class="week-tag ${d.isNext ? 'tag-next' : 'tag-now'}">${d.isNext ? 'TUẦN TỚI' : 'TUẦN NÀY'}</span>
+                            <h4 style="margin-bottom:10px;">${d.label}</h4>
+                            <select class="native-select" id="s_${i}" onchange="app.onShiftChange(${i})">
+                                <option value="">-- Chọn ca trực --</option>
+                                <option value="06:00-15:00">Ca 06:00-15:00</option>
+                                <option value="08:00-17:00" ${left <= 0 ? 'disabled' : ''}>Ca 08:00-17:00 (Còn trống: ${left})</option>
+                                <option value="13:00-22:00">Ca 13:00-22:00</option>
+                                <option value="OFF" style="color:red">OFF (Nghỉ)</option>
+                            </select>
+                            <select class="native-select" id="a_${i}" disabled>
+                                <option value="">-- Chọn Khu vực --</option>
+                                ${AREAS.map(a => `<option value="${a}">${a}</option>`).join('')}
+                            </select>
+                        </div>
+                    `;
                 });
                 listEl.innerHTML = html;
             },
