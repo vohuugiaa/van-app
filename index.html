@@ -769,6 +769,7 @@
                     this.loginSuccess();
                     this.initMap();
                 }
+                window.onhashchange = () => this.routing();
                 this.routing();
                 // Đã tắt tự động gửi vị trí từ điện thoại (Dùng định vị xe tự động)
                 // setInterval(() => this.broadcastLocation(), 120000);
