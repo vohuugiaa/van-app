@@ -878,10 +878,13 @@
                     const lon = pos.coords.longitude.toFixed(6);
                     this.state.addr = `Tọa độ: ${lat}, ${lon}`;
                     try {
-                        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`, { headers: { 'Accept-Language': 'vi' } });
+                        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1`, { headers: { 'Accept-Language': 'vi' } });
                         const data = await res.json();
-                        this.state.addr = data.display_name || `Tọa độ: ${lat}, ${lon}`;
-                        st.innerText = "✅ Vị trí: " + (data.address.road || data.display_name.split(',')[0]);
+                        const a = data.address || {};
+                        const ward = a.suburb || a.neighbourhood || a.village || "";
+                        const dist = a.city_district || a.county || a.city || "";
+                        this.state.addr = (ward && dist) ? `${ward}, ${dist}` : data.display_name;
+                        st.innerText = "✅ Vị trí: " + (this.state.addr.length > 30 ? this.state.addr.substring(0,30) + "..." : this.state.addr);
                     } catch (e) {
                         st.innerText = "✅ Vị trí: " + this.state.addr;
                     }
