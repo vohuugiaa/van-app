@@ -899,7 +899,7 @@
                 const c = document.createElement('canvas');
                 c.width = v.videoWidth; c.height = v.videoHeight;
                 c.getContext('2d').drawImage(v, 0, 0);
-                this.state.photo = c.toDataURL('image/jpeg', 0.6);
+                this.state.photo = c.toDataURL('image/jpeg', 0.4);
                 document.getElementById('photo-preview-img').src = this.state.photo;
                 document.getElementById('photo-preview-container').style.display = 'block';
                 document.getElementById('btn-open-camera').style.display = 'none';
