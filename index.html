@@ -443,6 +443,31 @@
             font-weight: 700;
             backdrop-filter: blur(5px);
         }
+
+        /* Cancellation Page Styles */
+        #page-huychuyen .native-select {
+            background: #f8fafc;
+            border: 2px solid #f1f5f9;
+            transition: 0.3s;
+        }
+
+        #page-huychuyen .native-select:focus {
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(26, 188, 156, 0.1);
+        }
+
+        input[type="file"]::file-selector-button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            margin-right: 10px;
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -514,6 +539,7 @@
                     target="_blank" class="menu-btn"><span>💵</span><label>Phản hồi Lương</label></a>
                 <a href="https://docs.google.com/forms/d/e/1FAIpQLSe5vAY1wYKI_HoOzvgB9QGjHmmfLGyEqn2iFIFzmlBNoMjXAQ/viewform?usp=dialog"
                     target="_blank" class="menu-btn"><span>💡</span><label>Góp ý</label></a>
+                <a href="#/huychuyen" class="menu-btn"><span>🚫</span><label>Hủy chuyến</label></a>
                 <a href="https://docs.google.com/forms/d/e/1FAIpQLSe7ruc7QFEaO0g6IAEYYsxoIQ33r2PGdvvmw8z4ASxOjsAk-Q/viewform?usp=dialog"
                     target="_blank" class="menu-btn"><span>🎫</span><label>Đăng ký VETC</label></a>
             </div>
@@ -603,6 +629,42 @@
             <div id="p-schedule" style="display: flex; flex-direction: column; gap: 12px;"></div>
         </div>
 
+        <!-- PAGE: HUY CHUYEN -->
+        <div id="page-huychuyen" class="page">
+            <div class="page-header">
+                <h1>Báo cáo Hủy chuyến</h1>
+            </div>
+            
+            <div id="contract-info-card" class="card" style="border-left: 5px solid var(--warning);">
+                <p style="font-weight:900; font-size:1.1rem; color:var(--text); margin-bottom:5px;">Loại hợp đồng: <span id="display-contract-type" style="color:var(--primary-dark)">---</span></p>
+                <div id="contract-rules" style="font-size: 0.85rem; line-height: 1.6; color: var(--text-light);">
+                    <!-- Rules will be injected here -->
+                </div>
+            </div>
+
+            <div class="card">
+                <h4 style="font-size: 0.9rem; margin-bottom: 15px; font-weight: 800;">NHẬP THÔNG TIN HỦY</h4>
+                
+                <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-light); margin-bottom: 5px; display: block;">Ngày giờ hủy cuốc</label>
+                <input type="datetime-local" id="cancel-time" class="native-select" style="margin-bottom: 15px;">
+
+                <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-light); margin-bottom: 5px; display: block;">Bằng chứng (Ghi âm/Hình ảnh/Log gọi)</label>
+                <input type="file" id="cancel-evidence" accept="image/*,audio/*" class="native-select" style="margin-bottom: 15px; padding: 8px;">
+
+                <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-light); margin-bottom: 5px; display: block;">Lý do giải trình</label>
+                <textarea id="cancel-note" class="native-select" style="height: 100px; padding: 12px; resize: none;" placeholder="Nhập lý do chi tiết tại đây..."></textarea>
+
+                <button class="btn-action" id="btn-submit-cancel" style="margin-top: 10px;" onclick="app.submitCancellation()">
+                    <span>GỬI YÊU CẦU ĐỘI VAN</span>
+                </button>
+            </div>
+
+            <h4 style="font-size: 1rem; margin: 20px 0 15px; font-weight: 800; color: var(--text-light);">📋 Lịch sử yêu cầu</h4>
+            <div id="cancel-history" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 35px;">
+                <p style="text-align: center; color: var(--text-light); font-size: 0.85rem; padding: 20px;">Đang tải lịch sử...</p>
+            </div>
+        </div>
+
         <nav class="bottom-nav" id="main-nav" style="display:none;">
             <div onclick="app.nav('home')" class="nav-item" id="nav-home"><span>🏠</span><span>Trang chủ</span></div>
             <div onclick="app.nav('checkin')" class="nav-item" id="nav-checkin"><span>📍</span><span>Điểm danh</span>
@@ -648,7 +710,7 @@
         let WEEK_DATES = [];
 
         const app = {
-            state: { name: '', id: '', bundle: null, camMode: 'user', addr: '', isLocked: false, photo: null },
+            state: { name: '', id: '', contractType: 'Thử việc', bundle: null, camMode: 'user', addr: '', isLocked: false, photo: null },
             init() {
                 this.checkZalo();
                 this.state.id = localStorage.getItem('van_user_id');
@@ -688,10 +750,13 @@
                 try {
                     const res = await fetch(`${SCRIPT_URL}?action=login&id=${i}`).then(r => r.text());
                     if (res.trim().startsWith("success")) {
-                        const driverName = res.trim().split("|")[1] || "Tài xế";
+                        const parts = res.trim().split("|");
+                        const driverName = parts[1] || "Tài xế";
+                        const contract = parts[2] || "Thử việc";
                         localStorage.setItem('van_user_id', i);
                         localStorage.setItem('van_user_name', driverName);
-                        this.state.id = i; this.state.name = driverName;
+                        localStorage.setItem('van_user_contract', contract);
+                        this.state.id = i; this.state.name = driverName; this.state.contractType = contract;
                         this.showToast("Chào mừng " + driverName + "!", "success");
                         this.loginSuccess();
                     } else {
@@ -704,13 +769,15 @@
                 }
             },
 
-            loginSuccess() {
+                this.state.id = localStorage.getItem('van_user_id');
+                this.state.name = localStorage.getItem('van_user_name');
+                this.state.contractType = localStorage.getItem('van_user_contract') || 'Thử việc';
                 document.getElementById('page-login').classList.remove('active');
                 document.getElementById('main-nav').style.display = 'flex';
                 document.getElementById('user-name').innerText = "Chào, " + this.state.name;
                 document.getElementById('user-sap').innerText = "Mã NV: " + this.state.id;
                 this.nav('home'); this.refreshBundle();
-            },
+                this.renderCancellationRules();
 
             async refreshBundle() {
                 document.getElementById('global-loading').style.display = 'flex';
@@ -742,6 +809,7 @@
                 if (document.getElementById('nav-' + h)) document.getElementById('nav-' + h).classList.add('active');
                 if (h === "checkin") this.checkCheckinLimit();
                 if (h === "phanca") this.startTimer();
+                if (h === "huychuyen") this.renderCancellationHistory();
             },
 
             logout() { if (confirm("Bạn muốn đăng xuất?")) { localStorage.clear(); location.href = ""; } },
@@ -985,6 +1053,105 @@
                     if (d < today || seen.has(this.fmt(r[4]))) return false;
                     seen.add(this.fmt(r[4])); return true;
                 }).reverse().map(r => `<div class="card" style="padding:12px; font-size:0.8rem;"><strong>📅 Ngày: ${this.fmt(r[4])}</strong><br><span style="color:var(--primary-dark)">Ca: ${r[5]}</span> | ${r[3]}</div>`).join('') || "Chưa có lịch trình";
+            },
+
+            renderCancellationRules() {
+                const type = this.state.contractType;
+                const displayType = document.getElementById('display-contract-type');
+                const rulesEl = document.getElementById('contract-rules');
+                if (!displayType || !rulesEl) return;
+
+                displayType.innerText = type;
+                if (type === "Thử việc") {
+                    rulesEl.innerHTML = `
+                        <p>• Bill tối thiểu: <b>640.000 VNĐ</b></p>
+                        <p>• Tỉ lệ nhận: <b>80%</b></p>
+                        <p>• Tỉ lệ hoàn thành: <b>85%</b></p>
+                    `;
+                } else {
+                    rulesEl.innerHTML = `
+                        <p>• Bill tối thiểu: <b>800.000 VNĐ</b></p>
+                        <p>• Tỉ lệ nhận: <b>80%</b></p>
+                        <p>• Tỉ lệ hoàn thành: <b>90%</b></p>
+                    `;
+                }
+            },
+
+            async submitCancellation() {
+                const time = document.getElementById('cancel-time').value;
+                const fileInput = document.getElementById('cancel-evidence');
+                const note = document.getElementById('cancel-note').value.trim();
+                const btn = document.getElementById('btn-submit-cancel');
+
+                if (!time || !note) return this.showToast("Vui lòng điền đủ thông tin!", "error");
+                
+                btn.disabled = true;
+                btn.innerHTML = `<div class="spinner-small"></div> Đang gửi...`;
+
+                let evidenceBase64 = "";
+                if (fileInput.files && fileInput.files[0]) {
+                    evidenceBase64 = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => resolve(e.target.result);
+                        reader.readAsDataURL(fileInput.files[0]);
+                    });
+                }
+
+                const payload = {
+                    action: "submit_cancellation",
+                    id: this.state.id,
+                    name: this.state.name,
+                    contractType: this.state.contractType,
+                    cancelTime: time,
+                    evidence: evidenceBase64,
+                    note: note,
+                    timestamp: new Date().toLocaleString('vi-VN'),
+                    status: "Đang xử lý"
+                };
+
+                try {
+                    await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload), mode: 'no-cors' });
+                    this.showToast("Đã gửi báo cáo thành công!", "success");
+                    
+                    // Reset form
+                    document.getElementById('cancel-time').value = "";
+                    document.getElementById('cancel-evidence').value = "";
+                    document.getElementById('cancel-note').value = "";
+                    
+                    setTimeout(() => {
+                        this.refreshBundle();
+                        this.renderCancellationHistory();
+                    }, 1000);
+                } catch (e) {
+                    this.showToast("Lỗi gửi dữ liệu!", "error");
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = `<span>GỬI YÊU CẦU ĐỘI VAN</span>`;
+                }
+            },
+
+            renderCancellationHistory() {
+                const historyEl = document.getElementById('cancel-history');
+                if (!historyEl) return;
+
+                // Giả lập dữ liệu từ bundle nếu có, hoặc fetch
+                const history = this.state.bundle ? this.state.bundle.cancellations : [];
+                
+                if (!history || history.length === 0) {
+                    historyEl.innerHTML = `<p style="text-align: center; color: var(--text-light); font-size: 0.85rem; padding: 20px;">Chưa có yêu cầu nào được gửi.</p>`;
+                    return;
+                }
+
+                historyEl.innerHTML = history.reverse().map(r => `
+                    <div class="card" style="padding: 15px; border-left: 4px solid ${r.status === 'Đã xử lý' ? 'var(--primary)' : 'var(--warning)'};">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                            <span style="font-size: 0.75rem; font-weight: 800; color: var(--text-light);">${r.cancelTime}</span>
+                            <span class="week-tag" style="background: ${r.status === 'Đã xử lý' ? '#dcfce7' : '#fef3c7'}; color: ${r.status === 'Đã xử lý' ? '#166534' : '#92400e'};">${r.status}</span>
+                        </div>
+                        <p style="font-size: 0.85rem; line-height: 1.4; color: var(--text);">${r.note}</p>
+                        ${r.feedback ? `<div style="margin-top: 10px; padding: 10px; background: #f8fafc; border-radius: 10px; font-size: 0.8rem; color: var(--primary-dark);"><strong>Phản hồi:</strong> ${r.feedback}</div>` : ''}
+                    </div>
+                `).join('');
             }
         };
         app.init();
