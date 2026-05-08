@@ -1186,16 +1186,19 @@
                     return;
                 }
 
-                historyEl.innerHTML = history.reverse().map(r => `
-                    <div class="card" style="padding: 15px; border-left: 4px solid ${r.status === 'Đã xử lý' ? 'var(--primary)' : 'var(--warning)'};">
-                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
-                            <span style="font-size: 0.75rem; font-weight: 800; color: var(--text-light);">${r.cancelTime}</span>
-                            <span class="week-tag" style="background: ${r.status === 'Đã xử lý' ? '#dcfce7' : '#fef3c7'}; color: ${r.status === 'Đã xử lý' ? '#166534' : '#92400e'};">${r.status}</span>
+                historyEl.innerHTML = history.reverse().map(r => {
+                    const formattedDate = (r.cancelTime || "").replace('T', ' ').substring(0, 16);
+                    return `
+                        <div class="card" style="padding: 15px; border-left: 4px solid ${r.status === 'Đã xử lý' ? 'var(--primary)' : 'var(--warning)'};">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                                <span style="font-size: 0.75rem; font-weight: 800; color: var(--text-light);">${formattedDate}</span>
+                                <span class="week-tag" style="background: ${r.status === 'Đã xử lý' ? '#dcfce7' : '#fef3c7'}; color: ${r.status === 'Đã xử lý' ? '#166534' : '#92400e'};">${r.status}</span>
+                            </div>
+                            <p style="font-size: 0.85rem; line-height: 1.4; color: var(--text);">${r.note}</p>
+                            ${r.feedback ? `<div style="margin-top: 10px; padding: 10px; background: #f8fafc; border-radius: 10px; font-size: 0.8rem; color: var(--primary-dark);"><strong>Phản hồi:</strong> ${r.feedback}</div>` : ''}
                         </div>
-                        <p style="font-size: 0.85rem; line-height: 1.4; color: var(--text);">${r.note}</p>
-                        ${r.feedback ? `<div style="margin-top: 10px; padding: 10px; background: #f8fafc; border-radius: 10px; font-size: 0.8rem; color: var(--primary-dark);"><strong>Phản hồi:</strong> ${r.feedback}</div>` : ''}
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
             }
         };
         app.init();
