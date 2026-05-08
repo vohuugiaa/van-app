@@ -865,7 +865,12 @@
                 if (h === "huychuyen") this.renderCancellationHistory();
                 if (h === "map") {
                     this.initMap();
-                    setTimeout(() => { if(this.state.map) this.state.map.invalidateSize(); }, 300);
+                    setTimeout(() => { 
+                        if(this.state.map) {
+                            this.state.map.invalidateSize();
+                            this.locateMe(); // Tự động định vị khi mở tab
+                        }
+                    }, 300);
                 }
             },
 
@@ -1207,9 +1212,19 @@
 
             locateMe() {
                 if (!this.state.map) return;
+                const stats = document.getElementById('map-stats');
+                stats.innerText = "📍 Đang tìm vị trí của bạn...";
                 navigator.geolocation.getCurrentPosition(pos => {
-                    this.state.map.flyTo([pos.coords.latitude, pos.coords.longitude], 15);
-                }, () => this.showToast("Không tìm thấy vị trí!", "error"), { enableHighAccuracy: true });
+                    this.state.map.flyTo([pos.coords.latitude, pos.coords.longitude], 16, {
+                        animate: true,
+                        duration: 1.5
+                    });
+                    stats.innerText = "✅ Đã định vị";
+                    setTimeout(() => this.syncMap(), 1000);
+                }, () => {
+                    this.showToast("Không lấy được GPS!", "error");
+                    stats.innerText = "❌ Lỗi GPS";
+                }, { enableHighAccuracy: true });
             }
         };
         app.init();
