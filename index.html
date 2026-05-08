@@ -769,10 +769,12 @@
                     this.loginSuccess();
                     this.initMap();
                 }
-                window.onhashchange = () => this.routing();
                 this.routing();
                 // Đã tắt tự động gửi vị trí từ điện thoại (Dùng định vị xe tự động)
                 // setInterval(() => this.broadcastLocation(), 120000);
+                
+                // Tự động làm mới bản đồ mỗi 30 giây để xe chạy mượt hơn
+                setInterval(() => { if(location.hash === "#/map") this.syncMap(); }, 30000);
             },
 
             checkZalo() {
@@ -1189,18 +1191,8 @@
                         });
 
                         const popupContent = `
-                            <div style="font-family: inherit; padding: 5px; min-width:150px;">
-                                <strong style="color:var(--primary); font-size:1.1rem;">${driver.name}</strong><br>
-                                <small style="color:#666;">${isGPS ? '📡 Định vị từ xe' : '📱 Định vị điện thoại'}</small><br>
-                                <div style="margin: 5px 0; font-weight:700;">
-                                    ${driver.speed !== undefined ? `⚡ Tốc độ: ${driver.speed} km/h` : ''}
-                                </div>
-                                <small>Cập nhật: ${new Date(driver.ts).toLocaleTimeString('vi-VN')}</small>
-                                <hr style="margin: 8px 0; border: 0; border-top: 1px solid #eee;">
-                                <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${driver.lat},${driver.lng}')" 
-                                        style="width:100%; background:var(--primary); color:white; border:0; padding:10px; border-radius:10px; font-size:12px; cursor:pointer; font-weight:700;">
-                                    <i class="fas fa-directions"></i> DẪN ĐƯỜNG ĐẾN ĐÂY
-                                </button>
+                            <div style="text-align:center; padding: 5px;">
+                                <strong style="color:var(--primary); font-size:1.2rem;">${driver.name}</strong>
                             </div>
                         `;
                         marker.bindPopup(popupContent);
@@ -1219,18 +1211,15 @@
             locateMe() {
                 if (!this.state.map) return;
                 const stats = document.getElementById('map-stats');
-                stats.innerText = "📍 Đang tìm vị trí của bạn...";
+                stats.innerText = "📍 Đang tìm bạn...";
                 navigator.geolocation.getCurrentPosition(pos => {
-                    this.state.map.flyTo([pos.coords.latitude, pos.coords.longitude], 17, {
-                        animate: true,
-                        duration: 1.5
-                    });
-                    stats.innerText = "✅ Đã định vị";
-                    setTimeout(() => this.syncMap(), 1000);
+                    const coords = [pos.coords.latitude, pos.coords.longitude];
+                    this.state.map.flyTo(coords, 17, { animate: true, duration: 1 });
+                    stats.innerText = "✅ Đã khớp vị trí";
+                    setTimeout(() => this.syncMap(), 500);
                 }, () => {
-                    this.showToast("Không lấy được GPS!", "error");
                     stats.innerText = "❌ Lỗi GPS";
-                }, { enableHighAccuracy: true });
+                }, { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 });
             }
         };
         app.init();
