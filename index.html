@@ -738,7 +738,7 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwJQb7utkVadMI3sizO-jo4xHvBHWmot22x_MoHFnBFKykIc85GsXDGy3LpDSOKIz68Ig/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyGCgmfV3kmTVU3EaQPkmna8Nv5itlzbBNnP_NnANqheQwNVmGIjpRT4SQcZkvwP3pl3g/exec";
         const AREAS = ["Quận Phú Nhuận", "Huyện Nhà Bè", "Quận 5", "Quận 3", "Quận 4", "Quận 1", "Quận 6", "Quận 8", "Quận 7", "Huyện Bình Chánh", "Quận Tân Bình", "Quận 11", "Quận 10", "Quận Gò Vấp", "Quận Bình Thạnh", "Quận Tân Phú", "Quận 12", "Huyện Hóc Môn", "Quận Bình Tân", "Thành phố Thủ Đức"];
         let WEEK_DATES = [];
 
@@ -920,8 +920,7 @@
                     name: this.state.name,
                     timestamp: new Date().toLocaleString('vi-VN'),
                     location: this.state.addr,
-                    photo: this.state.photo,
-                    folderId: "1gtEfBj_TfuXCHwbx_ZxqcmqWSdmcGcPC" // Thư mục Check-in
+                    photo: this.state.photo
                 };
                 try {
                     await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload), mode: 'no-cors' });
@@ -1065,8 +1064,7 @@
                     contractType: this.state.contractType,
                     cancelTime: time,
                     photo: eBase64,
-                    note: n,
-                    folderId: "1Hnu92gVr7D0_yWmw1uaKtgLayBHMmbJm" // Thư mục Hủy cuốc
+                    note: n
                 };
                 try {
                     await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(p), mode: 'no-cors' });
