@@ -521,7 +521,7 @@
                     VanApp</h2>
 
                 <div class="card" style="padding: 30px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
-                    <input type="number" id="login-id" placeholder="Nhập mã SAP của bạn"
+                    <input type="number" id="login-id" placeholder="Nhập mã nhân viên của bạn"
                         style="width: 100%; padding: 18px; border-radius: 15px; border: 2px solid #f1f5f9; margin-bottom: 20px; font-size: 1.2rem; text-align: center; outline: none; transition: 0.3s;">
                     <button class="btn-action" id="btn-login" onclick="app.login()"><span>VÀO HỆ THỐNG</span></button>
                 </div>
@@ -853,7 +853,9 @@
 
             nav(p) { location.hash = "#/" + p; },
             routing() {
-                const h = location.hash.replace("#/", "") || "home";
+                const h = location.hash.replace("#/", "") || "login";
+                if (!this.state.id && h !== "login") { location.hash = "#/login"; return; }
+                
                 document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
                 document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
                 if (document.getElementById('page-' + h)) document.getElementById('page-' + h).classList.add('active');
@@ -867,7 +869,7 @@
                 }
             },
 
-            logout() { if (confirm("Bạn muốn đăng xuất?")) { localStorage.clear(); location.href = ""; } },
+            logout() { if (confirm("Bạn muốn đăng xuất?")) { localStorage.clear(); location.hash = "#/login"; location.reload(); } },
             checkCheckinLimit() {
                 const today = new Date().toLocaleDateString('vi-VN');
                 const isDone = localStorage.getItem('last_check_date') === today;
