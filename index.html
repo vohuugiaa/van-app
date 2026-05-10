@@ -982,7 +982,12 @@
                 // PHÂN QUYỀN HỦY CHUYẾN (Chỉ tổ VAN.DOIXE11.02 mới thấy)
                 const btnHuy = document.getElementById('btn-home-huychuyen');
                 if (btnHuy) {
-                    btnHuy.style.display = (this.state.group === "VAN.DOIXE11.02") ? 'flex' : 'none';
+                    if (this.state.group === "VAN.DOIXE11.02") {
+                        btnHuy.style.display = 'flex';
+                        btnHuy.style.flexDirection = 'column'; // Đảm bảo icon ở trên, chữ ở dưới
+                    } else {
+                        btnHuy.style.display = 'none';
+                    }
                 }
                 
                 this.nav('home'); this.refreshBundle();
@@ -1003,7 +1008,25 @@
                 const history = this.state.bundle ? this.state.bundle.history : [];
                 if (history && history.length > 0) {
                     const last = history[history.length - 1];
-                    document.getElementById('home-last-check').innerText = last[0].split(',')[1] || last[0];
+                    const rawDate = last[0]; 
+                    let formattedDate = rawDate;
+                    
+                    try {
+                        // Nếu là dạng ISO (có chữ T), chuyển về dd/mm/yyyy HH:mm
+                        if (rawDate.includes('T') || !isNaN(Date.parse(rawDate))) {
+                            const d = new Date(rawDate);
+                            const day = ("0" + d.getDate()).slice(-2);
+                            const month = ("0" + (d.getMonth() + 1)).slice(-2);
+                            const year = d.getFullYear();
+                            const hours = ("0" + d.getHours()).slice(-2);
+                            const mins = ("0" + d.getMinutes()).slice(-2);
+                            formattedDate = `${day}/${month}/${year} ${hours}:${mins}`;
+                        } else {
+                            formattedDate = rawDate.split(',')[1] || rawDate;
+                        }
+                    } catch(e) { formattedDate = rawDate; }
+                    
+                    document.getElementById('home-last-check').innerText = formattedDate;
                     if (last[0].includes(today)) localStorage.setItem('last_check_date', today);
                 }
                 this.renderPhanCa(); this.renderProfile();
