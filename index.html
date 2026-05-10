@@ -554,13 +554,22 @@
         /* Lớp khóa menu khi bật camera */
         /* VanMap Styles */
         #page-map {
-            height: calc(100vh - 70px);
+            height: 100vh;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
         }
 
         #van-map {
             width: 100%;
             height: 100%;
             z-index: 1;
+        }
+
+        /* ẨN LOGO LEAFLET */
+        .leaflet-control-attribution {
+            display: none !important;
         }
 
         .map-stats {
