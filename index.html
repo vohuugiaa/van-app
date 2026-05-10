@@ -4,6 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- CHỐNG CACHE CỨNG -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Hệ Thống Quản Lý Tài Xế Van</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -758,10 +762,19 @@
         const FIREBASE_URL = "https://vanmap-live-default-rtdb.asia-southeast1.firebasedatabase.app/";
         const AREAS = ["Quận Phú Nhuận", "Huyện Nhà Bè", "Quận 5", "Quận 3", "Quận 4", "Quận 1", "Quận 6", "Quận 8", "Quận 7", "Huyện Bình Chánh", "Quận Tân Bình", "Quận 11", "Quận 10", "Quận Gò Vấp", "Quận Bình Thạnh", "Quận Tân Phú", "Quận 12", "Huyện Hóc Môn", "Quận Bình Tân", "Thành phố Thủ Đức"];
         let WEEK_DATES = [];
+        const APP_VERSION = "1.0.2"; // TĂNG SỐ NÀY LÊN MỖI KHI CẬP NHẬT (VD: 1.0.3)
 
         const app = {
             state: { name: '', id: '', contractType: '', bundle: null, camMode: 'user', addr: '', isLocked: false, photo: null, map: null, markers: null, myMarker: null, lastUpdate: 0 },
             init() {
+                // TỰ ĐỘNG RESET CACHE NẾU CÓ BẢN MỚI
+                const savedVersion = localStorage.getItem('app_version');
+                if (savedVersion !== APP_VERSION) {
+                    localStorage.setItem('app_version', APP_VERSION);
+                    location.reload(true); // Ép trình duyệt tải lại từ server
+                    return;
+                }
+                
                 this.checkZalo();
                 this.state.id = localStorage.getItem('van_user_id');
                 this.state.name = localStorage.getItem('van_user_name');
