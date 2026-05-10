@@ -294,7 +294,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.9);
-            z-index: 3000;
+            z-index: 10000;
             display: none;
             flex-direction: column;
         }
@@ -903,7 +903,8 @@
                     this.state.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: this.state.camMode } });
                     document.getElementById('video-preview').srcObject = this.state.stream;
                     document.getElementById('overlay-camera').classList.add('active');
-                    document.body.classList.add('camera-active'); // Thêm class ẩn menu
+                    // ẨN MENU KHI BẬT CAMERA
+                    document.getElementById('main-nav').style.display = 'none';
                 } catch (e) {
                     this.showToast("Không mở được camera!", "error");
                     return;
@@ -948,7 +949,8 @@
             closeCamera() {
                 if (this.state.stream) this.state.stream.getTracks().forEach(t => t.stop());
                 document.getElementById('overlay-camera').classList.remove('active');
-                document.body.classList.remove('camera-active'); // Xóa class hiện lại menu
+                // HIỆN LẠI MENU KHI ĐÓNG CAMERA
+                document.getElementById('main-nav').style.display = 'flex';
             },
             async submitCheckin() {
                 if (!this.state.photo || !this.state.addr) return this.showToast("Thiếu ảnh hoặc vị trí!", "warning");
