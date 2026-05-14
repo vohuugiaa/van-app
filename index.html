@@ -308,6 +308,33 @@
             background: var(--primary-dark);
         }
 
+        /* Custom Modal CSS */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: 10000;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-box {
+            background: white; width: 85%; max-width: 320px; border-radius: 16px;
+            text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            transform: scale(0.95); transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; flex-direction: column; overflow: hidden;
+        }
+        .modal-overlay.active .modal-box { transform: scale(1); }
+        .modal-content { padding: 25px 20px 20px; }
+        .modal-title { font-size: 1.1rem; font-weight: 800; color: #000; margin-bottom: 10px; }
+        .modal-message { font-size: 0.9rem; color: var(--text-light); line-height: 1.5; }
+        .modal-actions { display: flex; border-top: 1px solid #E5E5EA; }
+        .modal-btn {
+            flex: 1; padding: 15px; border: none; background: transparent;
+            font-size: 1rem; font-weight: 600; color: var(--ios-blue); cursor: pointer;
+        }
+        .modal-btn:active { background: #f2f2f7; }
+        .modal-btn-primary { font-weight: 800; }
+        .modal-btn-danger { color: var(--danger); }
+        .modal-actions .modal-btn:not(:last-child) { border-right: 1px solid #E5E5EA; }
+
         .menu-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -635,6 +662,17 @@
     </div>
     <div id="toast" class="toast">Thông báo</div>
 
+    <!-- Global Custom Modal -->
+    <div id="custom-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-content">
+                <div id="modal-title" class="modal-title">Thông báo</div>
+                <div id="modal-message" class="modal-message">Nội dung</div>
+            </div>
+            <div id="modal-actions" class="modal-actions"></div>
+        </div>
+    </div>
+
     <div id="zalo-overlay">
         <span style="font-size: 4rem;">🌐</span>
         <h2 style="margin: 20px 0 10px; font-weight: 900; color: #000;">MỞ TRÌNH DUYỆT NGOÀI</h2>
@@ -944,6 +982,39 @@
                 setTimeout(() => t.classList.remove('active'), 3000);
             },
 
+            showAlertModal(title, message, btnText = "Đóng", callback = null) {
+                document.getElementById('modal-title').innerText = title;
+                document.getElementById('modal-message').innerHTML = message;
+                const actions = document.getElementById('modal-actions');
+                actions.innerHTML = `<button class="modal-btn modal-btn-primary" id="modal-btn-ok">${btnText}</button>`;
+                const modal = document.getElementById('custom-modal');
+                modal.classList.add('active');
+                document.getElementById('modal-btn-ok').onclick = () => {
+                    modal.classList.remove('active');
+                    if (callback) callback();
+                };
+            },
+            
+            showConfirmModal(title, message, okText, cancelText, onOk, onCancel) {
+                document.getElementById('modal-title').innerText = title;
+                document.getElementById('modal-message').innerHTML = message;
+                const actions = document.getElementById('modal-actions');
+                actions.innerHTML = `
+                    <button class="modal-btn" id="modal-btn-cancel">${cancelText}</button>
+                    <button class="modal-btn modal-btn-primary" id="modal-btn-ok">${okText}</button>
+                `;
+                const modal = document.getElementById('custom-modal');
+                modal.classList.add('active');
+                document.getElementById('modal-btn-cancel').onclick = () => {
+                    modal.classList.remove('active');
+                    if (onCancel) onCancel();
+                };
+                document.getElementById('modal-btn-ok').onclick = () => {
+                    modal.classList.remove('active');
+                    if (onOk) onOk();
+                };
+            },
+
             async login() {
                 const i = document.getElementById('login-id').value.trim();
                 const btn = document.getElementById('btn-login');
@@ -1054,12 +1125,21 @@
                         return;
                     }
                     if (this.lastHash !== "huychuyen") {
-                        const called = confirm("Bạn đã gọi cho tổng đài hỗ trợ của tài xế ghi nhận hay chưa?\n\nChọn [OK] nếu RỒI, chọn [Hủy/Cancel] nếu CHƯA.");
-                        if (!called) {
-                            alert("Vui lòng gọi tổng đài để ghi nhận.");
-                            location.hash = "#/home";
-                            return;
-                        }
+                        location.hash = "#/home"; // Tạm thời quay về trang chủ
+                        this.showConfirmModal(
+                            "Xác nhận ghi nhận", 
+                            "Bạn đã gọi cho tổng đài hỗ trợ của tài xế ghi nhận hay chưa?",
+                            "RỒI", 
+                            "CHƯA",
+                            () => {
+                                this.lastHash = "huychuyen";
+                                location.hash = "#/huychuyen";
+                            },
+                            () => {
+                                this.showAlertModal("Lưu ý", "Vui lòng gọi tổng đài để ghi nhận trước khi hủy chuyến.");
+                            }
+                        );
+                        return;
                     }
                 }
                 this.lastHash = h;
@@ -1305,7 +1385,10 @@
                 if (selectedDate.getFullYear() === today.getFullYear() && 
                     selectedDate.getMonth() === today.getMonth() && 
                     selectedDate.getDate() === today.getDate()) {
-                    alert("Nếu bạn đã gọi tổng đài để ghi nhận rồi, ngày mai hãy vào phần thống kê hiệu suất để xem tỉ lệ có hoàn lại không.\n\nNếu không hãy quay lại đây để giải trình lại. Xin cảm ơn.");
+                    this.showAlertModal(
+                        "Thông báo",
+                        "Nếu bạn đã gọi tổng đài để ghi nhận rồi, ngày mai hãy vào phần thống kê hiệu suất để xem tỉ lệ có hoàn lại không.<br><br>Nếu không hãy quay lại đây để giải trình lại.<br><br>Xin cảm ơn."
+                    );
                     return;
                 }
                 if (selectedDate > today) {
