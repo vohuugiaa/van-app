@@ -1047,11 +1047,22 @@
                 if (!this.state.id && h !== "login") { location.hash = "#/login"; return; }
 
                 // KHÓA TRUY CẬP TRỰC TIẾP VÀO HỦY CHUYẾN
-                if (h === "huychuyen" && this.state.group !== "VAN.DOIXE11.02") {
-                    this.showToast("Bạn không có quyền vào mục này!", "error");
-                    location.hash = "#/home";
-                    return;
+                if (h === "huychuyen") {
+                    if (this.state.group !== "VAN.DOIXE11.02") {
+                        this.showToast("Bạn không có quyền vào mục này!", "error");
+                        location.hash = "#/home";
+                        return;
+                    }
+                    if (this.lastHash !== "huychuyen") {
+                        const called = confirm("Bạn đã gọi cho tổng đài hỗ trợ của tài xế ghi nhận hay chưa?\n\nChọn [OK] nếu RỒI, chọn [Hủy/Cancel] nếu CHƯA.");
+                        if (!called) {
+                            alert("Vui lòng gọi tổng đài để ghi nhận.");
+                            location.hash = "#/home";
+                            return;
+                        }
+                    }
                 }
+                this.lastHash = h;
 
                 document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
                 document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -1287,6 +1298,20 @@
             async submitCancellation() {
                 const time = document.getElementById('cancel-time').value, f = document.getElementById('cancel-evidence'), n = document.getElementById('cancel-note').value.trim(), btn = document.getElementById('btn-submit-cancel');
                 if (!time || !n) return this.showToast("Vui lòng điền đủ thông tin!", "error");
+
+                const selectedDate = new Date(time);
+                const today = new Date();
+                
+                if (selectedDate.getFullYear() === today.getFullYear() && 
+                    selectedDate.getMonth() === today.getMonth() && 
+                    selectedDate.getDate() === today.getDate()) {
+                    alert("Nếu bạn đã gọi tổng đài để ghi nhận rồi, ngày mai hãy vào phần thống kê hiệu suất để xem tỉ lệ có hoàn lại không.\n\nNếu không hãy quay lại đây để giải trình lại. Xin cảm ơn.");
+                    return;
+                }
+                if (selectedDate > today) {
+                    return this.showToast("Không thể chọn ngày trong tương lai!", "error");
+                }
+
                 btn.disabled = true; btn.innerHTML = `<div class="spinner-small"></div> Đang gửi...`;
                 let eBase64 = "";
                 if (f.files && f.files[0]) {
