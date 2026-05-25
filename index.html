@@ -936,7 +936,7 @@
         const FIREBASE_URL = "https://vanmap-live-default-rtdb.asia-southeast1.firebasedatabase.app/";
         const AREAS = ["Quận Phú Nhuận", "Huyện Nhà Bè", "Quận 5", "Quận 3", "Quận 4", "Quận 1", "Quận 6", "Quận 8", "Quận 7", "Huyện Bình Chánh", "Quận Tân Bình", "Quận 11", "Quận 10", "Quận Gò Vấp", "Quận Bình Thạnh", "Quận Tân Phú", "Quận 12", "Huyện Hóc Môn", "Quận Bình Tân", "Thành phố Thủ Đức"];
         let WEEK_DATES = [];
-        const APP_VERSION = "1.0.2"; // TĂNG SỐ NÀY LÊN MỖI KHI CẬP NHẬT (VD: 1.0.3)
+        const APP_VERSION = "1.0.3"; // TĂNG SỐ NÀY LÊN MỖI KHI CẬP NHẬT (VD: 1.0.3)
 
         const app = {
             state: { name: '', id: '', contractType: '', bundle: null, camMode: 'user', addr: '', isLocked: false, photo: null, map: null, markers: null, myMarker: null, lastUpdate: 0 },
@@ -1422,7 +1422,17 @@
                 if (!h || h.length === 0) { el.innerHTML = `<p style="text-align: center; color: var(--text-light); font-size: 0.85rem; padding: 20px;">Chưa có yêu cầu.</p>`; return; }
                 el.innerHTML = h.slice().reverse().map(r => {
                     const d = (r.cancelTime || "").replace('T', ' ').substring(0, 16);
-                    return `<div class="card" style="padding: 15px; border-left: 4px solid ${r.status === 'Đã xử lý' ? 'var(--primary)' : 'var(--warning)'};"><div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;"><span style="font-size: 0.75rem; font-weight: 800; color: var(--text-light);">${d}</span><span class="week-tag" style="background: ${r.status === 'Đã xử lý' ? '#dcfce7' : '#fef3c7'}; color: ${r.status === 'Đã xử lý' ? '#166534' : '#92400e'};">${r.status}</span></div><p style="font-size: 0.85rem; line-height: 1.4; color: var(--text);">${r.note}</p>${r.feedback ? `<div style="margin-top: 10px; padding: 10px; background: #f8fafc; border-radius: 10px; font-size: 0.8rem; color: var(--primary-dark);"><strong>Phản hồi:</strong> ${r.feedback}</div>` : ''}</div>`;
+                    let fb = r.feedback || "";
+                    if (typeof fb === 'string' && fb.includes('T') && fb.endsWith('Z') && !isNaN(Date.parse(fb))) {
+                        const fd = new Date(fb);
+                        const fday = ("0" + fd.getDate()).slice(-2);
+                        const fmonth = ("0" + (fd.getMonth() + 1)).slice(-2);
+                        const fyear = fd.getFullYear();
+                        const fhours = ("0" + fd.getHours()).slice(-2);
+                        const fmins = ("0" + fd.getMinutes()).slice(-2);
+                        fb = `${fday}/${fmonth}/${fyear} ${fhours}:${fmins}`;
+                    }
+                    return `<div class="card" style="padding: 15px; border-left: 4px solid ${r.status === 'Đã xử lý' ? 'var(--primary)' : 'var(--warning)'};"><div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;"><span style="font-size: 0.75rem; font-weight: 800; color: var(--text-light);">${d}</span><span class="week-tag" style="background: ${r.status === 'Đã xử lý' ? '#dcfce7' : '#fef3c7'}; color: ${r.status === 'Đã xử lý' ? '#166534' : '#92400e'};">${r.status}</span></div><p style="font-size: 0.85rem; line-height: 1.4; color: var(--text);">${r.note}</p>${fb ? `<div style="margin-top: 10px; padding: 10px; background: #f8fafc; border-radius: 10px; font-size: 0.8rem; color: var(--primary-dark);"><strong>Phản hồi:</strong> ${fb}</div>` : ''}</div>`;
                 }).join('');
             },
 
