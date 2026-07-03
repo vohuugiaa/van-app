@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi">
 
 <head>
@@ -896,7 +896,7 @@
             <div onclick="app.nav('checkin')" class="nav-item" id="nav-checkin"><span>📍</span><span>Điểm danh</span>
             </div>
             <div onclick="app.nav('map')" class="nav-item" id="nav-map"><span>🗺️</span><span>Bản đồ</span></div>
-            <div onclick="app.nav('phanca')" class="nav-item" id="nav-phanca"><span>📅</span><span>Phân ca</span></div>
+            <!-- <div onclick="app.nav('phanca')" class="nav-item" id="nav-phanca"><span>📅</span><span>Phân ca</span></div> -->
             <div onclick="app.nav('hoso')" class="nav-item" id="nav-hoso"><span>👤</span><span>Hồ sơ</span></div>
         </nav>
 
@@ -1347,7 +1347,7 @@
                 document.getElementById('p-id').innerText = this.state.id;
                 document.getElementById('p-name').innerText = this.state.name;
                 const hL = document.getElementById('p-history'), sL = document.getElementById('p-schedule');
-                hL.innerHTML = this.state.bundle.history.slice().reverse().map(r => `<div class="card" style="padding:12px; font-size:0.8rem; display:flex; justify-content:space-between;"><span>${r[0]}</span><strong>${r[3]}</strong></div>`).join('') || "Chưa có hoạt động";
+                hL.innerHTML = this.state.bundle.history.slice().reverse().map(r => `<div class="card" style="padding:12px; font-size:0.8rem; display:flex; justify-content:space-between;"><span>${isNaN(new Date(r[0]).getTime()) ? r[0] : new Date(r[0]).toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}</span><strong>${r[3]}</strong></div>`).join('') || "Chưa có hoạt động";
                 const today = new Date(); today.setHours(0, 0, 0, 0); const seen = new Set();
                 sL.innerHTML = this.state.bundle.mySchedule.filter(r => {
                     const p = this.fmt(r[4]).split('/'); const d = new Date(p[2], p[1] - 1, p[0]);
@@ -1554,3 +1554,4 @@
 </body>
 
 </html>
+
