@@ -1475,52 +1475,64 @@
                 if (!this.state.map) return;
                 const stats = document.getElementById('map-stats');
 
-                try {
-                    // Gọi qua GAS để tiết kiệm băng thông Firebase
-                    const res = await fetch(`${SCRIPT_URL}?action=get_map`);
-                    const data = await res.json();
-                    if (!data) return;
+                const fetchMap = async (lat = '', lng = '') => {
+                    try {
+                        // Gửi vị trí người dùng lên GAS để lọc lấy 100 xe gần nhất
+                        let url = `${SCRIPT_URL}?action=get_map`;
+                        if (lat && lng) url += `&lat=${lat}&lng=${lng}`;
+                        
+                        const res = await fetch(url);
+                        const data = await res.json();
+                        if (!data) return;
 
-                    this.state.markers.clearLayers();
-                    let count = 0;
-                    const now = Date.now();
+                        this.state.markers.clearLayers();
+                        let count = 0;
+                        const now = Date.now();
 
-                    Object.keys(data).forEach(sap => {
-                        const driver = data[sap];
-                        if (now - driver.ts > 3600000) return; // Không hiện xe offline quá 1 tiếng
+                        Object.keys(data).forEach(sap => {
+                            const driver = data[sap];
+                            if (now - driver.ts > 3600000) return; // Không hiện xe offline quá 1 tiếng
 
-                        const isMe = sap === this.state.id;
-                        const isGPS = driver.type === "GPS_VEHICLE";
+                            const isMe = sap === this.state.id;
+                            const isGPS = driver.type === "GPS_VEHICLE";
 
-                        // Màu sắc: Xanh dương (Bạn), Xanh lá (Xe đang chạy), Cam (Xe đứng yên)
-                        let markerColor = isMe ? '#2563eb' : '#10b981';
-                        if (driver.speed === 0) markerColor = '#f59e0b';
-                        if (now - driver.ts > 600000) markerColor = '#94a3b8'; // Xám nếu mất tín hiệu > 10p
+                            // Màu sắc: Xanh dương (Bạn), Xanh lá (Xe đang chạy), Cam (Xe đứng yên)
+                            let markerColor = isMe ? '#2563eb' : '#10b981';
+                            if (driver.speed === 0) markerColor = '#f59e0b';
+                            if (now - driver.ts > 600000) markerColor = '#94a3b8'; // Xám nếu mất tín hiệu > 10p
 
-                        const marker = L.circleMarker([driver.lat, driver.lng], {
-                            radius: isMe ? 10 : (isGPS ? 9 : 8),
-                            fillColor: markerColor,
-                            color: '#fff',
-                            weight: 2,
-                            fillOpacity: 0.9
+                            const marker = L.circleMarker([driver.lat, driver.lng], {
+                                radius: isMe ? 10 : (isGPS ? 9 : 8),
+                                fillColor: markerColor,
+                                color: '#fff',
+                                weight: 2,
+                                fillOpacity: 0.9
+                            });
+
+                            const popupContent = `
+                                <div style="text-align:center; padding: 5px;">
+                                    <strong style="color:var(--primary); font-size:1.2rem;">${driver.name}</strong>
+                                </div>
+                            `;
+                            marker.bindPopup(popupContent);
+                            this.state.markers.addLayer(marker);
+                            if (isMe) {
+                                this.state.myMarker = marker;
+                                this.state.map.panTo([driver.lat, driver.lng]);
+                            }
+                            count++;
                         });
+                    } catch (e) {
+                        stats.innerText = "❌ Lỗi đồng bộ";
+                    }
+                };
 
-                        const popupContent = `
-                            <div style="text-align:center; padding: 5px;">
-                                <strong style="color:var(--primary); font-size:1.2rem;">${driver.name}</strong>
-                            </div>
-                        `;
-                        marker.bindPopup(popupContent);
-                        this.state.markers.addLayer(marker);
-                        if (isMe) {
-                            this.state.myMarker = marker;
-                            this.state.map.panTo([driver.lat, driver.lng]);
-                        }
-                        count++;
-                    });
-                } catch (e) {
-                    stats.innerText = "❌ Lỗi đồng bộ";
-                }
+                // Lấy vị trí hiện tại (timeout 5s để không bị treo), sau đó mới fetch map
+                navigator.geolocation.getCurrentPosition(
+                    pos => fetchMap(pos.coords.latitude, pos.coords.longitude),
+                    err => fetchMap(), // Lỗi thì cứ fetch không có tọa độ
+                    { enableHighAccuracy: false, timeout: 5000 }
+                );
             },
 
             locateMe() {
