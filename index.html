@@ -20,76 +20,6 @@
     <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
     <style>
         :root {
-            --ios-blue: #007AFF;
-            --ios-bg: #F2F2F7;
-            --ios-card: #FFFFFF;
-            --ios-text: #1C1C1E;
-            --ios-secondary: #8E8E93;
-            --ios-border: #E5E5EA;
-            --ios-green: #34C759;
-            --ios-red: #FF3B30;
-            --ios-accent: #5856D6;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
-        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--ios-bg); color: var(--ios-text); overflow-x: hidden; }
-
-        header { padding: 45px 20px 12px; background: rgba(242, 242, 247, 0.85); backdrop-filter: saturate(180%) blur(20px); position: sticky; top: 0; z-index: 1000; border-bottom: 0.5px solid var(--ios-border); display: flex; justify-content: space-between; align-items: flex-end; }
-        header h1 { font-size: 28px; font-weight: 800; letter-spacing: -1px; color: #000; }
-        .btn-sync { background: white; color: var(--ios-blue); border: none; padding: 8px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; box-shadow: 0 4px 10px rgba(0,0,0,0.06); transition: 0.2s; }
-        .btn-sync:active { transform: scale(0.95); opacity: 0.8; }
-
-        .container { padding: 8px 0 140px; max-width: 500px; margin: 0 auto; }
-        .hidden { display: none !important; }
-
-        .sticky-box { position: sticky; top: 95px; background: rgba(242, 242, 247, 0.9); backdrop-filter: blur(10px); padding: 10px 16px; z-index: 900; }
-        .search-container { background: #E3E3E8; border-radius: 12px; display: flex; align-items: center; padding: 10px 14px; position: relative; }
-        .search-container i { color: var(--ios-secondary); margin-right: 8px; font-style: normal; font-size: 16px; }
-        .search-container input { background: transparent; border: none; width: 100%; font-size: 16px; outline: none; font-weight: 500; color: #000; }
-
-        .filter-row { display: flex; overflow-x: auto; padding: 0 16px 12px; gap: 8px; }
-        .filter-row::-webkit-scrollbar { display: none; }
-        .pill { white-space: nowrap; padding: 7px 15px; background: #D1D1D6; border-radius: 100px; font-size: 12px; font-weight: 700; color: #3A3A3C; transition: 0.2s; }
-        .pill.active { background: var(--ios-blue); color: white; box-shadow: 0 4px 10px rgba(0,122,255,0.2); }
-
-        .card { background: white; border-radius: 14px; margin: 0 12px 10px; position: relative; border: 0.5px solid var(--ios-border); box-shadow: 0 2px 8px rgba(0,0,0,0.03); transition: 0.2s; }
-        .card:active { transform: scale(0.98); background: #FAFAFA; }
-        .list-item { padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; }
-        .item-title { font-size: 17px; font-weight: 800; color: #000; letter-spacing: -0.5px; }
-        .item-sub { font-size: 12px; color: var(--ios-secondary); margin-top: 2px; font-weight: 500; font-family: monospace; }
-
-        .status-badge { padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; }
-        .st-vandoanh { background: #E8F5E9; color: #2E7D32; }
-        .st-xenam { background: #FFEBEE; color: #C62828; }
-        .st-other { background: #E3F2FD; color: #1565C0; }
-
-        .suggest-box { position: absolute; left: 0; right: 0; background: rgba(255,255,255,0.98); backdrop-filter: blur(20px); z-index: 9999; box-shadow: 0 15px 40px rgba(0,0,0,0.15); border-radius: 12px; border: 0.5px solid var(--ios-border); max-height: 200px; overflow-y: auto; margin-top: 5px; }
-        .suggest-item { padding: 14px 16px; border-bottom: 0.5px solid var(--ios-border); font-size: 15px; font-weight: 600; }
-
-        .section-title { padding: 12px 16px 6px; font-size: 12px; color: var(--ios-secondary); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
-        .form-group { background: white; border-radius: 14px; margin: 0 12px 12px; overflow: hidden; border: 0.5px solid var(--ios-border); }
-        .form-row { padding: 14px 16px; border-bottom: 0.5px solid var(--ios-border); display: flex; align-items: center; }
-        .form-row:last-child { border-bottom: none; }
-        .form-row label { width: 100px; font-size: 14px; font-weight: 600; color: #3A3A3C; }
-        .form-row input { border: none; outline: none; flex: 1; font-size: 16px; background: transparent; font-weight: 500; }
-
-        .photo-box { background: white; border-radius: 14px; margin: 0 12px 15px; padding: 25px; text-align: center; border: 1.5px dashed var(--ios-blue); color: var(--ios-blue); font-weight: 700; font-size: 14px; }
-        .photo-box img { width: 100%; border-radius: 10px; margin-top: 12px; }
-
-        .btn-ios { background: var(--ios-blue); color: white; border: none; padding: 18px; border-radius: 16px; width: calc(100% - 24px); margin: 0 12px 30px; font-size: 16px; font-weight: 800; box-shadow: 0 8px 20px rgba(0,122,255,0.2); cursor: pointer; }
-
-        nav { position: fixed; bottom: 20px; left: 12px; right: 12px; background: rgba(255,255,255,0.85); backdrop-filter: saturate(180%) blur(25px); border: 0.5px solid rgba(255,255,255,0.3); border-radius: 30px; display: flex; padding: 10px 0; z-index: 2000; box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
-        .nav-item { flex: 1; text-align: center; color: var(--ios-secondary); font-size: 10px; font-weight: 700; }
-        .nav-item.active { color: var(--ios-blue); }
-        .nav-item i { font-size: 22px; display: block; margin-bottom: 4px; font-style: normal; filter: grayscale(1) opacity(0.5); transition: 0.3s; }
-        .nav-item.active i { filter: grayscale(0) opacity(1); transform: translateY(-2px); }
-
-        #overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.85); backdrop-filter: blur(10px); z-index: 10000; display: flex; align-items: center; justify-content: center; flex-direction: column; }
-        .loader { width: 35px; height: 35px; border: 4px solid #E5E5EA; border-top: 4px solid var(--ios-blue); border-radius: 50%; animation: spin 0.8s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-    </style>
-    <style>
-        :root {
             --primary: #1abc9c;
             --primary-dark: #16a085;
             --bg: #f8fafc;
@@ -107,14 +37,10 @@
             font-family: 'Inter', sans-serif;
             -webkit-tap-highlight-color: transparent;
             -webkit-touch-callout: none;
-            /* Chặn menu khi nhấn giữ */
             user-select: none;
-            /* Chặn chọn văn bản */
         }
 
-        /* Cho phép chọn văn bản trong các ô nhập liệu */
-        input,
-        textarea {
+        input, textarea {
             user-select: text !important;
             -webkit-touch-callout: default !important;
         }
@@ -151,15 +77,8 @@
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.98);
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
         }
 
         .bottom-nav {
@@ -188,20 +107,9 @@
             cursor: pointer;
         }
 
-        .nav-item span:first-child {
-            font-size: 1.4rem;
-            margin-bottom: 2px;
-        }
-
-        .nav-item span:last-child {
-            font-size: 0.6rem;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .nav-item.active {
-            color: var(--primary);
-        }
+        .nav-item span:first-child { font-size: 1.4rem; margin-bottom: 2px; }
+        .nav-item span:last-child { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; }
+        .nav-item.active { color: var(--primary); }
 
         .card {
             background: #f8fafc;
@@ -210,28 +118,6 @@
             margin-bottom: 15px;
             border: 1px solid #f1f5f9;
             transition: 0.3s;
-        }
-
-        .card.error-focus {
-            border: 2px solid var(--danger);
-            background: #fff1f2;
-            animation: shake 0.4s ease-in-out;
-        }
-
-        @keyframes shake {
-
-            0%,
-            100% {
-                transform: translateX(0);
-            }
-
-            25% {
-                transform: translateX(-5px);
-            }
-
-            75% {
-                transform: translateX(5px);
-            }
         }
 
         .btn-action {
@@ -251,456 +137,72 @@
             transition: 0.2s;
         }
 
-        .btn-action:active {
-            transform: scale(0.98);
-        }
-
-        .btn-action:disabled {
-            background: #cbd5e1;
-            cursor: not-allowed;
-            opacity: 0.8;
-        }
+        .btn-action:active { transform: scale(0.98); }
+        .btn-action:disabled { background: #cbd5e1; cursor: not-allowed; opacity: 0.8; }
 
         .spinner-small {
-            width: 18px;
-            height: 18px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+            width: 18px; height: 18px; border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite;
         }
 
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         .toast {
-            position: fixed;
-            bottom: 90px;
-            left: 50%;
-            transform: translateX(-50%) translateY(20px);
-            background: #333;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 30px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            z-index: 5000;
-            opacity: 0;
-            transition: 0.3s;
-            pointer-events: none;
-            text-align: center;
-            white-space: nowrap;
+            position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
+            background: #333; color: white; padding: 12px 24px; border-radius: 30px;
+            font-size: 0.85rem; font-weight: 600; z-index: 5000; opacity: 0; transition: 0.3s;
+            pointer-events: none; text-align: center; white-space: nowrap;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
+        .toast.active { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .toast.error { background: var(--danger); }
+        .toast.success { background: var(--primary-dark); }
 
-        .toast.active {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        .toast.error {
-            background: var(--danger);
-        }
-
-        .toast.success {
-            background: var(--primary-dark);
-        }
-
-        /* Custom Modal CSS */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: 10000;
-            display: flex; align-items: center; justify-content: center;
-            opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
-        }
-        .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        .modal-box {
-            background: white; width: 85%; max-width: 320px; border-radius: 16px;
-            text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            transform: scale(0.95); transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: flex; flex-direction: column; overflow: hidden;
-        }
-        .modal-overlay.active .modal-box { transform: scale(1); }
-        .modal-content { padding: 25px 20px 20px; }
-        .modal-title { font-size: 1.1rem; font-weight: 800; color: #000; margin-bottom: 10px; }
-        .modal-message { font-size: 0.9rem; color: var(--text-light); line-height: 1.5; }
-        .modal-actions { display: flex; border-top: 1px solid #E5E5EA; }
-        .modal-btn {
-            flex: 1; padding: 15px; border: none; background: transparent;
-            font-size: 1rem; font-weight: 600; color: var(--ios-blue); cursor: pointer;
-        }
-        .modal-btn:active { background: #f2f2f7; }
-        .modal-btn-primary { font-weight: 800; }
-        .modal-btn-danger { color: var(--danger); }
-        .modal-actions .modal-btn:not(:last-child) { border-right: 1px solid #E5E5EA; }
-
-        .menu-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
         .menu-btn {
-            background: white;
-            padding: 15px;
-            border-radius: 18px;
-            border: 1px solid #f1f5f9;
-            text-align: center;
-            text-decoration: none;
-            color: inherit;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
-            transition: 0.2s;
+            background: white; padding: 15px; border-radius: 18px; border: 1px solid #f1f5f9;
+            text-align: center; text-decoration: none; color: inherit;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02); transition: 0.2s; cursor: pointer;
         }
+        .menu-btn span { display: block; font-size: 1.2rem; margin-bottom: 5px; }
+        .menu-btn label { font-size: 0.75rem; font-weight: 700; cursor: pointer; }
 
-        .menu-btn span {
-            display: block;
-            font-size: 1.2rem;
-            margin-bottom: 5px;
-        }
+        .hotline-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #eee; text-decoration: none; color: inherit; }
+        .hotline-item .label { font-size: 0.8rem; font-weight: 600; color: var(--text-light); }
+        .hotline-item .phone { font-size: 0.9rem; font-weight: 800; color: #3b82f6; }
 
-        .menu-btn label {
-            font-size: 0.75rem;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .hotline-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .hotline-item .label {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--text-light);
-        }
-
-        .hotline-item .phone {
-            font-size: 0.9rem;
-            font-weight: 800;
-            color: #3b82f6;
-        }
-
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 10000;
-            display: none;
-            flex-direction: column;
-        }
-
-        .overlay.active {
-            display: flex;
-        }
-
-        #video-preview {
-            flex: 1;
-            object-fit: cover;
-        }
-
-        .camera-ui {
-            padding: 25px;
-            background: white;
-            border-top-left-radius: 30px;
-            border-top-right-radius: 30px;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-        }
-
-        .btn-shutter {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            border: 5px solid #eee;
-            background: var(--danger);
-        }
-
-        .day-box {
-            background: white;
-            border: 1px solid #f1f5f9;
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 12px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .day-box.locked {
-            background: #f1f5f9;
-            opacity: 0.7;
-            pointer-events: none;
-        }
-
-        .day-box.locked::after {
-            content: "ĐÃ KHÓA";
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: var(--danger);
-            color: white;
-            font-size: 0.6rem;
-            padding: 2px 8px;
-            border-radius: 5px;
-            font-weight: 800;
-        }
-
-        .native-select {
-            width: 100%;
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid #e2e8f0;
-            font-size: 0.9rem;
-            margin-bottom: 8px;
-            outline: none;
-        }
+        .native-select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 0.9rem; margin-bottom: 8px; outline: none; background: #f8fafc; }
+        .native-select:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(26, 188, 156, 0.1); }
 
         #global-loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: white;
-            z-index: 9999;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: white; z-index: 9999; display: none; flex-direction: column;
+            align-items: center; justify-content: center;
         }
 
-        .week-tag {
-            font-size: 0.6rem;
-            font-weight: 800;
-            padding: 3px 10px;
-            border-radius: 6px;
-            display: inline-block;
-            margin-bottom: 8px;
-        }
-
-        .tag-now {
-            background: #e0f2fe;
-            color: #0369a1;
-        }
-
-        .tag-next {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        /* Zalo Overlay Styles */
-        #zalo-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.98);
-            z-index: 10000;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 30px;
-        }
-
-        .zalo-guide-img {
-            width: 100%;
-            max-width: 300px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            margin: 20px 0;
-        }
-
-        #photo-preview-container {
-            display: none;
-            width: 100%;
-            border-radius: 20px;
-            overflow: hidden;
-            margin-top: 15px;
-            border: 2px solid var(--primary);
-            position: relative;
-        }
-
-        #photo-preview-img {
-            width: 100%;
-            display: block;
-        }
-
-        .btn-retake {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.5);
-            color: white;
-            border: none;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            backdrop-filter: blur(5px);
-        }
-
-        /* Cancellation Page Styles */
-        #page-huychuyen .native-select {
-            background: #f8fafc;
-            border: 2px solid #f1f5f9;
-            transition: 0.3s;
-        }
-
-        #page-huychuyen .native-select:focus {
-            border-color: var(--primary);
-            background: white;
-            box-shadow: 0 0 0 4px rgba(26, 188, 156, 0.1);
-        }
-
-        input[type="file"]::file-selector-button {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 0.75rem;
-            margin-right: 10px;
-            cursor: pointer;
-        }
-
-        /* Lớp khóa menu khi bật camera */
-        /* VanMap Styles */
-        #page-map {
-            height: 100vh;
-            width: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-
-        #van-map {
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-
-        /* ẨN LOGO LEAFLET */
-        .leaflet-control-attribution {
-            display: none !important;
-        }
-
-        .map-stats {
-            position: absolute;
-            top: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-            white-space: nowrap;
-            color: var(--primary);
-        }
-
-        .btn-refresh-map {
-            position: absolute;
-            top: 120px;
-            right: 15px;
-            z-index: 1000;
-            width: 45px;
-            height: 45px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-            color: var(--primary);
-            font-size: 1.1rem;
-            cursor: pointer;
-        }
-
-        .btn-locate-me {
-            position: absolute;
-            top: 65px;
-            right: 15px;
-            z-index: 1000;
-            width: 45px;
-            height: 45px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-            color: #3b82f6;
-            font-size: 1.1rem;
-            cursor: pointer;
-        }
+        #page-map { height: 100vh; width: 100%; position: absolute; top: 0; left: 0; }
+        #van-map { width: 100%; height: 100%; z-index: 1; }
+        .leaflet-control-attribution { display: none !important; }
+        .map-stats { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); z-index: 1000; background: rgba(255, 255, 255, 0.95); padding: 8px 15px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); white-space: nowrap; color: var(--primary); }
+        .btn-refresh-map { position: absolute; top: 120px; right: 15px; z-index: 1000; width: 45px; height: 45px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2); color: var(--primary); font-size: 1.1rem; cursor: pointer; }
+        .btn-locate-me { position: absolute; top: 65px; right: 15px; z-index: 1000; width: 45px; height: 45px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2); color: #3b82f6; font-size: 1.1rem; cursor: pointer; }
     </style>
 </head>
 
 <body>
     <div id="global-loading">
-        <div class="spinner-small"
-            style="width:40px; height:40px; border-width:4px; border-top-color:var(--primary); margin-bottom:15px;">
-        </div>
+        <div class="spinner-small" style="width:40px; height:40px; border-width:4px; border-top-color:var(--primary); margin-bottom:15px;"></div>
         <p style="font-weight:700; color:var(--text-light);">Đang đồng bộ dữ liệu...</p>
     </div>
     <div id="toast" class="toast">Thông báo</div>
 
-    <!-- Global Custom Modal -->
-    <div id="custom-modal" class="modal-overlay">
-        <div class="modal-box">
-            <div class="modal-content">
-                <div id="modal-title" class="modal-title">Thông báo</div>
-                <div id="modal-message" class="modal-message">Nội dung</div>
-            </div>
-            <div id="modal-actions" class="modal-actions"></div>
-        </div>
-    </div>
-
-    <div id="zalo-overlay">
-        <span style="font-size: 4rem;">🌐</span>
-        <h2 style="margin: 20px 0 10px; font-weight: 900; color: #000;">MỞ TRÌNH DUYỆT NGOÀI</h2>
-        <p style="color: var(--text-light); line-height: 1.6; font-weight: 500;">Bạn đang mở trong Zalo. Để chụp ảnh
-            điểm danh, vui lòng nhấn vào <b>dấu 3 chấm</b> (...) ở góc trên bên phải và chọn <b>"Mở bằng trình
-                duyệt"</b>.</p>
-        <div style="background: #eef2f7; padding: 15px; border-radius: 15px; margin-top: 20px;">
-            <p style="font-size: 0.8rem; font-weight: 700; color: #3b82f6;">HƯỚNG DẪN:</p>
-            <p style="font-size: 0.8rem; margin: 5px 0;">3 chấm (⋮) ➔ Mở bằng trình duyệt ➔ Chrome/Safari</p>
-        </div>
-        <button onclick="location.reload()"
-            style="margin-top: 30px; border: none; background: none; color: var(--primary); font-weight: 800; text-decoration: underline;">Đã
-            chuyển trình duyệt? Nhấn để tải lại</button>
-    </div>
-
     <div class="container">
         <!-- PAGE: LOGIN -->
         <div id="page-login" class="page active">
-            <div
-                style="height: 100%; display: flex; flex-direction: column; justify-content: center; text-align: center; padding: 30px;">
-                <h2
-                    style="font-size: 2.8rem; font-weight: 900; color: var(--primary); margin-bottom: 5px; letter-spacing: -1px;">
-                    VanApp</h2>
-
+            <div style="height: 100%; display: flex; flex-direction: column; justify-content: center; text-align: center; padding: 30px;">
+                <h2 style="font-size: 2.8rem; font-weight: 900; color: var(--primary); margin-bottom: 5px; letter-spacing: -1px;">VanApp</h2>
                 <div class="card" style="padding: 30px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
-                    <input type="number" id="login-id" placeholder="Nhập mã nhân viên của bạn"
-                        style="width: 100%; padding: 18px; border-radius: 15px; border: 2px solid #f1f5f9; margin-bottom: 20px; font-size: 1.2rem; text-align: center; outline: none; transition: 0.3s;">
+                    <input type="number" id="login-id" placeholder="Nhập mã nhân viên của bạn" style="width: 100%; padding: 18px; border-radius: 15px; border: 2px solid #f1f5f9; margin-bottom: 20px; font-size: 1.2rem; text-align: center; outline: none; transition: 0.3s;">
                     <button class="btn-action" id="btn-login" onclick="app.login()"><span>VÀO HỆ THỐNG</span></button>
                 </div>
             </div>
@@ -708,121 +210,72 @@
 
         <!-- PAGE: HOME -->
         <div id="page-home" class="page">
-            <div class="page-header" style="margin-bottom: 20px;">
+            <div class="page-header" style="margin-bottom: 20px; display: flex; justify-content: space-between;">
                 <div>
                     <h1 id="user-name" style="font-size: 1.4rem;">Chào, ---</h1>
-                    <p id="user-sap" style="font-size: 0.8rem; color: var(--text-light); font-weight: 700;">Mã NV: ---
-                    </p>
+                    <p id="user-sap" style="font-size: 0.8rem; color: var(--text-light); font-weight: 700;">Mã NV: ---</p>
                 </div>
-                <button onclick="app.logout()"
-                    style="border:none; background:none; color: var(--danger); font-weight: 800; font-size: 0.85rem;">Đăng
-                    xuất</button>
-            </div>
-
-            <div class="card"
-                style="background: linear-gradient(135deg, #1abc9c, #16a085); color: white; border: none; box-shadow: 0 10px 25px rgba(26,188,156,0.3); padding: 25px;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <h3 style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 5px;">📍 Điểm danh gần nhất</h3>
-                        <p style="font-size: 1.1rem; font-weight: 800;" id="home-last-check">Đang kiểm tra...</p>
-                    </div>
-                    <span style="font-size: 2.5rem;">🚗</span>
-                </div>
+                <button onclick="app.logout()" style="border:none; background:none; color: var(--danger); font-weight: 800; font-size: 0.85rem; cursor: pointer;">Đăng xuất</button>
             </div>
 
             <div class="menu-grid">
-                <a href="https://docs.google.com/forms/d/e/1FAIpQLSdeMUMCp55KATYMsYSpacilv4HnKiGKEsmbMEdRTyLS4wKc-w/viewform?usp=dialog"
-                    target="_blank" class="menu-btn"><span>📅</span><label>Đăng ký Nghỉ</label></a>
-
-                <a href="#/huychuyen" class="menu-btn" id="btn-home-huychuyen"><span>🚫</span><label>Hủy chuyến</label></a>
-
+                <div onclick="app.nav('lichoff')" class="menu-btn"><span>📅</span><label>Đăng ký Nghỉ (OFF)</label></div>
+                <div onclick="app.nav('map')" class="menu-btn"><span>🗺️</span><label>Xem Bản đồ</label></div>
             </div>
 
             <h3 style="font-size: 1rem; margin-bottom: 12px; font-weight: 800;">📞 TỔNG ĐÀI HỖ TRỢ</h3>
             <div class="card" style="padding: 0; overflow: hidden; border-radius: 20px;">
-                <a href="tel:1900232389" class="hotline-item"><span class="label">Cứu hộ xe VF</span><span
-                        class="phone">1900.232389</span></a>
-                <a href="tel:1900636984" class="hotline-item"><span class="label">Sạc pin & App VF</span><span
-                        class="phone">1900.636984</span></a>
-                <a href="tel:02471096839" class="hotline-item"><span class="label">Chăm sóc TX</span><span
-                        class="phone">0247.109.6839</span></a>
-                <a href="tel:19002088" class="hotline-item"><span class="label">Đặt xe</span><span
-                        class="phone">1900.2088</span></a>
-                <a href="tel:19002097" class="hotline-item"><span class="label">Hóa đơn điện tử</span><span
-                        class="phone">1900.2097</span></a>
-                <a href="tel:1900545458" class="hotline-item"><span class="label">BH PVI (Techcom)</span><span
-                        class="phone">1900.545458</span></a>
+                <a href="tel:1900232389" class="hotline-item"><span class="label">Cứu hộ xe VF</span><span class="phone">1900.232389</span></a>
+                <a href="tel:1900636984" class="hotline-item"><span class="label">Sạc pin & App VF</span><span class="phone">1900.636984</span></a>
+                <a href="tel:02471096839" class="hotline-item"><span class="label">Chăm sóc TX</span><span class="phone">0247.109.6839</span></a>
+                <a href="tel:19002088" class="hotline-item"><span class="label">Đặt xe</span><span class="phone">1900.2088</span></a>
             </div>
-        </div>
-
-        <!-- PAGE: CHECK-IN -->
-        <div id="page-checkin" class="page">
-            <div class="page-header">
-                <h1>Điểm danh nhanh</h1>
-            </div>
-            <div id="checkin-limit-msg" style="display:none;" class="card">
-                <div style="text-align:center; padding:30px;"><span
-                        style="font-size:4rem; display:block; margin-bottom:20px;">🎉</span>
-                    <h3 style="color:var(--primary-dark);">BẠN ĐÃ ĐIỂM DANH XONG!</h3>
-                    <p style="font-size:0.85rem; color:var(--text-light); margin-top:10px;">Hẹn gặp lại bạn vào ngày
-                        mai.</p>
-                </div>
-            </div>
-            <div id="checkin-content">
-                <div id="btn-open-camera" onclick="app.startCamera()"
-                    style="height: 200px; background: #f1f5f9; border-radius: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; cursor: pointer; border: 3px dashed #cbd5e1; transition: 0.3s;">
-                    <span style="font-size: 3rem;">📸</span>
-                    <h4 style="font-weight: 800; color: var(--primary-dark); margin:0;">BẤM ĐỂ CHỤP ẢNH</h4>
-                    <p style="font-size: 0.7rem; color: var(--text-light); font-weight: 600;">(Bắt buộc phải có ảnh để
-                        điểm danh)</p>
-                </div>
-
-                <div id="photo-preview-container">
-                    <img id="photo-preview-img" src="" alt="Preview">
-                    <button class="btn-retake" onclick="app.startCamera()">CHỤP LẠI</button>
-                </div>
-
-                <div id="checkin-status"
-                    style="margin-top: 15px; text-align: center; font-size: 0.85rem; color: var(--text-light); font-weight: 600; padding: 0 15px;">
-                </div>
-
-                <button id="btn-submit-checkin" class="btn-action" style="margin-top: 20px; display: none;"
-                    onclick="app.submitCheckin()">
-                    <span>GỬI ĐIỂM DANH NGAY</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- PAGE: PHÂN CA -->
-        <div id="page-phanca" class="page">
-            <div class="page-header">
-                <h1>Đăng ký Lịch trực</h1>
-            </div>
-            <div id="phanca-timer"
-                style="background: var(--warning); color: white; padding: 12px; border-radius: 15px; text-align: center; font-size: 0.85rem; font-weight: 800; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(245,158,11,0.2);">
-                Đang tính thời gian khóa...</div>
-            <div id="phanca-list"></div>
-            <button class="btn-action" style="margin-top: 20px; margin-bottom: 45px;" id="btn-phanca-submit"
-                onclick="app.reviewSchedule()">KIỂM TRA & CHỐT LỊCH</button>
         </div>
 
         <!-- PAGE: PROFILE -->
         <div id="page-hoso" class="page">
-            <div class="page-header">
+            <div class="page-header" style="margin-bottom: 20px;">
                 <h1>Hồ sơ cá nhân</h1>
             </div>
             <div class="card" style="border-left: 5px solid var(--primary);">
-                <p style="font-weight:900; font-size:1.2rem; color:var(--primary-dark); margin-bottom:5px;" id="p-name">
-                    Tài xế ---</p>
-                <p style="font-weight:700; font-size:0.9rem; color:var(--text-light);">Mã nhân viên: <span id="p-id"
-                        style="color:var(--text);">---</span></p>
+                <p style="font-weight:900; font-size:1.2rem; color:var(--primary-dark); margin-bottom:5px;" id="p-name">Tài xế ---</p>
+                <p style="font-weight:700; font-size:0.9rem; color:var(--text-light);">Mã nhân viên: <span id="p-id" style="color:var(--text);">---</span></p>
+                <p style="font-weight:700; font-size:0.9rem; color:var(--text-light); margin-top: 5px;">Tổ: <span id="p-group" style="color:var(--text);">---</span></p>
             </div>
-            <h4 style="font-size: 1rem; margin-bottom: 15px; font-weight: 800; color: var(--text-light);">🕒 Lịch sử
-                hoạt động</h4>
-            <div id="p-history" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 35px;"></div>
-            <h4 style="font-size: 1rem; margin-bottom: 15px; font-weight: 800; color: var(--text-light);">📅 Lịch trình
-                đã chốt</h4>
-            <div id="p-schedule" style="display: flex; flex-direction: column; gap: 12px;"></div>
+        </div>
+
+        <!-- PAGE: LICH OFF -->
+        <div id="page-lichoff" class="page">
+            <div class="page-header" style="margin-bottom: 20px;">
+                <h1>Đăng ký Lịch OFF</h1>
+            </div>
+
+            <div class="card">
+                <h4 style="font-size: 0.9rem; margin-bottom: 15px; font-weight: 800;">NHẬP THÔNG TIN NGHỈ</h4>
+
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <div style="flex: 1;">
+                        <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-light); margin-bottom: 5px; display: block;">Từ ngày</label>
+                        <input type="date" id="off-date-start" class="native-select" style="margin-bottom: 0;">
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-light); margin-bottom: 5px; display: block;">Đến ngày</label>
+                        <input type="date" id="off-date-end" class="native-select" style="margin-bottom: 0;">
+                    </div>
+                </div>
+
+                <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-light); margin-bottom: 5px; display: block;">Lý do nghỉ</label>
+                <textarea id="off-reason" class="native-select" style="height: 100px; padding: 12px; resize: none;" placeholder="Nhập lý do chi tiết tại đây..."></textarea>
+
+                <button class="btn-action" id="btn-submit-off" style="margin-top: 10px;" onclick="app.submitLichOff()">
+                    <span>GỬI ĐĂNG KÝ NGHỈ</span>
+                </button>
+            </div>
+
+            <h4 style="font-size: 1rem; margin: 20px 0 15px; font-weight: 800; color: var(--text-light);">📋 Lịch sử đăng ký nghỉ</h4>
+            <div id="off-history" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 35px;">
+                <p style="text-align: center; color: var(--text-light); font-size: 0.85rem; padding: 20px;">Đang tải lịch sử...</p>
+            </div>
         </div>
 
         <!-- PAGE: MAP -->
@@ -833,145 +286,42 @@
             <div class="btn-refresh-map" onclick="app.syncMap()">🔄</div>
         </div>
 
-        <!-- PAGE: HUY CHUYEN -->
-        <div id="page-huychuyen" class="page">
-            <div class="page-header">
-                <h1>Báo cáo Hủy chuyến</h1>
-            </div>
-
-            <div id="contract-info-card" class="card" style="border-left: 5px solid var(--warning);">
-                <p style="font-weight:900; font-size:1.0rem; color:var(--text); margin-bottom:10px;">Vui lòng chọn Loại
-                    hợp đồng của bạn:</p>
-                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                    <button id="btn-type-thuviec" class="btn-action"
-                        style="padding: 10px; font-size: 0.75rem; background: #f1f5f9; color: #333;"
-                        onclick="app.setContractType('Thử việc')">THỬ VIỆC</button>
-                    <button id="btn-type-chinhthuc" class="btn-action"
-                        style="padding: 10px; font-size: 0.75rem; background: #f1f5f9; color: #333;"
-                        onclick="app.setContractType('Chính thức')">CHÍNH THỨC</button>
-                </div>
-                <div id="contract-rules"
-                    style="font-size: 0.85rem; line-height: 1.6; color: var(--text-light); padding-top: 10px; border-top: 1px dashed #ddd;">
-                    <!-- Rules will be injected here -->
-                </div>
-            </div>
-
-            <div class="card">
-                <h4 style="font-size: 0.9rem; margin-bottom: 15px; font-weight: 800;">NHẬP THÔNG TIN HỦY</h4>
-
-                <label
-                    style="font-size: 0.75rem; font-weight: 700; color: var(--text-light); margin-bottom: 5px; display: block;">Ngày
-                    giờ hủy cuốc</label>
-                <input type="datetime-local" id="cancel-time" class="native-select" style="margin-bottom: 15px;">
-
-                <label
-                    style="font-size: 0.75rem; font-weight: 700; color: var(--text-light); margin-bottom: 5px; display: block;">Bằng
-                    chứng (Ghi âm/Hình ảnh/Log gọi)</label>
-                <input type="file" id="cancel-evidence" accept="image/*,audio/*" class="native-select"
-                    style="margin-bottom: 15px; padding: 8px;">
-
-                <label
-                    style="font-size: 0.75rem; font-weight: 700; color: var(--text-light); margin-bottom: 5px; display: block;">Lý
-                    do giải trình</label>
-                <textarea id="cancel-note" class="native-select" style="height: 100px; padding: 12px; resize: none;"
-                    placeholder="Nhập lý do chi tiết tại đây..."></textarea>
-
-                <button class="btn-action" id="btn-submit-cancel" style="margin-top: 10px;"
-                    onclick="app.submitCancellation()">
-                    <span>GỬI YÊU CẦU ĐỘI VAN</span>
-                </button>
-            </div>
-
-            <h4 style="font-size: 1rem; margin: 20px 0 15px; font-weight: 800; color: var(--text-light);">📋 Lịch sử yêu
-                cầu</h4>
-            <div id="cancel-history" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 35px;">
-                <p style="text-align: center; color: var(--text-light); font-size: 0.85rem; padding: 20px;">Đang tải
-                    lịch sử...</p>
-            </div>
-        </div>
-
         <nav class="bottom-nav" id="main-nav" style="display:none;">
             <div onclick="app.nav('home')" class="nav-item" id="nav-home"><span>🏠</span><span>Trang chủ</span></div>
-            <div onclick="app.nav('checkin')" class="nav-item" id="nav-checkin"><span>📍</span><span>Điểm danh</span>
-            </div>
+            <div onclick="app.nav('lichoff')" class="nav-item" id="nav-lichoff"><span>📅</span><span>Lịch OFF</span></div>
             <div onclick="app.nav('map')" class="nav-item" id="nav-map"><span>🗺️</span><span>Bản đồ</span></div>
-            <div onclick="app.nav('phanca')" class="nav-item" id="nav-phanca" style="display:none;"><span>📅</span><span>Phân ca</span></div>
             <div onclick="app.nav('hoso')" class="nav-item" id="nav-hoso"><span>👤</span><span>Hồ sơ</span></div>
         </nav>
-
-        <!-- OVERLAYS -->
-        <div id="overlay-camera" class="overlay">
-            <video id="video-preview" autoplay playsinline></video>
-            <div class="camera-ui">
-                <button class="btn-action"
-                    style="width:65px; height:65px; border-radius:50%; background:#f1f5f9; color:#333;"
-                    onclick="app.switchCamera()">🔄</button>
-                <div id="btn-snap" class="btn-shutter" onclick="app.takePhoto()" style="display: none;"></div>
-                <button class="btn-action"
-                    style="width:65px; height:65px; border-radius:50%; background:#fee2e2; color:red;"
-                    onclick="app.closeCamera()">✖</button>
-            </div>
-        </div>
-
-        <div id="overlay-review" class="overlay"
-            style="background: rgba(0,0,0,0.85); justify-content: center; padding: 20px;">
-            <div
-                style="background: white; width: 100%; border-radius: 30px; padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.3);">
-                <h2 style="margin-bottom: 20px; font-size: 1.4rem;">Xác nhận lịch trình</h2>
-                <div id="review-content"
-                    style="max-height: 350px; overflow-y: auto; font-size: 0.95rem; line-height: 1.8; color: var(--text);">
-                </div>
-                <div style="margin-top: 30px; display: flex; gap: 15px;">
-                    <button class="btn-action" style="background: #f1f5f9; color: #333;"
-                        onclick="document.getElementById('overlay-review').classList.remove('active')">SỬA LẠI</button>
-                    <button class="btn-action" id="btn-final-chot" onclick="app.finalSubmit()">CHỐT NGAY</button>
-                </div>
-            </div>
-        </div>
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyGCgmfV3kmTVU3EaQPkmna8Nv5itlzbBNnP_NnANqheQwNVmGIjpRT4SQcZkvwP3pl3g/exec";
-        const FIREBASE_URL = "https://vanmap-live-default-rtdb.asia-southeast1.firebasedatabase.app/";
-        const AREAS = ["Quận Phú Nhuận", "Huyện Nhà Bè", "Quận 5", "Quận 3", "Quận 4", "Quận 1", "Quận 6", "Quận 8", "Quận 7", "Huyện Bình Chánh", "Quận Tân Bình", "Quận 11", "Quận 10", "Quận Gò Vấp", "Quận Bình Thạnh", "Quận Tân Phú", "Quận 12", "Huyện Hóc Môn", "Quận Bình Tân", "Thành phố Thủ Đức"];
-        let WEEK_DATES = [];
-        const APP_VERSION = "1.0.3"; // TĂNG SỐ NÀY LÊN MỖI KHI CẬP NHẬT (VD: 1.0.3)
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw4FtuCzYcLtQNZC86R-fZKUr-wAl7LYKpf8L1KC1sERmabOgr0qnSDF0552uEaGbLZtg/exec";
+        const APP_VERSION = "2.0.0"; // TĂNG SỐ NÀY LÊN MỖI KHI CẬP NHẬT
 
         const app = {
-            state: { name: '', id: '', contractType: '', bundle: null, camMode: 'user', addr: '', isLocked: false, photo: null, map: null, markers: null, myMarker: null, lastUpdate: 0 },
+            state: { name: '', id: '', group: '', bundle: null, map: null, markers: null, myMarker: null },
             init() {
-                // TỰ ĐỘNG RESET CACHE NẾU CÓ BẢN MỚI
                 const savedVersion = localStorage.getItem('app_version');
                 if (savedVersion !== APP_VERSION) {
                     localStorage.setItem('app_version', APP_VERSION);
-                    location.reload(true); // Ép trình duyệt tải lại từ server
+                    location.reload(true);
                     return;
                 }
 
-                this.checkZalo();
                 this.state.id = localStorage.getItem('van_user_id');
                 this.state.name = localStorage.getItem('van_user_name');
+                this.state.group = localStorage.getItem('van_user_group');
+                
                 if (this.state.id) {
                     this.loginSuccess();
                     this.initMap();
                 }
+                
                 window.onhashchange = () => this.routing();
                 this.routing();
-                // Đã tắt tự động gửi vị trí từ điện thoại (Dùng định vị xe tự động)
-                // setInterval(() => this.broadcastLocation(), 120000);
 
                 // Tự động làm mới bản đồ mỗi 30 giây để xe chạy mượt hơn
                 setInterval(() => { if (location.hash === "#/map") this.syncMap(); }, 30000);
-            },
-
-            checkZalo() {
-                const ua = navigator.userAgent.toLowerCase();
-                const isZalo = ua.indexOf("zalo") > -1 || ua.indexOf("zaloview") > -1;
-                if (isZalo) {
-                    const overlay = document.getElementById('zalo-overlay');
-                    if (overlay) overlay.style.display = 'flex';
-                    document.body.style.overflow = 'hidden';
-                }
             },
 
             showToast(msg, type = '') {
@@ -979,39 +329,6 @@
                 if (!t) return;
                 t.innerText = msg; t.className = 'toast active ' + type;
                 setTimeout(() => t.classList.remove('active'), 3000);
-            },
-
-            showAlertModal(title, message, btnText = "Đóng", callback = null) {
-                document.getElementById('modal-title').innerText = title;
-                document.getElementById('modal-message').innerHTML = message;
-                const actions = document.getElementById('modal-actions');
-                actions.innerHTML = `<button class="modal-btn modal-btn-primary" id="modal-btn-ok">${btnText}</button>`;
-                const modal = document.getElementById('custom-modal');
-                modal.classList.add('active');
-                document.getElementById('modal-btn-ok').onclick = () => {
-                    modal.classList.remove('active');
-                    if (callback) callback();
-                };
-            },
-            
-            showConfirmModal(title, message, okText, cancelText, onOk, onCancel) {
-                document.getElementById('modal-title').innerText = title;
-                document.getElementById('modal-message').innerHTML = message;
-                const actions = document.getElementById('modal-actions');
-                actions.innerHTML = `
-                    <button class="modal-btn" id="modal-btn-cancel">${cancelText}</button>
-                    <button class="modal-btn modal-btn-primary" id="modal-btn-ok">${okText}</button>
-                `;
-                const modal = document.getElementById('custom-modal');
-                modal.classList.add('active');
-                document.getElementById('modal-btn-cancel').onclick = () => {
-                    modal.classList.remove('active');
-                    if (onCancel) onCancel();
-                };
-                document.getElementById('modal-btn-ok').onclick = () => {
-                    modal.classList.remove('active');
-                    if (onOk) onOk();
-                };
             },
 
             async login() {
@@ -1023,24 +340,20 @@
                 btn.innerHTML = `<div class="spinner-small"></div> Đang kiểm tra...`;
 
                 try {
-                    const res = await fetch(`${SCRIPT_URL}?action=login&id=${i}`).then(r => r.text());
-                    if (res.trim().startsWith("success")) {
-                        const parts = res.trim().split("|");
-                        const driverName = parts[1] || "Tài xế";
-                        const group = (parts[2] || "").trim(); // Lấy thông tin tổ từ GAS trả về
+                    const res = await fetch(`${SCRIPT_URL}?action=login&id=${i}`).then(r => r.json());
+                    if (res.status === 'success') {
+                        localStorage.setItem('van_user_id', res.id);
+                        localStorage.setItem('van_user_name', res.name);
+                        localStorage.setItem('van_user_group', res.group);
                         
-                        localStorage.setItem('van_user_id', i);
-                        localStorage.setItem('van_user_name', driverName);
-                        localStorage.setItem('van_user_group', group); // Lưu tổ vào máy
-                        
-                        this.state.id = i; 
-                        this.state.name = driverName;
-                        this.state.group = group;
+                        this.state.id = res.id; 
+                        this.state.name = res.name;
+                        this.state.group = res.group;
 
-                        this.showToast("Chào mừng " + driverName + "!", "success");
+                        this.showToast("Chào mừng " + res.name + "!", "success");
                         this.loginSuccess();
                     } else {
-                        this.showToast("Mã SAP không đúng!", "error");
+                        this.showToast(res.message || "Mã SAP không đúng!", "error");
                         btn.disabled = false; btn.innerHTML = `<span>VÀO HỆ THỐNG</span>`;
                     }
                 } catch (e) {
@@ -1048,30 +361,21 @@
                     btn.disabled = false; btn.innerHTML = `<span>VÀO HỆ THỐNG</span>`;
                 }
             },
+            
             loginSuccess() {
                 this.state.id = localStorage.getItem('van_user_id');
                 this.state.name = localStorage.getItem('van_user_name');
                 this.state.group = localStorage.getItem('van_user_group') || '';
-                this.state.contractType = localStorage.getItem('van_user_contract') || 'Thử việc';
+                
                 document.getElementById('page-login').classList.remove('active');
                 document.getElementById('main-nav').style.display = 'flex';
                 document.getElementById('user-name').innerText = "Chào, " + this.state.name;
                 document.getElementById('user-sap').innerText = "Mã NV: " + this.state.id;
                 
-                // PHÂN QUYỀN HỦY CHUYẾN (Chỉ tổ VAN.DOIXE11.02 mới thấy)
-                const btnHuy = document.getElementById('btn-home-huychuyen');
-                if (btnHuy) {
-                    if (this.state.group === "VAN.DOIXE11.02") {
-                        btnHuy.style.display = 'flex';
-                        btnHuy.style.flexDirection = 'column'; // Đảm bảo icon ở trên, chữ ở dưới
-                    } else {
-                        btnHuy.style.display = 'none';
-                    }
-                }
-                
-                this.nav('home'); this.refreshBundle();
-                this.renderCancellationRules();
+                this.nav('home'); 
+                this.refreshBundle();
             },
+            
             async refreshBundle() {
                 document.getElementById('global-loading').style.display = 'flex';
                 try {
@@ -1083,73 +387,22 @@
             },
 
             updateUI() {
-                const today = new Date().toLocaleDateString('vi-VN');
-                const history = this.state.bundle ? this.state.bundle.history : [];
-                if (history && history.length > 0) {
-                    const last = history[history.length - 1];
-                    const rawDate = last[0]; 
-                    let formattedDate = rawDate;
-                    
-                    try {
-                        // Nếu là dạng ISO (có chữ T), chuyển về dd/mm/yyyy HH:mm
-                        if (rawDate.includes('T') || !isNaN(Date.parse(rawDate))) {
-                            const d = new Date(rawDate);
-                            const day = ("0" + d.getDate()).slice(-2);
-                            const month = ("0" + (d.getMonth() + 1)).slice(-2);
-                            const year = d.getFullYear();
-                            const hours = ("0" + d.getHours()).slice(-2);
-                            const mins = ("0" + d.getMinutes()).slice(-2);
-                            formattedDate = `${day}/${month}/${year} ${hours}:${mins}`;
-                        } else {
-                            formattedDate = rawDate.split(',')[1] || rawDate;
-                        }
-                    } catch(e) { formattedDate = rawDate; }
-                    
-                    document.getElementById('home-last-check').innerText = formattedDate;
-                    if (last[0].includes(today)) localStorage.setItem('last_check_date', today);
-                }
-                this.renderPhanCa(); this.renderProfile();
+                this.renderProfile();
+                this.renderLichOffHistory();
             },
 
             nav(p) { location.hash = "#/" + p; },
+            
             routing() {
                 const h = location.hash.replace("#/", "") || "login";
                 if (!this.state.id && h !== "login") { location.hash = "#/login"; return; }
 
-                // KHÓA TRUY CẬP TRỰC TIẾP VÀO HỦY CHUYẾN
-                if (h === "huychuyen") {
-                    if (this.state.group !== "VAN.DOIXE11.02") {
-                        this.showToast("Bạn không có quyền vào mục này!", "error");
-                        location.hash = "#/home";
-                        return;
-                    }
-                    if (this.lastHash !== "huychuyen") {
-                        location.hash = "#/home"; // Tạm thời quay về trang chủ
-                        this.showConfirmModal(
-                            "Xác nhận ghi nhận", 
-                            "Bạn đã gọi cho tổng đài hỗ trợ của tài xế ghi nhận hay chưa?",
-                            "RỒI", 
-                            "CHƯA",
-                            () => {
-                                this.lastHash = "huychuyen";
-                                location.hash = "#/huychuyen";
-                            },
-                            () => {
-                                this.showAlertModal("Lưu ý", "Vui lòng gọi tổng đài để ghi nhận trước khi hủy chuyến.");
-                            }
-                        );
-                        return;
-                    }
-                }
-                this.lastHash = h;
-
                 document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
                 document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                
                 if (document.getElementById('page-' + h)) document.getElementById('page-' + h).classList.add('active');
                 if (document.getElementById('nav-' + h)) document.getElementById('nav-' + h).classList.add('active');
-                if (h === "checkin") this.checkCheckinLimit();
-                if (h === "phanca") this.startTimer();
-                if (h === "huychuyen") this.renderCancellationHistory();
+                
                 if (h === "map") {
                     this.initMap();
                     setTimeout(() => {
@@ -1162,276 +415,156 @@
             },
 
             logout() { if (confirm("Bạn muốn đăng xuất?")) { localStorage.clear(); location.hash = "#/login"; location.reload(); } },
-            checkCheckinLimit() {
-                const today = new Date().toLocaleDateString('vi-VN');
-                const isDone = localStorage.getItem('last_check_date') === today;
-                const limitMsg = document.getElementById('checkin-limit-msg');
-                const content = document.getElementById('checkin-content');
-                if (limitMsg) limitMsg.style.display = isDone ? 'block' : 'none';
-                if (content) content.style.display = isDone ? 'none' : 'block';
-            },
+            
             fmt(d) {
                 const date = new Date(d);
                 return isNaN(date) ? String(d).trim() : `${("0" + date.getDate()).slice(-2)}/${("0" + (date.getMonth() + 1)).slice(-2)}/${date.getFullYear()}`;
             },
 
-            async startCamera() {
-                const st = document.getElementById('checkin-status');
-                const btnSnap = document.getElementById('btn-snap');
-                st.innerText = "📍 Đang xác định vị trí...";
-                st.style.color = "var(--primary)";
-                if (btnSnap) btnSnap.style.display = "none";
-                this.state.addr = "";
-
-                try {
-                    this.state.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: this.state.camMode } });
-                    document.getElementById('video-preview').srcObject = this.state.stream;
-                    document.getElementById('overlay-camera').classList.add('active');
-                    // ẨN MENU KHI BẬT CAMERA
-                    document.getElementById('main-nav').style.display = 'none';
-                } catch (e) {
-                    this.showToast("Không mở được camera!", "error");
-                    return;
-                }
-
-                navigator.geolocation.getCurrentPosition(async pos => {
-                    const lat = pos.coords.latitude.toFixed(6);
-                    const lon = pos.coords.longitude.toFixed(6);
-                    this.state.addr = `Tọa độ: ${lat}, ${lon}`;
-                    try {
-                        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1`, { headers: { 'Accept-Language': 'vi' } });
-                        const data = await res.json();
-                        const a = data.address || {};
-                        const ward = a.suburb || a.neighbourhood || a.village || "";
-                        const dist = a.city_district || a.county || a.city || "";
-                        this.state.addr = (ward && dist) ? `${ward}, ${dist}` : data.display_name;
-                        st.innerText = "✅ Vị trí: " + (this.state.addr.length > 30 ? this.state.addr.substring(0, 30) + "..." : this.state.addr);
-                    } catch (e) {
-                        st.innerText = "✅ Vị trí: " + this.state.addr;
-                    }
-                    if (btnSnap) btnSnap.style.display = "block";
-                    st.style.color = "green";
-                }, err => {
-                    st.innerText = "✅ Vị trí: " + this.state.addr;
-                    if (btnSnap) btnSnap.style.display = "block";
-                }, { enableHighAccuracy: true, timeout: 10000 });
-            },
-
-            switchCamera() { this.state.camMode = (this.state.camMode === 'user' ? 'environment' : 'user'); this.startCamera(); },
-            takePhoto() {
-                const v = document.getElementById('video-preview');
-                const c = document.createElement('canvas');
-                c.width = v.videoWidth; c.height = v.videoHeight;
-                c.getContext('2d').drawImage(v, 0, 0);
-                this.state.photo = c.toDataURL('image/jpeg', 0.4);
-                document.getElementById('photo-preview-img').src = this.state.photo;
-                document.getElementById('photo-preview-container').style.display = 'block';
-                document.getElementById('btn-open-camera').style.display = 'none';
-                document.getElementById('btn-submit-checkin').style.display = 'flex';
-                this.closeCamera();
-            },
-            closeCamera() {
-                if (this.state.stream) this.state.stream.getTracks().forEach(t => t.stop());
-                document.getElementById('overlay-camera').classList.remove('active');
-                // HIỆN LẠI MENU KHI ĐÓNG CAMERA
-                document.getElementById('main-nav').style.display = 'flex';
-            },
-            async submitCheckin() {
-                if (!this.state.photo || !this.state.addr) return this.showToast("Thiếu ảnh hoặc vị trí!", "warning");
-                const btn = document.getElementById('btn-submit-checkin');
-                btn.disabled = true; btn.innerHTML = `<div class="spinner-small"></div> ĐANG GỬI...`;
-                const payload = {
-                    id: this.state.id,
-                    name: this.state.name,
-                    timestamp: new Date().toLocaleString('vi-VN'),
-                    location: this.state.addr,
-                    photo: this.state.photo
-                };
-                try {
-                    await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload), mode: 'no-cors' });
-                    localStorage.setItem('last_check_date', new Date().toLocaleDateString('vi-VN'));
-                    this.showToast("Điểm danh thành công!", "success");
-                    document.getElementById('photo-preview-container').style.display = 'none';
-                    document.getElementById('btn-open-camera').style.display = 'flex';
-                    document.getElementById('btn-submit-checkin').style.display = 'none';
-                    this.state.photo = null;
-                    setTimeout(() => { this.checkCheckinLimit(); this.refreshBundle(); }, 1000);
-                } catch (e) {
-                    this.showToast("Lỗi gửi dữ liệu!", "error");
-                    btn.disabled = false; btn.innerHTML = `<span>GỬI ĐIỂM DANH NGAY</span>`;
-                }
-            },
-
-            renderPhanCa() {
-                const listEl = document.getElementById('phanca-list');
-                if (!listEl) return;
-                this.generateDates();
-                const bundle = this.state.bundle || { shiftCounts: {}, mySchedule: [] };
-                const already = bundle.mySchedule.some(r => WEEK_DATES.map(d => d.value).includes(this.fmt(r[4])));
-                if (already) {
-                    listEl.innerHTML = `<div class="card" style="text-align:center; padding:40px;"><span style="font-size:4rem;">✅</span><h3 style="margin-top:15px; color:var(--primary-dark);">LỊCH ĐÃ ĐƯỢC CHỐT!</h3><p style="font-size:0.85rem; color:var(--text-light); margin-top:10px;">Xem lại trong mục Hồ sơ.</p></div>`;
-                    if (document.getElementById('btn-phanca-submit')) document.getElementById('btn-phanca-submit').style.display = 'none';
-                    return;
-                }
-                let html = '';
-                WEEK_DATES.forEach((d, i) => {
-                    const c8 = bundle.shiftCounts[d.value] || 0;
-                    const left = Math.max(0, 252 - c8);
-                    const isLocked = this.state.isLocked && d.isNext;
-                    html += `<div class="day-box ${isLocked ? 'locked' : ''}" id="day_box_${i}"><span class="week-tag ${d.isNext ? 'tag-next' : 'tag-now'}">${d.isNext ? 'TUẦN TỚI' : 'TUẦN NÀY'}</span><h4 style="margin-bottom:10px;">${d.label}</h4><select class="native-select" id="s_${i}" onchange="app.onShiftChange(${i})"><option value="">-- Chọn ca trực --</option><option value="06:00-15:00">Ca 06:00-15:00</option><option value="08:00-17:00" ${left <= 0 ? 'disabled' : ''}>Ca 08:00-17:00 (Còn trống: ${left})</option><option value="13:00-22:00">Ca 13:00-22:00</option><option value="OFF" style="color:red">OFF (Nghỉ)</option></select><select class="native-select" id="a_${i}" disabled><option value="">-- Chọn Khu vực --</option>${AREAS.map(a => `<option value="${a}">${a}</option>`).join('')}</select></div>`;
-                });
-                listEl.innerHTML = html;
-            },
-            onShiftChange(i) {
-                const s = document.getElementById(`s_${i}`).value;
-                document.getElementById(`a_${i}`).disabled = (s === '' || s === 'OFF');
-                document.getElementById(`day_box_${i}`).classList.remove('error-focus');
-            },
-            generateDates() {
-                WEEK_DATES = []; let now = new Date(); now.setHours(0, 0, 0, 0);
-                let start = new Date(now); start.setDate(now.getDate() + 1);
-                let dToSun1 = now.getDay() === 0 ? 0 : 7 - now.getDay();
-                let sun1 = new Date(now); sun1.setDate(now.getDate() + dToSun1);
-                let sun2 = new Date(sun1); sun2.setDate(sun1.getDate() + 7);
-                let curr = new Date(start);
-                while (curr <= sun2) {
-                    let c = new Date(curr);
-                    WEEK_DATES.push({ label: `${c.getDay() === 0 ? 'Chủ Nhật' : 'Thứ ' + (c.getDay() + 1)} (${c.getDate()}/${c.getMonth() + 1})`, value: this.fmt(c), isNext: c > sun1 });
-                    curr.setDate(curr.getDate() + 1);
-                }
-            },
-            startTimer() {
-                const el = document.getElementById('phanca-timer');
-                if (this.tInt) clearInterval(this.tInt);
-                this.tInt = setInterval(() => {
-                    let now = new Date(); let target = new Date();
-                    let dToS = now.getDay() === 0 ? 0 : 7 - now.getDay();
-                    target.setDate(now.getDate() + dToS); target.setHours(20, 0, 0, 0);
-                    if (now > target) {
-                        el.innerText = "ĐÃ KHÓA ĐĂNG KÝ TUẦN TỚI (Sau 20h CN)";
-                        this.state.isLocked = true; el.style.background = "var(--danger)";
-                    } else {
-                        let diff = target - now; let h = Math.floor(diff / 3600000); let m = Math.floor((diff % 3600000) / 60000); let s = Math.floor((diff % 60000) / 1000);
-                        el.innerText = `KHÓA TUẦN TỚI SAU: ${h}h ${m}m ${s}s`;
-                        this.state.isLocked = false; el.style.background = "var(--warning)";
-                    }
-                }, 1000);
-            },
-            reviewSchedule() {
-                this.state.schedules = []; let html = '';
-                for (let i = 0; i < WEEK_DATES.length; i++) {
-                    if (this.state.isLocked && WEEK_DATES[i].isNext) continue;
-                    const s = document.getElementById(`s_${i}`).value, a = document.getElementById(`a_${i}`).value;
-                    if (!s || (s !== 'OFF' && !a)) {
-                        document.getElementById(`day_box_${i}`).classList.add('error-focus');
-                        return this.showToast("Vui lòng điền đủ lịch!", "error");
-                    }
-                    this.state.schedules.push({ date: WEEK_DATES[i].value, shift: s, area: a || "Nghỉ" });
-                    html += `<div style="padding:10px; border-bottom:1px solid #eee;"><strong>${WEEK_DATES[i].label}</strong>: ${s} | ${a || 'OFF'}</div>`;
-                }
-                document.getElementById('review-content').innerHTML = html;
-                document.getElementById('overlay-review').classList.add('active');
-            },
-            async finalSubmit() {
-                const btn = document.getElementById('btn-final-chot');
-                btn.disabled = true; btn.innerHTML = `<div class="spinner-small"></div> Đang gửi...`;
-                try {
-                    await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "submit_schedule", driverId: this.state.id, driverName: this.state.name, schedules: this.state.schedules }) });
-                    this.showToast("Đã chốt lịch thành công!", "success");
-                    setTimeout(() => location.reload(), 1500);
-                } catch (e) { this.showToast("Lỗi gửi dữ liệu!", "error"); btn.disabled = false; btn.innerText = "CHỐT NGAY"; }
-            },
             renderProfile() {
-                if (!this.state.bundle) return;
                 document.getElementById('p-id').innerText = this.state.id;
                 document.getElementById('p-name').innerText = this.state.name;
-                const hL = document.getElementById('p-history'), sL = document.getElementById('p-schedule');
-                hL.innerHTML = this.state.bundle.history.slice().reverse().map(r => `<div class="card" style="padding:12px; font-size:0.8rem; display:flex; justify-content:space-between;"><span>${isNaN(new Date(r[0]).getTime()) ? r[0] : new Date(r[0]).toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}</span><strong>${r[3]}</strong></div>`).join('') || "Chưa có hoạt động";
-                const today = new Date(); today.setHours(0, 0, 0, 0); const seen = new Set();
-                sL.innerHTML = this.state.bundle.mySchedule.filter(r => {
-                    const p = this.fmt(r[4]).split('/'); const d = new Date(p[2], p[1] - 1, p[0]);
-                    if (d < today || seen.has(this.fmt(r[4]))) return false;
-                    seen.add(this.fmt(r[4])); return true;
-                }).slice().reverse().map(r => `<div class="card" style="padding:12px; font-size:0.8rem;"><strong>📅 Ngày: ${this.fmt(r[4])}</strong><br>Ca: ${r[5]} | ${r[3]}</div>`).join('') || "Chưa có lịch trình";
+                document.getElementById('p-group').innerText = this.state.group || 'Chưa cập nhật';
             },
 
-            setContractType(type) {
-                this.state.contractType = type; localStorage.setItem('van_user_contract', type);
-                this.renderCancellationRules();
-            },
-            renderCancellationRules() {
-                const type = this.state.contractType; const rulesEl = document.getElementById('contract-rules');
-                const bT = document.getElementById('btn-type-thuviec'), bC = document.getElementById('btn-type-chinhthuc');
-                if (!rulesEl || !bT || !bC) return;
-                bT.style.background = (type === "Thử việc") ? "var(--primary)" : "#f1f5f9";
-                bT.style.color = (type === "Thử việc") ? "white" : "#333";
-                bC.style.background = (type === "Chính thức") ? "var(--primary)" : "#f1f5f9";
-                bC.style.color = (type === "Chính thức") ? "white" : "#333";
-                if (type === "Thử việc") {
-                    rulesEl.innerHTML = `<p>• Bill tối thiểu: <b>640.000 VNĐ</b></p><p>• Tỉ lệ nhận: <b>80%</b></p><p>• Tỉ lệ hoàn thành: <b>85%</b></p>`;
-                } else if (type === "Chính thức") {
-                    rulesEl.innerHTML = `<p>• Bill tối thiểu: <b>800.000 VNĐ</b></p><p>• Tỉ lệ nhận: <b>80%</b></p><p>• Tỉ lệ hoàn thành: <b>85%</b></p>`;
-                } else { rulesEl.innerHTML = `<p style="color:var(--danger)">Vui lòng chọn loại hợp đồng.</p>`; }
-            },
-
-            async submitCancellation() {
-                const time = document.getElementById('cancel-time').value, f = document.getElementById('cancel-evidence'), n = document.getElementById('cancel-note').value.trim(), btn = document.getElementById('btn-submit-cancel');
-                if (!time || !n) return this.showToast("Vui lòng điền đủ thông tin!", "error");
-
-                const selectedDate = new Date(time);
-                const today = new Date();
+            async submitLichOff() {
+                const dateStart = document.getElementById('off-date-start').value;
+                const dateEnd = document.getElementById('off-date-end').value || dateStart;
+                const reason = document.getElementById('off-reason').value.trim();
+                const btn = document.getElementById('btn-submit-off');
                 
-                if (selectedDate.getFullYear() === today.getFullYear() && 
-                    selectedDate.getMonth() === today.getMonth() && 
-                    selectedDate.getDate() === today.getDate()) {
-                    this.showAlertModal(
-                        "Thông báo",
-                        "Nếu bạn đã gọi tổng đài để ghi nhận rồi, ngày mai hãy vào phần thống kê hiệu suất để xem tỉ lệ có hoàn lại không.<br><br>Nếu không hãy quay lại đây để giải trình lại.<br><br>Xin cảm ơn."
-                    );
+                if (!dateStart || !reason) return this.showToast("Vui lòng điền đủ thông tin!", "error");
+
+                // --- KIỂM TRA ĐIỀU KIỆN NGHỈ ---
+                const dStart = new Date(dateStart); dStart.setHours(0,0,0,0);
+                const dEnd = new Date(dateEnd); dEnd.setHours(0,0,0,0);
+                
+                if (dEnd < dStart) {
+                    alert("Lỗi: Ngày kết thúc không được nhỏ hơn ngày bắt đầu!");
                     return;
                 }
-                if (selectedDate > today) {
-                    return this.showToast("Không thể chọn ngày trong tương lai!", "error");
+                
+                const requestDays = Math.round((dEnd - dStart) / 86400000) + 1;
+                if (requestDays > 2) {
+                    alert("Cảnh báo: Chỉ được phép đăng ký nghỉ tối đa 2 ngày cùng lúc. Nếu cần nghỉ dài hơn vui lòng liên hệ Giám sát.");
+                    return;
                 }
 
-                btn.disabled = true; btn.innerHTML = `<div class="spinner-small"></div> Đang gửi...`;
-                let eBase64 = "";
-                if (f.files && f.files[0]) {
-                    eBase64 = await new Promise(r => { const rd = new FileReader(); rd.onload = (e) => r(e.target.result); rd.readAsDataURL(f.files[0]); });
+                const pastOffs = (this.state.bundle && this.state.bundle.timeOffs) ? this.state.bundle.timeOffs : [];
+                const allPastDates = pastOffs.map(r => {
+                    let d = new Date(r.dateOff);
+                    d.setHours(0,0,0,0);
+                    return d;
+                });
+                
+                // Mảng chứa các ngày đang xin nghỉ đợt này
+                let newRequestDates = [];
+                for(let d = new Date(dStart); d <= dEnd; d.setDate(d.getDate() + 1)) {
+                    newRequestDates.push(new Date(d));
                 }
-                const p = {
-                    action: "submit_cancellation",
-                    id: this.state.id,
-                    name: this.state.name,
-                    contractType: this.state.contractType,
-                    cancelTime: time,
-                    photo: eBase64,
-                    note: n
-                };
-                try {
-                    await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(p), mode: 'no-cors' });
-                    this.showToast("Đã gửi báo cáo thành công!", "success");
-                    document.getElementById('cancel-time').value = ""; document.getElementById('cancel-evidence').value = ""; document.getElementById('cancel-note').value = "";
-                    setTimeout(() => { this.refreshBundle(); this.renderCancellationHistory(); }, 1000);
-                } catch (e) { this.showToast("Lỗi gửi dữ liệu!", "error"); } finally { btn.disabled = false; btn.innerHTML = `<span>GỬI YÊU CẦU ĐỘI VAN</span>`; }
-            },
-            renderCancellationHistory() {
-                const el = document.getElementById('cancel-history'); if (!el) return;
-                const h = this.state.bundle ? this.state.bundle.cancellations : [];
-                if (!h || h.length === 0) { el.innerHTML = `<p style="text-align: center; color: var(--text-light); font-size: 0.85rem; padding: 20px;">Chưa có yêu cầu.</p>`; return; }
-                el.innerHTML = h.slice().reverse().map(r => {
-                    const d = (r.cancelTime || "").replace('T', ' ').substring(0, 16);
-                    let fb = r.feedback || "";
-                    if (typeof fb === 'string' && fb.includes('T') && fb.endsWith('Z') && !isNaN(Date.parse(fb))) {
-                        const fd = new Date(fb);
-                        const fday = ("0" + fd.getDate()).slice(-2);
-                        const fmonth = ("0" + (fd.getMonth() + 1)).slice(-2);
-                        const fyear = fd.getFullYear();
-                        const fhours = ("0" + fd.getHours()).slice(-2);
-                        const fmins = ("0" + fd.getMinutes()).slice(-2);
-                        fb = `${fday}/${fmonth}/${fyear} ${fhours}:${fmins}`;
+                
+                // Trùng lịch
+                for(let nd of newRequestDates) {
+                    if (allPastDates.some(pd => pd.getTime() === nd.getTime())) {
+                        alert(`Lỗi: Bạn đã đăng ký nghỉ ngày ${this.fmt(nd)} rồi!`);
+                        return;
                     }
-                    return `<div class="card" style="padding: 15px; border-left: 4px solid ${r.status === 'Đã xử lý' ? 'var(--primary)' : 'var(--warning)'};"><div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;"><span style="font-size: 0.75rem; font-weight: 800; color: var(--text-light);">${d}</span><span class="week-tag" style="background: ${r.status === 'Đã xử lý' ? '#dcfce7' : '#fef3c7'}; color: ${r.status === 'Đã xử lý' ? '#166534' : '#92400e'};">${r.status}</span></div><p style="font-size: 0.85rem; line-height: 1.4; color: var(--text);">${r.note}</p>${fb ? `<div style="margin-top: 10px; padding: 10px; background: #f8fafc; border-radius: 10px; font-size: 0.8rem; color: var(--primary-dark);"><strong>Phản hồi:</strong> ${fb}</div>` : ''}</div>`;
+                }
+                
+                // 4 ngày / tháng
+                let countInCycle = newRequestDates.length; 
+                allPastDates.forEach(d => {
+                    let cycleStart, cycleEnd;
+                    if (dStart.getDate() >= 26) {
+                        cycleStart = new Date(dStart.getFullYear(), dStart.getMonth(), 26);
+                        cycleEnd = new Date(dStart.getFullYear(), dStart.getMonth() + 1, 25);
+                    } else {
+                        cycleStart = new Date(dStart.getFullYear(), dStart.getMonth() - 1, 26);
+                        cycleEnd = new Date(dStart.getFullYear(), dStart.getMonth(), 25);
+                    }
+                    if (d >= cycleStart && d <= cycleEnd) countInCycle++;
+                });
+                
+                if (countInCycle > 4) {
+                    alert("Cảnh báo: Số lượt nghỉ trong tháng của bạn đã hết (Vượt quá 4 ngày). Vui lòng liên hệ Giám sát để được hỗ trợ.");
+                    return;
+                }
+                
+                // Chặn 3 ngày liên tiếp trong tổng thể
+                let allDates = [...allPastDates, ...newRequestDates];
+                allDates.sort((a, b) => a - b);
+                for (let i = 0; i < allDates.length - 2; i++) {
+                    const d1 = allDates[i];
+                    const d2 = allDates[i+1];
+                    const d3 = allDates[i+2];
+                    
+                    const isConsecutive12 = Math.round((d2 - d1) / 86400000) === 1;
+                    const isConsecutive23 = Math.round((d3 - d2) / 86400000) === 1;
+                    
+                    if (isConsecutive12 && isConsecutive23) {
+                        alert("Cảnh báo: Tổng lịch nghỉ tạo thành 3 ngày liên tiếp. Vui lòng liên hệ Giám sát để được hỗ trợ.");
+                        return;
+                    }
+                }
+                // --- KẾT THÚC KIỂM TRA ---
+
+                btn.disabled = true; btn.innerHTML = `<div class="spinner-small"></div> Đang gửi...`;
+                
+                try {
+                    // Gửi từng ngày một để lưu vào Google Sheet thành từng dòng
+                    for (let nd of newRequestDates) {
+                        const formattedDate = `${nd.getFullYear()}-${("0" + (nd.getMonth() + 1)).slice(-2)}-${("0" + nd.getDate()).slice(-2)}`;
+                        const p = {
+                            action: "submit_lich_off",
+                            id: this.state.id,
+                            name: this.state.name,
+                            group: this.state.group,
+                            dateOff: formattedDate,
+                            reason: reason
+                        };
+                        await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(p), mode: 'no-cors' });
+                    }
+                    
+                    this.showToast("Đã gửi đăng ký nghỉ thành công!", "success");
+                    document.getElementById('off-date-start').value = ""; 
+                    document.getElementById('off-date-end').value = ""; 
+                    document.getElementById('off-reason').value = "";
+                    setTimeout(() => { this.refreshBundle(); }, 1500);
+                } catch (e) { 
+                    this.showToast("Lỗi gửi dữ liệu!", "error"); 
+                } finally { 
+                    btn.disabled = false; btn.innerHTML = `<span>GỬI ĐĂNG KÝ NGHỈ</span>`; 
+                }
+            },
+            
+            renderLichOffHistory() {
+                const el = document.getElementById('off-history'); if (!el) return;
+                const h = this.state.bundle ? this.state.bundle.timeOffs : [];
+                if (!h || h.length === 0) { el.innerHTML = `<p style="text-align: center; color: var(--text-light); font-size: 0.85rem; padding: 20px;">Chưa có dữ liệu đăng ký nghỉ.</p>`; return; }
+                
+                el.innerHTML = h.slice().reverse().map(r => {
+                    let dFormat = r.dateOff;
+                    if (r.dateOff && r.dateOff.includes('T')) {
+                        const d = new Date(r.dateOff);
+                        dFormat = `${("0" + d.getDate()).slice(-2)}/${("0" + (d.getMonth() + 1)).slice(-2)}/${d.getFullYear()}`;
+                    } else if (r.dateOff && !isNaN(Date.parse(r.dateOff))) {
+                        const d = new Date(r.dateOff);
+                        dFormat = `${("0" + d.getDate()).slice(-2)}/${("0" + (d.getMonth() + 1)).slice(-2)}/${d.getFullYear()}`;
+                    }
+                    
+                    let timeFormat = r.timestamp;
+                    if (r.timestamp && r.timestamp.includes('T')) {
+                        const dt = new Date(r.timestamp);
+                        timeFormat = `${("0" + dt.getDate()).slice(-2)}/${("0" + (dt.getMonth() + 1)).slice(-2)}/${dt.getFullYear()} ${("0" + dt.getHours()).slice(-2)}:${("0" + dt.getMinutes()).slice(-2)}`;
+                    }
+
+                    return `<div class="card" style="padding: 15px; border-left: 4px solid var(--primary);">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                            <span style="font-size: 0.75rem; font-weight: 800; color: var(--text-light);">Gửi: ${timeFormat}</span>
+                            <span class="week-tag" style="background: #fef3c7; color: #92400e;">Nghỉ: ${dFormat}</span>
+                        </div>
+                        <p style="font-size: 0.85rem; line-height: 1.4; color: var(--text);"><strong>Lý do:</strong> ${r.reason}</p>
+                    </div>`;
                 }).join('');
             },
 
@@ -1450,33 +583,12 @@
                 this.syncMap();
             },
 
-            async broadcastLocation() {
-                if (!this.state.id) return;
-                navigator.geolocation.getCurrentPosition(async pos => {
-                    const lat = pos.coords.latitude;
-                    const lng = pos.coords.longitude;
-                    const payload = {
-                        name: this.state.name,
-                        lat: lat,
-                        lng: lng,
-                        ts: Date.now()
-                    };
-                    try {
-                        await fetch(`${FIREBASE_URL}locations/${this.state.id}.json`, {
-                            method: 'PATCH',
-                            body: JSON.stringify(payload)
-                        });
-                    } catch (e) { }
-                }, null, { enableHighAccuracy: true });
-            },
-
             async syncMap() {
                 if (!this.state.map) return;
                 const stats = document.getElementById('map-stats');
 
                 const fetchMap = async (lat = '', lng = '') => {
                     try {
-                        // Gửi vị trí người dùng lên GAS để lọc lấy 100 xe gần nhất
                         let url = `${SCRIPT_URL}?action=get_map`;
                         if (lat && lng) url += `&lat=${lat}&lng=${lng}`;
                         
@@ -1495,7 +607,6 @@
                             const isMe = sap === this.state.id;
                             const isGPS = driver.type === "GPS_VEHICLE";
 
-                            // Màu sắc: Xanh dương (Bạn), Xanh lá (Xe đang chạy), Cam (Xe đứng yên)
                             let markerColor = isMe ? '#2563eb' : '#10b981';
                             if (driver.speed === 0) markerColor = '#f59e0b';
                             if (now - driver.ts > 600000) markerColor = '#94a3b8'; // Xám nếu mất tín hiệu > 10p
@@ -1511,45 +622,49 @@
                             const popupContent = `
                                 <div style="text-align:center; padding: 5px;">
                                     <strong style="color:var(--primary); font-size:1.2rem;">${driver.name}</strong>
+                                    <p style="margin-top:5px; font-size:0.8rem; font-weight:700;">Tốc độ: ${driver.speed} km/h</p>
+                                    <p style="font-size:0.75rem; color:#666;">Cập nhật: ${Math.floor((now - driver.ts)/60000)} phút trước</p>
                                 </div>
                             `;
-                            marker.bindPopup(popupContent);
+                            marker.bindPopup(popupContent, { closeButton: false, className: 'custom-popup' });
                             this.state.markers.addLayer(marker);
+                            count++;
+                            
+                            // Lưu marker của mình để panTo
                             if (isMe) {
                                 this.state.myMarker = marker;
-                                this.state.map.panTo([driver.lat, driver.lng]);
                             }
-                            count++;
                         });
+                        stats.innerHTML = `🟢 Đang hiển thị ${count} xe gần nhất`;
                     } catch (e) {
-                        stats.innerText = "❌ Lỗi đồng bộ";
+                        stats.innerHTML = "🔴 Lỗi đồng bộ vệ tinh";
                     }
                 };
 
-                // Lấy vị trí hiện tại (timeout 5s để không bị treo), sau đó mới fetch map
                 navigator.geolocation.getCurrentPosition(
                     pos => fetchMap(pos.coords.latitude, pos.coords.longitude),
-                    err => fetchMap(), // Lỗi thì cứ fetch không có tọa độ
-                    { enableHighAccuracy: false, timeout: 5000 }
+                    err => fetchMap(),
+                    { enableHighAccuracy: true, timeout: 5000 }
                 );
             },
 
             locateMe() {
                 if (!this.state.map) return;
                 const stats = document.getElementById('map-stats');
-                stats.innerText = "📍 Đang tìm bạn...";
+                stats.innerHTML = "🎯 Đang tìm vị trí của bạn...";
+                
                 navigator.geolocation.getCurrentPosition(pos => {
                     const coords = [pos.coords.latitude, pos.coords.longitude];
                     this.state.map.flyTo(coords, 17, { animate: true, duration: 1 });
-                    stats.innerText = "✅ Đã khớp vị trí";
                     setTimeout(() => this.syncMap(), 500);
-                }, () => {
-                    stats.innerText = "❌ Lỗi GPS";
-                }, { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 });
+                }, err => {
+                    stats.innerHTML = "❌ Không thể lấy vị trí";
+                    setTimeout(() => this.syncMap(), 2000);
+                }, { enableHighAccuracy: true, timeout: 5000 });
             }
         };
-        app.init();
+
+        window.onload = () => app.init();
     </script>
 </body>
-
 </html>
