@@ -220,7 +220,8 @@
 
             <div class="menu-grid">
                 <div onclick="app.nav('lichoff')" class="menu-btn"><span>📅</span><label>Đăng ký Nghỉ (OFF)</label></div>
-                <div onclick="app.nav('map')" class="menu-btn"><span>🗺️</span><label>Xem Bản đồ</label></div>
+                <div onclick="app.nav('baocao')" class="menu-btn"><span>⚠️</span><label>Báo Cáo Huỷ</label></div>
+                <div onclick="app.nav('map')" class="menu-btn" style="grid-column: span 2;"><span>🗺️</span><label>Xem Bản đồ</label></div>
             </div>
 
             <h3 style="font-size: 1rem; margin-bottom: 12px; font-weight: 800;">📞 TỔNG ĐÀI HỖ TRỢ</h3>
@@ -275,6 +276,60 @@
 
             <h4 style="font-size: 1rem; margin: 20px 0 15px; font-weight: 800; color: var(--text-light);">📋 Lịch sử đăng ký nghỉ</h4>
             <div id="off-history" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 35px;">
+                <p style="text-align: center; color: var(--text-light); font-size: 0.85rem; padding: 20px;">Đang tải lịch sử...</p>
+            </div>
+        </div>
+
+        <!-- PAGE: BAO CAO -->
+        <div id="page-baocao" class="page">
+            <div class="page-header" style="margin-bottom: 20px;">
+                <h1>Báo Cáo Huỷ Chuyến</h1>
+            </div>
+
+            <div id="baocao-step-1" style="display: block;">
+                <div class="card">
+                    <h4 style="font-size: 0.9rem; margin-bottom: 15px; font-weight: 800;">ĐIỀU KIỆN XÉT DUYỆT</h4>
+                    <p style="font-size: 0.85rem; color: var(--text); margin-bottom: 15px;">Vui lòng xác nhận thông tin doanh thu trước khi báo cáo:</p>
+                    
+                    <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-light); margin-bottom: 5px; display: block;">Loại Hợp Đồng</label>
+                    <select id="baocao-contract" class="native-select" style="margin-bottom: 15px;" onchange="app.checkBaoCaoEligibility()">
+                        <option value="chinh_thuc">Hợp đồng chính thức (Định mức 800k)</option>
+                        <option value="dao_tao">Hợp đồng đào tạo (Định mức 640k)</option>
+                    </select>
+
+                    <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-light); margin-bottom: 5px; display: block;">Doanh thu App ngày bị ảnh hưởng</label>
+                    <input type="number" id="baocao-revenue" class="native-select" style="margin-bottom: 15px;" placeholder="Ví dụ: 850000 hoặc 850" oninput="app.checkBaoCaoEligibility()">
+                    
+                    <div id="baocao-eligibility-msg" style="font-size: 0.85rem; font-weight: 700; color: var(--danger); margin-bottom: 15px; min-height: 20px;"></div>
+
+                    <button class="btn-action" id="btn-next-baocao" onclick="app.nextBaoCaoStep()" disabled style="background: #94a3b8;">
+                        <span>TIẾP TỤC BÁO CÁO</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="baocao-step-2" style="display: none;">
+                <div class="card">
+                    <h4 style="font-size: 0.9rem; margin-bottom: 15px; font-weight: 800;">THÔNG TIN BÁO CÁO (Rớt tỉ lệ)</h4>
+
+                    <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-light); margin-bottom: 5px; display: block;">Ngày bị ảnh hưởng</label>
+                    <input type="date" id="baocao-date" class="native-select" style="margin-bottom: 15px;">
+
+                    <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-light); margin-bottom: 5px; display: block;">Lý Do</label>
+                    <textarea id="baocao-reason" class="native-select" style="height: 100px; padding: 12px; resize: none;" placeholder="Nhập lý do chi tiết để được xem xét chấm công..."></textarea>
+
+                    <button class="btn-action" id="btn-submit-baocao" style="margin-top: 10px;" onclick="app.submitBaoCao()">
+                        <span>GỬI BÁO CÁO</span>
+                    </button>
+                    
+                    <button class="btn-action" style="margin-top: 10px; background: transparent; color: var(--text-light); border: 1px solid #cbd5e1;" onclick="app.resetBaoCaoForm()">
+                        <span>QUAY LẠI</span>
+                    </button>
+                </div>
+            </div>
+
+            <h4 style="font-size: 1rem; margin: 20px 0 15px; font-weight: 800; color: var(--text-light);">📋 Lịch sử báo cáo</h4>
+            <div id="baocao-history" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 35px;">
                 <p style="text-align: center; color: var(--text-light); font-size: 0.85rem; padding: 20px;">Đang tải lịch sử...</p>
             </div>
         </div>
@@ -390,9 +445,13 @@
             updateUI() {
                 this.renderProfile();
                 this.renderLichOffHistory();
+                this.renderBaoCaoHistory();
             },
 
-            nav(p) { location.hash = "#/" + p; },
+            nav(p) { 
+                location.hash = "#/" + p; 
+                if (p === 'baocao') this.resetBaoCaoForm();
+            },
             
             routing() {
                 const h = location.hash.replace("#/", "") || "login";
@@ -559,12 +618,161 @@
                         timeFormat = `${("0" + dt.getDate()).slice(-2)}/${("0" + (dt.getMonth() + 1)).slice(-2)}/${dt.getFullYear()} ${("0" + dt.getHours()).slice(-2)}:${("0" + dt.getMinutes()).slice(-2)}`;
                     }
 
+                    // Xử lý hiển thị trạng thái
+                    let statusText = r.status || "Đang xử lý";
+                    let statusBg = "#fef3c7";
+                    let statusColor = "#92400e";
+                    if (statusText.toLowerCase().includes("từ chối")) {
+                        statusBg = "#fee2e2"; statusColor = "#991b1b";
+                    } else if (statusText.toLowerCase().includes("đã duyệt") || statusText.toLowerCase().includes("đã xử lý") || statusText.toLowerCase().includes("thành công")) {
+                        statusBg = "#dcfce7"; statusColor = "#166534";
+                    }
+
                     return `<div class="card" style="padding: 15px; border-left: 4px solid var(--primary);">
                         <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
                             <span style="font-size: 0.75rem; font-weight: 800; color: var(--text-light);">Gửi: ${timeFormat}</span>
-                            <span class="week-tag" style="background: #fef3c7; color: #92400e;">Nghỉ: ${dFormat}</span>
+                            <span class="week-tag" style="background: var(--primary-light); color: var(--primary-dark);">OFF: ${dFormat}</span>
                         </div>
-                        <p style="font-size: 0.85rem; line-height: 1.4; color: var(--text);"><strong>Lý do:</strong> ${r.reason}</p>
+                        <p style="font-size: 0.85rem; line-height: 1.4; color: var(--text); margin-bottom: 8px;"><strong>Lý do:</strong> ${r.reason}</p>
+                        <div style="display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; background: ${statusBg}; color: ${statusColor};">${statusText}</div>
+                    </div>`;
+                }).join('');
+            },
+
+            checkBaoCaoEligibility() {
+                const contract = document.getElementById('baocao-contract').value;
+                const rawRev = parseInt(document.getElementById('baocao-revenue').value) || 0;
+                const msgEl = document.getElementById('baocao-eligibility-msg');
+                const btn = document.getElementById('btn-next-baocao');
+
+                let isValid = false;
+                if (rawRev === 0 || isNaN(rawRev)) {
+                    msgEl.innerText = "";
+                    btn.disabled = true;
+                    btn.style.background = "#94a3b8";
+                    return;
+                }
+
+                // Hỗ trợ nhập 800 hoặc 800000 đều được
+                const revenue = rawRev < 10000 ? rawRev * 1000 : rawRev;
+
+                if (contract === 'chinh_thuc') {
+                    if (revenue >= 800000) {
+                        isValid = true;
+                    } else {
+                        msgEl.innerText = "Doanh thu của bạn không đủ điều kiện (yêu cầu >= 800k). Bạn không thể gửi báo cáo.";
+                    }
+                } else {
+                    if (revenue >= 640000) {
+                        isValid = true;
+                    } else {
+                        msgEl.innerText = "Doanh thu của bạn không đủ điều kiện (yêu cầu >= 640k). Bạn không thể gửi báo cáo.";
+                    }
+                }
+
+                if (isValid) {
+                    msgEl.innerText = "Bạn đủ điều kiện để gửi báo cáo.";
+                    msgEl.style.color = "var(--primary-dark)";
+                    btn.disabled = false;
+                    btn.style.background = "var(--primary)";
+                } else {
+                    msgEl.style.color = "var(--danger)";
+                    btn.disabled = true;
+                    btn.style.background = "#94a3b8";
+                }
+            },
+
+            nextBaoCaoStep() {
+                document.getElementById('baocao-step-1').style.display = 'none';
+                document.getElementById('baocao-step-2').style.display = 'block';
+            },
+
+            resetBaoCaoForm() {
+                const el1 = document.getElementById('baocao-step-1');
+                const el2 = document.getElementById('baocao-step-2');
+                if (el1 && el2) {
+                    el1.style.display = 'block';
+                    el2.style.display = 'none';
+                    document.getElementById('baocao-revenue').value = '';
+                    document.getElementById('baocao-eligibility-msg').innerText = '';
+                    
+                    const btn = document.getElementById('btn-next-baocao');
+                    btn.disabled = true;
+                    btn.style.background = "#94a3b8";
+
+                    document.getElementById('baocao-date').value = ""; 
+                    document.getElementById('baocao-reason').value = "";
+                }
+            },
+
+            async submitBaoCao() {
+                const dateAffected = document.getElementById('baocao-date').value;
+                const reason = document.getElementById('baocao-reason').value.trim();
+                const btn = document.getElementById('btn-submit-baocao');
+                
+                if (!dateAffected || !reason) return this.showToast("Vui lòng điền đủ thông tin!", "error");
+
+                btn.disabled = true; btn.innerHTML = `<div class="spinner-small"></div> Đang gửi...`;
+                
+                const p = {
+                    action: "submit_baocao",
+                    id: this.state.id,
+                    name: this.state.name,
+                    group: this.state.group,
+                    dateAffected: dateAffected,
+                    reason: reason
+                };
+                
+                try {
+                    const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(p), mode: 'no-cors' });
+                    this.showToast("Đã gửi báo cáo thành công!", "success");
+                    this.resetBaoCaoForm();
+                    setTimeout(() => { this.refreshBundle(); }, 1500);
+                } catch (e) { 
+                    this.showToast("Lỗi gửi dữ liệu!", "error"); 
+                } finally { 
+                    btn.disabled = false; btn.innerHTML = `<span>GỬI BÁO CÁO</span>`; 
+                }
+            },
+            
+            renderBaoCaoHistory() {
+                const el = document.getElementById('baocao-history'); if (!el) return;
+                const h = this.state.bundle ? this.state.bundle.baocao : [];
+                if (!h || h.length === 0) { el.innerHTML = `<p style="text-align: center; color: var(--text-light); font-size: 0.85rem; padding: 20px;">Chưa có dữ liệu báo cáo.</p>`; return; }
+                
+                el.innerHTML = h.slice().reverse().map(r => {
+                    let dFormat = r.dateAffected;
+                    if (r.dateAffected && r.dateAffected.includes('T')) {
+                        const d = new Date(r.dateAffected);
+                        dFormat = `${("0" + d.getDate()).slice(-2)}/${("0" + (d.getMonth() + 1)).slice(-2)}/${d.getFullYear()}`;
+                    } else if (r.dateAffected && !isNaN(Date.parse(r.dateAffected))) {
+                        const d = new Date(r.dateAffected);
+                        dFormat = `${("0" + d.getDate()).slice(-2)}/${("0" + (d.getMonth() + 1)).slice(-2)}/${d.getFullYear()}`;
+                    }
+                    
+                    let timeFormat = r.timestamp;
+                    if (r.timestamp && r.timestamp.includes('T')) {
+                        const dt = new Date(r.timestamp);
+                        timeFormat = `${("0" + dt.getDate()).slice(-2)}/${("0" + (dt.getMonth() + 1)).slice(-2)}/${dt.getFullYear()} ${("0" + dt.getHours()).slice(-2)}:${("0" + dt.getMinutes()).slice(-2)}`;
+                    }
+
+                    // Xử lý hiển thị trạng thái
+                    let statusText = r.status || "Đang xử lý";
+                    let statusBg = "#fef3c7";
+                    let statusColor = "#92400e";
+                    if (statusText.toLowerCase().includes("từ chối")) {
+                        statusBg = "#fee2e2"; statusColor = "#991b1b";
+                    } else if (statusText.toLowerCase().includes("đã duyệt") || statusText.toLowerCase().includes("đã xử lý") || statusText.toLowerCase().includes("thành công")) {
+                        statusBg = "#dcfce7"; statusColor = "#166534";
+                    }
+
+                    return `<div class="card" style="padding: 15px; border-left: 4px solid var(--danger);">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                            <span style="font-size: 0.75rem; font-weight: 800; color: var(--text-light);">Gửi: ${timeFormat}</span>
+                            <span class="week-tag" style="background: #fee2e2; color: #991b1b;">Ngày bị AH: ${dFormat}</span>
+                        </div>
+                        <p style="font-size: 0.85rem; line-height: 1.4; color: var(--text); margin-bottom: 8px;"><strong>Lý do:</strong> ${r.reason}</p>
+                        <div style="display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; background: ${statusBg}; color: ${statusColor};">${statusText}</div>
                     </div>`;
                 }).join('');
             },
