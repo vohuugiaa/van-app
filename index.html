@@ -286,7 +286,7 @@
                 <h1>Báo Cáo Huỷ Chuyến</h1>
             </div>
 
-            <div id="baocao-step-1" style="display: block;">
+            <div id="baocao-form-container">
                 <div class="card">
                     <h4 style="font-size: 0.9rem; margin-bottom: 15px; font-weight: 800;">ĐIỀU KIỆN XÉT DUYỆT</h4>
                     <p style="font-size: 0.85rem; color: var(--text); margin-bottom: 15px;">Vui lòng xác nhận thông tin doanh thu trước khi báo cáo:</p>
@@ -302,29 +302,19 @@
                     
                     <div id="baocao-eligibility-msg" style="font-size: 0.85rem; font-weight: 700; color: var(--danger); margin-bottom: 15px; min-height: 20px;"></div>
 
-                    <button class="btn-action" id="btn-next-baocao" onclick="app.nextBaoCaoStep()" disabled style="background: #94a3b8;">
-                        <span>TIẾP TỤC BÁO CÁO</span>
-                    </button>
-                </div>
-            </div>
+                    <div style="border-top: 1px dashed #cbd5e1; padding-top: 15px; margin-top: 15px;">
+                        <h4 style="font-size: 0.9rem; margin-bottom: 15px; font-weight: 800;">THÔNG TIN BÁO CÁO (Rớt tỉ lệ)</h4>
 
-            <div id="baocao-step-2" style="display: none;">
-                <div class="card">
-                    <h4 style="font-size: 0.9rem; margin-bottom: 15px; font-weight: 800;">THÔNG TIN BÁO CÁO (Rớt tỉ lệ)</h4>
+                        <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-light); margin-bottom: 5px; display: block;">Ngày bị ảnh hưởng</label>
+                        <input type="date" id="baocao-date" class="native-select" style="margin-bottom: 15px;">
 
-                    <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-light); margin-bottom: 5px; display: block;">Ngày bị ảnh hưởng</label>
-                    <input type="date" id="baocao-date" class="native-select" style="margin-bottom: 15px;">
+                        <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-light); margin-bottom: 5px; display: block;">Lý Do</label>
+                        <textarea id="baocao-reason" class="native-select" style="height: 100px; padding: 12px; resize: none;" placeholder="Nhập lý do chi tiết để được xem xét chấm công..."></textarea>
 
-                    <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-light); margin-bottom: 5px; display: block;">Lý Do</label>
-                    <textarea id="baocao-reason" class="native-select" style="height: 100px; padding: 12px; resize: none;" placeholder="Nhập lý do chi tiết để được xem xét chấm công..."></textarea>
-
-                    <button class="btn-action" id="btn-submit-baocao" style="margin-top: 10px;" onclick="app.submitBaoCao()">
-                        <span>GỬI BÁO CÁO</span>
-                    </button>
-                    
-                    <button class="btn-action" style="margin-top: 10px; background: transparent; color: var(--text-light); border: 1px solid #cbd5e1;" onclick="app.resetBaoCaoForm()">
-                        <span>QUAY LẠI</span>
-                    </button>
+                        <button class="btn-action" id="btn-submit-baocao" style="margin-top: 10px; background: #94a3b8;" onclick="app.submitBaoCao()" disabled>
+                            <span>GỬI BÁO CÁO</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -643,7 +633,7 @@
                 const contract = document.getElementById('baocao-contract').value;
                 const rawRev = parseInt(document.getElementById('baocao-revenue').value) || 0;
                 const msgEl = document.getElementById('baocao-eligibility-msg');
-                const btn = document.getElementById('btn-next-baocao');
+                const btn = document.getElementById('btn-submit-baocao');
 
                 let isValid = false;
                 if (rawRev === 0 || isNaN(rawRev)) {
@@ -682,27 +672,18 @@
                 }
             },
 
-            nextBaoCaoStep() {
-                document.getElementById('baocao-step-1').style.display = 'none';
-                document.getElementById('baocao-step-2').style.display = 'block';
-            },
-
             resetBaoCaoForm() {
-                const el1 = document.getElementById('baocao-step-1');
-                const el2 = document.getElementById('baocao-step-2');
-                if (el1 && el2) {
-                    el1.style.display = 'block';
-                    el2.style.display = 'none';
-                    document.getElementById('baocao-revenue').value = '';
-                    document.getElementById('baocao-eligibility-msg').innerText = '';
-                    
-                    const btn = document.getElementById('btn-next-baocao');
+                document.getElementById('baocao-revenue').value = '';
+                document.getElementById('baocao-eligibility-msg').innerText = '';
+                
+                const btn = document.getElementById('btn-submit-baocao');
+                if (btn) {
                     btn.disabled = true;
                     btn.style.background = "#94a3b8";
-
-                    document.getElementById('baocao-date').value = ""; 
-                    document.getElementById('baocao-reason').value = "";
                 }
+
+                document.getElementById('baocao-date').value = ""; 
+                document.getElementById('baocao-reason').value = "";
             },
 
             async submitBaoCao() {
