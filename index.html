@@ -590,9 +590,28 @@
             renderLichOffHistory() {
                 const el = document.getElementById('off-history'); if (!el) return;
                 const h = this.state.bundle ? this.state.bundle.timeOffs : [];
-                if (!h || h.length === 0) { el.innerHTML = `<p style="text-align: center; color: var(--text-light); font-size: 0.85rem; padding: 20px;">Chưa có dữ liệu đăng ký nghỉ.</p>`; return; }
                 
-                el.innerHTML = h.slice().reverse().map(r => {
+                const now = new Date();
+                let cycleStart, cycleEnd;
+                if (now.getDate() >= 26) {
+                    cycleStart = new Date(now.getFullYear(), now.getMonth(), 26);
+                    cycleEnd = new Date(now.getFullYear(), now.getMonth() + 1, 25);
+                } else {
+                    cycleStart = new Date(now.getFullYear(), now.getMonth() - 1, 26);
+                    cycleEnd = new Date(now.getFullYear(), now.getMonth(), 25);
+                }
+                cycleStart.setHours(0,0,0,0);
+                cycleEnd.setHours(23,59,59,999);
+                
+                const filteredHistory = h.filter(r => {
+                    if (!r.dateOff) return false;
+                    const d = new Date(r.dateOff);
+                    return d >= cycleStart && d <= cycleEnd;
+                });
+                
+                if (!filteredHistory || filteredHistory.length === 0) { el.innerHTML = `<p style="text-align: center; color: var(--text-light); font-size: 0.85rem; padding: 20px;">Chưa có dữ liệu đăng ký nghỉ trong chu kỳ này.</p>`; return; }
+                
+                el.innerHTML = filteredHistory.slice().reverse().map(r => {
                     let dFormat = r.dateOff;
                     if (r.dateOff && r.dateOff.includes('T')) {
                         const d = new Date(r.dateOff);
@@ -719,9 +738,28 @@
             renderBaoCaoHistory() {
                 const el = document.getElementById('baocao-history'); if (!el) return;
                 const h = this.state.bundle ? this.state.bundle.baocao : [];
-                if (!h || h.length === 0) { el.innerHTML = `<p style="text-align: center; color: var(--text-light); font-size: 0.85rem; padding: 20px;">Chưa có dữ liệu báo cáo.</p>`; return; }
                 
-                el.innerHTML = h.slice().reverse().map(r => {
+                const now = new Date();
+                let cycleStart, cycleEnd;
+                if (now.getDate() >= 26) {
+                    cycleStart = new Date(now.getFullYear(), now.getMonth(), 26);
+                    cycleEnd = new Date(now.getFullYear(), now.getMonth() + 1, 25);
+                } else {
+                    cycleStart = new Date(now.getFullYear(), now.getMonth() - 1, 26);
+                    cycleEnd = new Date(now.getFullYear(), now.getMonth(), 25);
+                }
+                cycleStart.setHours(0,0,0,0);
+                cycleEnd.setHours(23,59,59,999);
+                
+                const filteredHistory = h.filter(r => {
+                    if (!r.dateAffected) return false;
+                    const d = new Date(r.dateAffected);
+                    return d >= cycleStart && d <= cycleEnd;
+                });
+                
+                if (!filteredHistory || filteredHistory.length === 0) { el.innerHTML = `<p style="text-align: center; color: var(--text-light); font-size: 0.85rem; padding: 20px;">Chưa có dữ liệu báo cáo trong chu kỳ này.</p>`; return; }
+                
+                el.innerHTML = filteredHistory.slice().reverse().map(r => {
                     let dFormat = r.dateAffected;
                     if (r.dateAffected && r.dateAffected.includes('T')) {
                         const d = new Date(r.dateAffected);
