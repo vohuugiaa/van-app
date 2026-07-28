@@ -383,14 +383,14 @@
 
 
         <!-- CHATBOT UI -->
-        <div class="chat-btn" onclick="app.toggleChat()">💬</div>
+        <div class="chat-btn" id="chat-btn" style="display:none;" onclick="app.toggleChat()">💬</div>
         <div class="chat-window" id="chat-window">
             <div class="chat-header">
                 <span>🤖 Trợ Lý Van</span>
                 <span class="close-btn" onclick="app.toggleChat()">✖</span>
             </div>
             <div class="chat-body" id="chat-body">
-                <div class="chat-msg bot">Xin chào! Tôi là Trợ Lý AI của Van. Bạn cần hỗ trợ gì về quy trình và luật công ty?</div>
+                <div class="chat-msg bot" id="chat-welcome">Xin chào! Tôi là Trợ Lý AI của Van. Bạn cần hỗ trợ gì về quy trình và luật công ty?</div>
                 <div class="typing-indicator" id="chat-typing"><span></span><span></span><span></span></div>
             </div>
             <div class="chat-suggestions">
@@ -486,6 +486,8 @@
                 
                 document.getElementById('page-login').classList.remove('active');
                 document.getElementById('main-nav').style.display = 'flex';
+                document.getElementById('chat-btn').style.display = 'flex';
+                document.getElementById('chat-welcome').innerText = `Xin chào anh ${this.state.name}! Tôi là Trợ Lý AI của đội Van. Anh cần hỗ trợ gì về quy trình và luật công ty?`;
                 document.getElementById('user-name').innerText = "Chào, " + this.state.name;
                 document.getElementById('user-sap').innerText = "Mã NV: " + this.state.id;
                 
