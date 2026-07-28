@@ -163,6 +163,67 @@
         .menu-btn span { display: block; font-size: 1.2rem; margin-bottom: 5px; }
         .menu-btn label { font-size: 0.75rem; font-weight: 700; cursor: pointer; }
 
+        /* AI CHATBOT STYLES */
+        .chat-btn {
+            position: fixed; bottom: 85px; right: 20px;
+            width: 55px; height: 55px; border-radius: 50%;
+            background: var(--primary); color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; cursor: pointer; box-shadow: 0 4px 15px rgba(26, 188, 156, 0.4);
+            z-index: 1000; transition: transform 0.2s;
+        }
+        .chat-btn:active { transform: scale(0.9); }
+        .chat-window {
+            position: fixed; bottom: 150px; right: 20px;
+            width: calc(100% - 40px); max-width: 350px; height: 500px; max-height: 65vh;
+            background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            display: flex; flex-direction: column; overflow: hidden;
+            z-index: 1000; transition: 0.3s;
+            opacity: 0; pointer-events: none; transform: translateY(20px);
+        }
+        .chat-window.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
+        .chat-header {
+            background: var(--primary); color: white; padding: 15px; font-weight: 700;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .chat-header .close-btn { cursor: pointer; font-size: 1.2rem; }
+        .chat-body {
+            flex: 1; padding: 15px; overflow-y: auto; background: #f8fafc;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .chat-msg {
+            max-width: 85%; padding: 10px 14px; border-radius: 16px; font-size: 0.9rem; line-height: 1.4; white-space: pre-wrap;
+        }
+        .chat-msg.bot { background: white; color: var(--text); align-self: flex-start; border: 1px solid #e2e8f0; border-bottom-left-radius: 4px; }
+        .chat-msg.user { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .chat-suggestions {
+            display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 15px; background: white; border-top: 1px solid #f1f5f9;
+        }
+        .chat-chip {
+            background: #f1f5f9; color: var(--primary-dark); font-size: 0.75rem; font-weight: 600;
+            padding: 6px 10px; border-radius: 20px; cursor: pointer; transition: 0.2s;
+        }
+        .chat-chip:active { background: #e2e8f0; }
+        .chat-input-area {
+            display: flex; padding: 10px; background: white; border-top: 1px solid #f1f5f9; gap: 8px;
+        }
+        .chat-input {
+            flex: 1; border: 1px solid #e2e8f0; border-radius: 20px; padding: 10px 15px; font-size: 0.9rem; outline: none;
+        }
+        .chat-send-btn {
+            background: var(--primary); border: none; width: 40px; height: 40px; border-radius: 50%;
+            color: white; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 1.2rem;
+        }
+        .chat-send-btn:disabled { background: #cbd5e1; }
+        .typing-indicator {
+            display: none; align-items: center; gap: 4px; padding: 10px 14px;
+            background: white; border: 1px solid #e2e8f0; border-radius: 16px; align-self: flex-start; width: max-content;
+        }
+        .typing-indicator span { width: 6px; height: 6px; background: #cbd5e1; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+
         .hotline-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #eee; text-decoration: none; color: inherit; }
         .hotline-item .label { font-size: 0.8rem; font-weight: 600; color: var(--text-light); }
         .hotline-item .phone { font-size: 0.9rem; font-weight: 800; color: #3b82f6; }
@@ -321,6 +382,29 @@
         </div>
 
 
+        <!-- CHATBOT UI -->
+        <div class="chat-btn" onclick="app.toggleChat()">💬</div>
+        <div class="chat-window" id="chat-window">
+            <div class="chat-header">
+                <span>🤖 Trợ Lý Van</span>
+                <span class="close-btn" onclick="app.toggleChat()">✖</span>
+            </div>
+            <div class="chat-body" id="chat-body">
+                <div class="chat-msg bot">Xin chào! Tôi là Trợ Lý AI của Van. Bạn cần hỗ trợ gì về quy trình và luật công ty?</div>
+                <div class="typing-indicator" id="chat-typing"><span></span><span></span><span></span></div>
+            </div>
+            <div class="chat-suggestions">
+                <div class="chat-chip" onclick="app.sendChat('Báo cáo huỷ đơn')">Huỷ đơn</div>
+                <div class="chat-chip" onclick="app.sendChat('Báo bảo hiểm')">Bảo hiểm</div>
+                <div class="chat-chip" onclick="app.sendChat('Đổi khu vực')">Đổi tuyến</div>
+                <div class="chat-chip" onclick="app.sendChat('Luật nghỉ phép')">Nghỉ phép</div>
+                <div class="chat-chip" onclick="app.sendChat('Quy định trang phục')">Đồng phục</div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" class="chat-input" id="chat-input" placeholder="Nhập câu hỏi..." onkeypress="if(event.key === 'Enter') app.sendChat()">
+                <button class="chat-send-btn" id="chat-send" onclick="app.sendChat()">➤</button>
+            </div>
+        </div>
 
         <nav class="bottom-nav" id="main-nav" style="display:none;">
             <div onclick="app.nav('home')" class="nav-item" id="nav-home"><span>🏠</span><span>Trang chủ</span></div>
@@ -774,6 +858,68 @@
                     </div>`;
                 }).join('');
             },
+
+            // --- CHAT AI MODULE ---
+            chatHistory: [],
+            toggleChat() {
+                const cw = document.getElementById('chat-window');
+                cw.classList.toggle('active');
+            },
+            appendChatUI(text, sender) {
+                const body = document.getElementById('chat-body');
+                const typing = document.getElementById('chat-typing');
+                const div = document.createElement('div');
+                div.className = 'chat-msg ' + sender;
+                div.innerText = text;
+                body.insertBefore(div, typing);
+                body.scrollTop = body.scrollHeight;
+            },
+            async sendChat(presetMsg = null) {
+                const input = document.getElementById('chat-input');
+                const btn = document.getElementById('chat-send');
+                const msg = presetMsg || input.value.trim();
+                
+                if (!msg) return;
+                
+                input.value = "";
+                btn.disabled = true;
+                
+                this.appendChatUI(msg, 'user');
+                
+                const typing = document.getElementById('chat-typing');
+                const body = document.getElementById('chat-body');
+                typing.style.display = 'flex';
+                body.scrollTop = body.scrollHeight;
+
+                const payload = {
+                    action: "chat_ai",
+                    message: msg,
+                    history: this.chatHistory.slice(-4) // Gửi 4 tin gần nhất
+                };
+
+                try {
+                    const res = await fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    const data = await res.json();
+                    typing.style.display = 'none';
+                    
+                    if (data.status === 'success' && data.reply) {
+                        this.appendChatUI(data.reply, 'bot');
+                        this.chatHistory.push({ role: "user", content: msg });
+                        this.chatHistory.push({ role: "assistant", content: data.reply });
+                    } else {
+                        this.appendChatUI(data.message || "Lỗi phản hồi từ AI.", 'bot');
+                    }
+                } catch(e) {
+                    typing.style.display = 'none';
+                    this.appendChatUI("Xin lỗi, hệ thống AI đang bảo trì. Vui lòng thử lại sau.", 'bot');
+                } finally {
+                    btn.disabled = false;
+                }
+            }
 
         };
 
