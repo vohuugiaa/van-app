@@ -699,6 +699,14 @@
                 
                 if (!dateAffected || !reason) return this.showToast("Vui lòng điền đủ thông tin!", "error");
 
+                const today = new Date();
+                const todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+                
+                if (dateAffected === todayStr) {
+                    alert("Nếu huỷ với lý do của khách hàng thì hệ thống sẽ hoàn lại tỷ lệ vào ngày mai.\nNgày mai check lại nếu chưa hoàn mới vào báo cáo.");
+                    return;
+                }
+
                 btn.disabled = true; btn.innerHTML = `<div class="spinner-small"></div> Đang gửi...`;
                 
                 const p = {
