@@ -274,6 +274,14 @@
                 <h1>Báo Cáo Huỷ Chuyến</h1>
             </div>
 
+            <div style="display: flex; background: #e2e8f0; border-radius: 12px; padding: 4px; margin-bottom: 20px;">
+                <div id="tab-baocao-form" onclick="app.switchBaocaoTab('form')" style="flex: 1; text-align: center; padding: 10px; border-radius: 8px; font-weight: 700; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.05); color: var(--primary-dark); cursor: pointer; transition: 0.2s;">Gửi Báo Cáo</div>
+                <div id="tab-baocao-history" onclick="app.switchBaocaoTab('history')" style="flex: 1; text-align: center; padding: 10px; border-radius: 8px; font-weight: 700; color: var(--text-light); cursor: pointer; transition: 0.2s;">Lịch Sử</div>
+            </div>
+
+            <div id="baocao-section-form">
+
+
             <div id="baocao-form-container">
                 <div class="card">
                     <h4 style="font-size: 0.9rem; margin-bottom: 15px; font-weight: 800;">ĐIỀU KIỆN XÉT DUYỆT</h4>
@@ -306,9 +314,12 @@
                 </div>
             </div>
 
-            <h4 style="font-size: 1rem; margin: 20px 0 15px; font-weight: 800; color: var(--text-light);">📋 Lịch sử báo cáo</h4>
-            <div id="baocao-history" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 35px;">
-                <p style="text-align: center; color: var(--text-light); font-size: 0.85rem; padding: 20px;">Đang tải lịch sử...</p>
+            </div>
+            
+            <div id="baocao-section-history" style="display: none;">
+                <div id="baocao-history" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 35px;">
+                    <p style="text-align: center; color: var(--text-light); font-size: 0.85rem; padding: 20px;">Đang tải lịch sử...</p>
+                </div>
             </div>
         </div>
 
@@ -425,9 +436,37 @@
                 this.renderBaoCaoHistory();
             },
 
+            switchBaocaoTab(tab) {
+                const formTab = document.getElementById('tab-baocao-form');
+                const historyTab = document.getElementById('tab-baocao-history');
+                const formSec = document.getElementById('baocao-section-form');
+                const historySec = document.getElementById('baocao-section-history');
+
+                if (tab === 'form') {
+                    formTab.style.background = 'white';
+                    formTab.style.color = 'var(--primary-dark)';
+                    formTab.style.boxShadow = '0 2px 8px rgba(0,0,0,0.05)';
+                    historyTab.style.background = 'transparent';
+                    historyTab.style.color = 'var(--text-light)';
+                    historyTab.style.boxShadow = 'none';
+                    formSec.style.display = 'block';
+                    historySec.style.display = 'none';
+                } else {
+                    historyTab.style.background = 'white';
+                    historyTab.style.color = 'var(--primary-dark)';
+                    historyTab.style.boxShadow = '0 2px 8px rgba(0,0,0,0.05)';
+                    formTab.style.background = 'transparent';
+                    formTab.style.color = 'var(--text-light)';
+                    formTab.style.boxShadow = 'none';
+                    historySec.style.display = 'block';
+                    formSec.style.display = 'none';
+                    this.renderBaoCaoHistory();
+                }
+            },
+
             nav(p) { 
                 location.hash = "#/" + p; 
-                if (p === 'baocao') this.resetBaoCaoForm();
+                if (p === 'baocao') { this.resetBaoCaoForm(); this.switchBaocaoTab('form'); }
             },
             
             routing() {
