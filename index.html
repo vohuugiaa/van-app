@@ -241,7 +241,7 @@
             <div class="card">
                 <h4 style="font-size: 0.9rem; margin-bottom: 15px; font-weight: 800;">NHẬP THÔNG TIN NGHỈ</h4>
 
-                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <div style="display: flex; gap: 10px; margin-bottom: 12px;">
                     <div style="flex: 1;">
                         <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-light); margin-bottom: 5px; display: block;">Từ ngày</label>
                         <input type="date" id="off-date-start" class="native-select" style="margin-bottom: 0;">
@@ -250,6 +250,11 @@
                         <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-light); margin-bottom: 5px; display: block;">Đến ngày</label>
                         <input type="date" id="off-date-end" class="native-select" style="margin-bottom: 0;">
                     </div>
+                </div>
+
+                <div id="off-date-preview" style="font-size: 0.82rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 15px; padding: 10px 12px; background: #e6fcf5; border-radius: 12px; border: 1px solid #c3fae8; display: flex; align-items: center; gap: 6px;">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 18px; height: 18px; flex-shrink: 0;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    <span id="off-date-preview-text">Đang tải lịch nghỉ...</span>
                 </div>
 
                 <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-light); margin-bottom: 5px; display: block;">Lý do nghỉ</label>
@@ -278,7 +283,7 @@
 
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw4FtuCzYcLtQNZC86R-fZKUr-wAl7LYKpf8L1KC1sERmabOgr0qnSDF0552uEaGbLZtg/exec";
-        const APP_VERSION = "2.1.0"; // TĂNG SỐ NÀY LÊN MỖI KHI CẬP NHẬT
+        const APP_VERSION = "2.2.0"; // TĂNG SỐ NÀY LÊN MỖI KHI CẬP NHẬT
 
         // Cơ chế tự động kiểm tra bản cập nhật mới từ server (Chống Cache triệt để)
         async function checkAutoUpdate() {
@@ -410,15 +415,138 @@
                 
                 if (document.getElementById('page-' + h)) document.getElementById('page-' + h).classList.add('active');
                 if (document.getElementById('nav-' + h)) document.getElementById('nav-' + h).classList.add('active');
+                if (h === 'lichoff') this.initOffDateInputs();
                 
 
             },
 
             logout() { if (confirm("Bạn muốn đăng xuất?")) { localStorage.clear(); location.hash = "#/login"; location.reload(); } },
             
-            fmt(d) {
+            parseDateSafe(d) {
+                if (!d) return null;
                 const date = new Date(d);
-                return isNaN(date) ? String(d).trim() : `${("0" + date.getDate()).slice(-2)}/${("0" + (date.getMonth() + 1)).slice(-2)}/${date.getFullYear()}`;
+                if (isNaN(date.getTime())) return null;
+                if (date.getFullYear() > 2400) {
+                    date.setFullYear(date.getFullYear() - 543);
+                }
+                return date;
+            },
+
+            normalizeDate(dateStr) {
+                if (!dateStr) return '';
+                const parts = dateStr.trim().split('-');
+                if (parts.length === 3) {
+                    let y = parseInt(parts[0], 10);
+                    if (y > 2400) {
+                        y -= 543;
+                    }
+                    return `${y}-${parts[1]}-${parts[2]}`;
+                }
+                return dateStr;
+            },
+
+            formatDateISO(d) {
+                const year = d.getFullYear();
+                const month = ("0" + (d.getMonth() + 1)).slice(-2);
+                const day = ("0" + d.getDate()).slice(-2);
+                return `${year}-${month}-${day}`;
+            },
+
+            fmt(d) {
+                const date = this.parseDateSafe(d);
+                if (!date) return String(d).trim();
+                const day = ("0" + date.getDate()).slice(-2);
+                const month = ("0" + (date.getMonth() + 1)).slice(-2);
+                return `${day}/${month}/${date.getFullYear()}`;
+            },
+
+            initOffDateInputs() {
+                const startInput = document.getElementById('off-date-start');
+                const endInput = document.getElementById('off-date-end');
+                if (!startInput || !endInput) return;
+
+                const today = new Date();
+                const todayStr = this.formatDateISO(today);
+
+                // Giới hạn trong vòng 45 ngày tới
+                const maxFutureDate = new Date(today);
+                maxFutureDate.setDate(maxFutureDate.getDate() + 45);
+                const maxFutureStr = this.formatDateISO(maxFutureDate);
+
+                startInput.min = todayStr;
+                startInput.max = maxFutureStr;
+                endInput.min = todayStr;
+                endInput.max = maxFutureStr;
+
+                if (!startInput.value) startInput.value = todayStr;
+                if (!endInput.value) endInput.value = startInput.value;
+
+                startInput.onchange = () => {
+                    const sNorm = this.normalizeDate(startInput.value);
+                    if (sNorm) {
+                        const sDate = this.parseDateSafe(sNorm);
+                        if (sDate) {
+                            const maxEnd = new Date(sDate);
+                            maxEnd.setDate(maxEnd.getDate() + 1);
+
+                            endInput.min = sNorm;
+                            endInput.max = this.formatDateISO(maxEnd);
+
+                            const eNorm = this.normalizeDate(endInput.value);
+                            const eDate = this.parseDateSafe(eNorm);
+                            if (!eNorm || !eDate || eDate < sDate || eDate > maxEnd) {
+                                endInput.value = sNorm;
+                            }
+                        }
+                    }
+                    this.updateDatePreview();
+                };
+
+                endInput.onchange = () => {
+                    this.updateDatePreview();
+                };
+
+                if (startInput.value) {
+                    startInput.onchange();
+                } else {
+                    this.updateDatePreview();
+                }
+            },
+
+            updateDatePreview() {
+                const sInput = document.getElementById('off-date-start');
+                const eInput = document.getElementById('off-date-end');
+                const previewEl = document.getElementById('off-date-preview-text');
+                if (!sInput || !previewEl) return;
+
+                const sVal = this.normalizeDate(sInput.value);
+                const eVal = this.normalizeDate(eInput ? eInput.value : '') || sVal;
+
+                if (!sVal) {
+                    previewEl.innerText = "Vui lòng chọn ngày nghỉ";
+                    return;
+                }
+
+                const sDate = this.parseDateSafe(sVal);
+                const eDate = this.parseDateSafe(eVal);
+
+                if (!sDate || !eDate) {
+                    previewEl.innerText = "Ngày không hợp lệ";
+                    return;
+                }
+
+                const daysOfWeek = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+                const sDow = daysOfWeek[sDate.getDay()];
+                const sFmt = `${("0" + sDate.getDate()).slice(-2)}/${("0" + (sDate.getMonth() + 1)).slice(-2)}/${sDate.getFullYear()}`;
+
+                if (sVal === eVal) {
+                    previewEl.innerText = `Lịch nghỉ: ${sDow}, ${sFmt} (1 ngày)`;
+                } else {
+                    const eDow = daysOfWeek[eDate.getDay()];
+                    const eFmt = `${("0" + eDate.getDate()).slice(-2)}/${("0" + (eDate.getMonth() + 1)).slice(-2)}/${eDate.getFullYear()}`;
+                    const diffDays = Math.round((eDate - sDate) / 86400000) + 1;
+                    previewEl.innerText = `Lịch nghỉ: ${sFmt} (${sDow}) - ${eFmt} (${eDow}) (${diffDays} ngày)`;
+                }
             },
 
             renderProfile() {
@@ -428,34 +556,34 @@
             },
 
             async submitLichOff() {
-                const dateStart = document.getElementById('off-date-start').value;
-                const dateEnd = document.getElementById('off-date-end').value || dateStart;
+                const rawStart = document.getElementById('off-date-start').value;
+                const rawEnd = document.getElementById('off-date-end').value || rawStart;
+                const dateStart = this.normalizeDate(rawStart);
+                const dateEnd = this.normalizeDate(rawEnd);
                 const reason = document.getElementById('off-reason').value.trim();
                 const btn = document.getElementById('btn-submit-off');
                 
                 if (!dateStart || !reason) return this.showToast("Vui lòng điền đủ thông tin!", "error");
 
                 // --- KIỂM TRA ĐIỀU KIỆN NGHỈ ---
-                const dStart = new Date(dateStart); dStart.setHours(0,0,0,0);
-                const dEnd = new Date(dateEnd); dEnd.setHours(0,0,0,0);
+                const dStart = this.parseDateSafe(dateStart); dStart.setHours(0,0,0,0);
+                const dEnd = this.parseDateSafe(dateEnd); dEnd.setHours(0,0,0,0);
                 
                 if (dEnd < dStart) {
-                    alert("Lỗi: Ngày kết thúc không được nhỏ hơn ngày bắt đầu!");
-                    return;
+                    return this.showToast("Lỗi: Ngày kết thúc không được nhỏ hơn ngày bắt đầu!", "error");
                 }
                 
                 const requestDays = Math.round((dEnd - dStart) / 86400000) + 1;
                 if (requestDays > 2) {
-                    alert("Cảnh báo: Chỉ được phép đăng ký nghỉ tối đa 2 ngày cùng lúc. Nếu cần nghỉ dài hơn vui lòng liên hệ Giám sát.");
-                    return;
+                    return this.showToast("Cảnh báo: Chỉ được phép đăng ký nghỉ tối đa 2 ngày cùng lúc!", "error");
                 }
 
                 const pastOffs = (this.state.bundle && this.state.bundle.timeOffs) ? this.state.bundle.timeOffs : [];
                 const allPastDates = pastOffs.map(r => {
-                    let d = new Date(r.dateOff);
-                    d.setHours(0,0,0,0);
+                    let d = this.parseDateSafe(r.dateOff);
+                    if (d) d.setHours(0,0,0,0);
                     return d;
-                });
+                }).filter(d => d !== null);
                 
                 // Mảng chứa các ngày đang xin nghỉ đợt này
                 let newRequestDates = [];
@@ -466,8 +594,7 @@
                 // Trùng lịch
                 for(let nd of newRequestDates) {
                     if (allPastDates.some(pd => pd.getTime() === nd.getTime())) {
-                        alert(`Lỗi: Bạn đã đăng ký nghỉ ngày ${this.fmt(nd)} rồi!`);
-                        return;
+                        return this.showToast(`Lỗi: Bạn đã đăng ký nghỉ ngày ${this.fmt(nd)} rồi!`, "error");
                     }
                 }
                 
@@ -486,8 +613,7 @@
                 });
                 
                 if (countInCycle > 4) {
-                    alert("Cảnh báo: Số lượt nghỉ trong tháng của bạn đã hết (Vượt quá 4 ngày). Vui lòng liên hệ Giám sát để được hỗ trợ.");
-                    return;
+                    return this.showToast("Cảnh báo: Số lượt nghỉ trong tháng của bạn đã hết (Vượt quá 4 ngày)!", "error");
                 }
                 
                 // Chặn 3 ngày liên tiếp trong tổng thể
@@ -502,8 +628,7 @@
                     const isConsecutive23 = Math.round((d3 - d2) / 86400000) === 1;
                     
                     if (isConsecutive12 && isConsecutive23) {
-                        alert("Cảnh báo: Tổng lịch nghỉ tạo thành 3 ngày liên tiếp. Vui lòng liên hệ Giám sát để được hỗ trợ.");
-                        return;
+                        return this.showToast("Cảnh báo: Tổng lịch nghỉ tạo thành 3 ngày liên tiếp!", "error");
                     }
                 }
                 // --- KẾT THÚC KIỂM TRA ---
@@ -513,7 +638,7 @@
                 try {
                     // Gửi từng ngày một để lưu vào Google Sheet thành từng dòng
                     for (let nd of newRequestDates) {
-                        const formattedDate = `${nd.getFullYear()}-${("0" + (nd.getMonth() + 1)).slice(-2)}-${("0" + nd.getDate()).slice(-2)}`;
+                        const formattedDate = this.formatDateISO(nd);
                         const p = {
                             action: "submit_lich_off",
                             id: this.state.id,
@@ -526,9 +651,8 @@
                     }
                     
                     this.showToast("Đã gửi đăng ký nghỉ thành công!", "success");
-                    document.getElementById('off-date-start').value = ""; 
-                    document.getElementById('off-date-end').value = ""; 
                     document.getElementById('off-reason').value = "";
+                    this.initOffDateInputs();
                     setTimeout(() => { this.refreshBundle(); }, 1500);
                 } catch (e) { 
                     this.showToast("Lỗi gửi dữ liệu!", "error"); 
@@ -555,21 +679,15 @@
                 
                 const filteredHistory = h.filter(r => {
                     if (!r.dateOff) return false;
-                    const d = new Date(r.dateOff);
-                    return d >= cycleStart && d <= cycleEnd;
+                    const d = this.parseDateSafe(r.dateOff);
+                    return d && d >= cycleStart && d <= cycleEnd;
                 });
                 
                 if (!filteredHistory || filteredHistory.length === 0) { el.innerHTML = `<p style="text-align: center; color: var(--text-light); font-size: 0.85rem; padding: 20px;">Chưa có dữ liệu đăng ký nghỉ trong chu kỳ này.</p>`; return; }
                 
                 el.innerHTML = filteredHistory.slice().reverse().map(r => {
-                    let dFormat = r.dateOff;
-                    if (r.dateOff && r.dateOff.includes('T')) {
-                        const d = new Date(r.dateOff);
-                        dFormat = `${("0" + d.getDate()).slice(-2)}/${("0" + (d.getMonth() + 1)).slice(-2)}/${d.getFullYear()}`;
-                    } else if (r.dateOff && !isNaN(Date.parse(r.dateOff))) {
-                        const d = new Date(r.dateOff);
-                        dFormat = `${("0" + d.getDate()).slice(-2)}/${("0" + (d.getMonth() + 1)).slice(-2)}/${d.getFullYear()}`;
-                    }
+                    const d = this.parseDateSafe(r.dateOff);
+                    let dFormat = d ? `${("0" + d.getDate()).slice(-2)}/${("0" + (d.getMonth() + 1)).slice(-2)}/${d.getFullYear()}` : r.dateOff;
                     
                     let timeFormat = r.timestamp;
                     if (r.timestamp && r.timestamp.includes('T')) {
