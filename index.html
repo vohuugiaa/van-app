@@ -283,24 +283,26 @@
             <div class="card">
                 <h4 style="font-size: 0.9rem; margin-bottom: 15px; font-weight: 800;">NHẬP THÔNG TIN NGHỈ</h4>
 
-                <!-- CHỌN 1 NGÀY HOẶC 2 NGÀY -->
+                <!-- CHỌN 1 NGÀY HOẶC 2 NGÀY VỚI BIỂU TƯỢNG RADIO RÕ RÀNG -->
                 <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-light); margin-bottom: 8px; display: block;">Anh muốn nghỉ mấy ngày?</label>
                 <div style="display: flex; gap: 8px; margin-bottom: 14px;">
-                    <button type="button" id="btn-type-1" onclick="app.setOffType(1)" style="flex: 1; padding: 11px; border-radius: 12px; border: 2px solid var(--primary); background: #e6fcf5; color: var(--primary-dark); font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: 0.2s;">
-                        🟢 Nghỉ 1 Ngày
+                    <button type="button" id="btn-type-1" onclick="app.setOffType(1)" style="flex: 1; padding: 12px 10px; border-radius: 12px; border: 2px solid var(--primary); background: #e6fcf5; color: var(--primary-dark); font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 7px;">
+                        <span id="icon-type-1" style="display: flex;"></span>
+                        <span>Nghỉ 1 Ngày</span>
                     </button>
-                    <button type="button" id="btn-type-2" onclick="app.setOffType(2)" style="flex: 1; padding: 11px; border-radius: 12px; border: 2px solid #e2e8f0; background: white; color: var(--text-light); font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: 0.2s;">
-                        ⚪ 2 Ngày Liên Tiếp
+                    <button type="button" id="btn-type-2" onclick="app.setOffType(2)" style="flex: 1; padding: 12px 10px; border-radius: 12px; border: 2px solid #e2e8f0; background: white; color: var(--text-light); font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 7px;">
+                        <span id="icon-type-2" style="display: flex;"></span>
+                        <span>2 Ngày Liên Tiếp</span>
                     </button>
                 </div>
 
-                <!-- CHỌN NHANH -->
+                <!-- CHỌN NHANH (CHỈ CHỌN TỪ NGÀY MAI TRỞ ĐI) -->
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                    <label id="lbl-date-start" style="font-size: 0.75rem; font-weight: 700; color: var(--text-light); margin-bottom: 0;">Chọn ngày nghỉ</label>
+                    <label id="lbl-date-start" style="font-size: 0.75rem; font-weight: 700; color: var(--text-light); margin-bottom: 0;">Chọn ngày nghỉ (từ ngày mai)</label>
                     <div style="display: flex; gap: 5px;">
-                        <button type="button" onclick="app.setQuickDate(0)" style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 14px; padding: 3px 9px; font-size: 0.7rem; font-weight: 700; color: var(--text); cursor: pointer;">Hôm nay</button>
-                        <button type="button" onclick="app.setQuickDate(1)" style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 14px; padding: 3px 9px; font-size: 0.7rem; font-weight: 700; color: var(--text); cursor: pointer;">Ngày mai</button>
-                        <button type="button" onclick="app.setQuickDate(2)" style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 14px; padding: 3px 9px; font-size: 0.7rem; font-weight: 700; color: var(--text); cursor: pointer;">Ngày mốt</button>
+                        <button type="button" id="btn-quick-1" onclick="app.setQuickDate(1)" style="background: #e6fcf5; border: 1.5px solid var(--primary); color: var(--primary-dark); border-radius: 14px; padding: 4px 10px; font-size: 0.72rem; font-weight: 800; cursor: pointer; transition: 0.2s;">Ngày mai</button>
+                        <button type="button" id="btn-quick-2" onclick="app.setQuickDate(2)" style="background: #f1f5f9; border: 1px solid #cbd5e1; color: var(--text); border-radius: 14px; padding: 4px 10px; font-size: 0.72rem; font-weight: 700; cursor: pointer; transition: 0.2s;">Ngày mốt</button>
+                        <button type="button" id="btn-quick-3" onclick="app.setQuickDate(3)" style="background: #f1f5f9; border: 1px solid #cbd5e1; color: var(--text); border-radius: 14px; padding: 4px 10px; font-size: 0.72rem; font-weight: 700; cursor: pointer; transition: 0.2s;">3 ngày tới</button>
                     </div>
                 </div>
 
@@ -338,7 +340,7 @@
 
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw4FtuCzYcLtQNZC86R-fZKUr-wAl7LYKpf8L1KC1sERmabOgr0qnSDF0552uEaGbLZtg/exec";
-        const APP_VERSION = "2.3.0"; // TĂNG SỐ NÀY LÊN MỖI KHI CẬP NHẬT
+        const APP_VERSION = "2.4.0"; // TĂNG SỐ NÀY LÊN MỖI KHI CẬP NHẬT
 
         // Cơ chế tự động kiểm tra bản cập nhật mới từ server (Chống Cache triệt để)
         async function checkAutoUpdate() {
@@ -519,16 +521,25 @@
                 this.state.offType = type;
                 const b1 = document.getElementById('btn-type-1');
                 const b2 = document.getElementById('btn-type-2');
+                const icon1 = document.getElementById('icon-type-1');
+                const icon2 = document.getElementById('icon-type-2');
                 const lbl = document.getElementById('lbl-date-start');
 
+                const svgActive = '<svg style="width: 18px; height: 18px; color: var(--primary); flex-shrink: 0;" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>';
+                const svgInactive = '<svg style="width: 18px; height: 18px; color: #94a3b8; flex-shrink: 0;" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="10" r="7" /></svg>';
+
                 if (type === 1) {
-                    if (b1) { b1.style.background = '#e6fcf5'; b1.style.borderColor = 'var(--primary)'; b1.style.color = 'var(--primary-dark)'; b1.innerText = '🟢 Nghỉ 1 Ngày'; }
-                    if (b2) { b2.style.background = 'white'; b2.style.borderColor = '#e2e8f0'; b2.style.color = 'var(--text-light)'; b2.innerText = '⚪ 2 Ngày Liên Tiếp'; }
-                    if (lbl) lbl.innerText = 'Chọn ngày nghỉ';
+                    if (b1) { b1.style.background = '#e6fcf5'; b1.style.borderColor = 'var(--primary)'; b1.style.color = 'var(--primary-dark)'; }
+                    if (b2) { b2.style.background = 'white'; b2.style.borderColor = '#e2e8f0'; b2.style.color = 'var(--text-light)'; }
+                    if (icon1) icon1.innerHTML = svgActive;
+                    if (icon2) icon2.innerHTML = svgInactive;
+                    if (lbl) lbl.innerText = 'Chọn ngày nghỉ (từ ngày mai)';
                 } else {
-                    if (b2) { b2.style.background = '#e6fcf5'; b2.style.borderColor = 'var(--primary)'; b2.style.color = 'var(--primary-dark)'; b2.innerText = '🟢 2 Ngày Liên Tiếp'; }
-                    if (b1) { b1.style.background = 'white'; b1.style.borderColor = '#e2e8f0'; b1.style.color = 'var(--text-light)'; b1.innerText = '⚪ Nghỉ 1 Ngày'; }
-                    if (lbl) lbl.innerText = 'Ngày đầu tiên bắt đầu nghỉ (Hệ thống tính 2 ngày liền kề)';
+                    if (b2) { b2.style.background = '#e6fcf5'; b2.style.borderColor = 'var(--primary)'; b2.style.color = 'var(--primary-dark)'; }
+                    if (b1) { b1.style.background = 'white'; b1.style.borderColor = '#e2e8f0'; b1.style.color = 'var(--text-light)'; }
+                    if (icon2) icon2.innerHTML = svgActive;
+                    if (icon1) icon1.innerHTML = svgInactive;
+                    if (lbl) lbl.innerText = 'Ngày bắt đầu nghỉ (tự động tính 2 ngày)';
                 }
                 this.updateDatePreview();
             },
@@ -539,8 +550,28 @@
                 const sInput = document.getElementById('off-date-start');
                 if (sInput) {
                     sInput.value = this.formatDateISO(d);
+                    this.highlightQuickBtn(offsetDays);
                     this.updateDatePreview();
                 }
+            },
+
+            highlightQuickBtn(offsetDays) {
+                [1, 2, 3].forEach(n => {
+                    const btn = document.getElementById('btn-quick-' + n);
+                    if (btn) {
+                        if (n === offsetDays) {
+                            btn.style.background = '#e6fcf5';
+                            btn.style.borderColor = 'var(--primary)';
+                            btn.style.color = 'var(--primary-dark)';
+                            btn.style.fontWeight = '800';
+                        } else {
+                            btn.style.background = '#f1f5f9';
+                            btn.style.borderColor = '#cbd5e1';
+                            btn.style.color = 'var(--text)';
+                            btn.style.fontWeight = '700';
+                        }
+                    }
+                });
             },
 
             initOffDateInputs() {
@@ -548,19 +579,41 @@
                 if (!startInput) return;
 
                 const today = new Date();
-                const todayStr = this.formatDateISO(today);
+                today.setHours(0,0,0,0);
+
+                // CHẶN ĐĂNG KÝ TRONG NGÀY: Min là NGÀY MAI
+                const tomorrow = new Date(today);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                const tomorrowStr = this.formatDateISO(tomorrow);
 
                 // Giới hạn trong vòng 45 ngày tới
                 const maxFutureDate = new Date(today);
                 maxFutureDate.setDate(maxFutureDate.getDate() + 45);
                 const maxFutureStr = this.formatDateISO(maxFutureDate);
 
-                startInput.min = todayStr;
+                startInput.min = tomorrowStr;
                 startInput.max = maxFutureStr;
 
-                if (!startInput.value) startInput.value = todayStr;
+                // Mặc định luôn là ngày mai
+                if (!startInput.value || this.parseDateSafe(this.normalizeDate(startInput.value)) <= today) {
+                    startInput.value = tomorrowStr;
+                    this.highlightQuickBtn(1);
+                }
 
                 startInput.onchange = () => {
+                    const sNorm = this.normalizeDate(startInput.value);
+                    const sDate = this.parseDateSafe(sNorm);
+                    if (sDate) {
+                        if (sDate <= today) {
+                            this.showToast("Không được đăng ký trong ngày! Đã chuyển sang ngày mai.", "error");
+                            startInput.value = tomorrowStr;
+                            this.highlightQuickBtn(1);
+                        } else {
+                            // Kiểm tra xem có trùng với nút quick nào không
+                            const diff = Math.round((sDate - today) / 86400000);
+                            this.highlightQuickBtn(diff);
+                        }
+                    }
                     this.updateDatePreview();
                 };
 
@@ -595,7 +648,7 @@
                     eDate.setDate(eDate.getDate() + 1);
                     const eDow = daysOfWeek[eDate.getDay()];
                     const eFmt = `${("0" + eDate.getDate()).slice(-2)}/${("0" + (eDate.getMonth() + 1)).slice(-2)}/${eDate.getFullYear()}`;
-                    previewEl.innerText = `Nghỉ 2 ngày: ${sDow} (${sFmt}) và ${eDow} (${eFmt})`;
+                    previewEl.innerText = `Nghỉ 2 ngày: ${sDow} (${sFmt}) & ${eDow} (${eFmt})`;
                 }
             },
 
@@ -611,6 +664,12 @@
                 const sDate = this.parseDateSafe(dateStart);
                 if (!sDate) {
                     return this.showToast("Ngày nghỉ không hợp lệ!", "error");
+                }
+
+                const today = new Date();
+                today.setHours(0,0,0,0);
+                if (sDate <= today) {
+                    return this.showToast("Chỉ được đăng ký nghỉ từ ngày mai trở đi!", "error");
                 }
 
                 const daysOfWeek = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
@@ -656,6 +715,12 @@
 
                 const dStart = this.parseDateSafe(dateStart);
                 dStart.setHours(0,0,0,0);
+
+                const today = new Date();
+                today.setHours(0,0,0,0);
+                if (dStart <= today) {
+                    return this.showToast("Chỉ được đăng ký nghỉ từ ngày mai trở đi!", "error");
+                }
 
                 let dEnd = new Date(dStart);
                 if (this.state.offType === 2) {
